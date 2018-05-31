@@ -29,6 +29,174 @@ bot.onText(/\/hey/, msg => {
 })
 
 
+function edit_profile_driver(msg) {
+
+        var mysql  = require('mysql');
+        var pool  = mysql.createPool({
+                host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id
+
+pool.getConnection(function(err, connection) {
+
+      connection.query(' SELECT marka, nomer, tel FROM users WHERE id_user = ? AND vibor = "driver" ',[ user_id ] ,function(err, rows, fields) {
+      if (err) throw err;
+      var driver = JSON.parse(JSON.stringify(rows));
+
+      var text = 'Ваши данные:\n' +
+                 'Марка авто: ' + driver[0].marka + '\n' +
+                 'Номер авто: ' + driver[0].nomer + '\n' +
+                 'Телефон: ' + driver[0].tel + '\n\n' +
+                 'Чтобы редактировать данные набирайте в строке следующие команды и затем новые данные через пробел:\n' +
+                 'Например:\n' +
+                 '/marka Тойота королла\n' +
+                 '/nomer M 777 HAN\n' +
+                 '/phone +77013334444';
+
+      bot.sendMessage(msg.chat.id, text)
+      })
+})
+}
+
+
+function edit_profile_pass(msg) {
+
+        var mysql  = require('mysql');
+        var pool  = mysql.createPool({
+                host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id
+
+pool.getConnection(function(err, connection) {
+
+      connection.query(' SELECT tel FROM users WHERE id_user = ? AND vibor = "passenger" ',[ user_id ] ,function(err, rows, fields) {
+      if (err) throw err;
+      var pass = JSON.parse(JSON.stringify(rows));
+
+      var text = 'Ваши данные:\n' +
+                 'Телефон: ' + pass[0].tel + '\n\n' +
+                 'Чтобы редактировать данные набирайте в строке следующие команды и затем новые данные через пробел:\n' +
+                 'Например:\n' +
+                 '/tel +77013334444';
+
+      bot.sendMessage(msg.chat.id, text)
+      })
+})
+}
+
+
+bot.onText(/\/marka (.+)/, (msg, [source, match]) => {
+
+  const { id } = msg.chat
+
+        var mysql  = require('mysql');
+        var pool  = mysql.createPool({
+                host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id
+
+pool.getConnection(function(err, connection) {
+
+      connection.query(' UPDATE users SET marka = ? WHERE id_user = ? ',[ match, user_id ] ,function(err, rows, fields) {
+        if (err) throw err;
+
+      var text = 'Марка вашего авто отредактирована на: ' + match;
+      bot.sendMessage(msg.chat.id, text)
+      })
+})
+})
+
+
+bot.onText(/\/nomer (.+)/, (msg, [source, match]) => {
+
+  const { id } = msg.chat
+
+        var mysql  = require('mysql');
+        var pool  = mysql.createPool({
+                host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id
+
+pool.getConnection(function(err, connection) {
+
+      connection.query(' UPDATE users SET nomer = ? WHERE id_user = ? ',[ match, user_id ] ,function(err, rows, fields) {
+      if (err) throw err;
+
+      var text = 'Номер вашего авто отредактирован на: ' + match;
+      bot.sendMessage(msg.chat.id, text)
+      })
+})
+})
+
+
+bot.onText(/\/phone (.+)/, (msg, [source, match]) => {
+
+  const { id } = msg.chat
+
+        var mysql  = require('mysql');
+        var pool  = mysql.createPool({
+                host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id
+
+pool.getConnection(function(err, connection) {
+
+      connection.query(' UPDATE users SET tel = ? WHERE id_user = ? ',[ match, user_id ] ,function(err, rows, fields) {
+      if (err) throw err;
+
+      var text = 'Ваш номер телефона отредактирован на: ' + match;
+      bot.sendMessage(msg.chat.id, text)
+      })
+})
+})
+
+
+bot.onText(/\/tel (.+)/, (msg, [source, match]) => {
+
+  const { id } = msg.chat
+
+        var mysql  = require('mysql');
+        var pool  = mysql.createPool({
+                host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id
+
+pool.getConnection(function(err, connection) {
+
+      connection.query(' UPDATE users SET tel = ? WHERE id_user = ? ',[ match, user_id ] ,function(err, rows, fields) {
+      if (err) throw err;
+
+      var text = 'Ваш номер телефона отредактирован на: ' + match;
+      bot.sendMessage(msg.chat.id, text)
+      })
+})
+})
+
+
 
 bot.onText(/\/table/, msg => {
 
@@ -215,7 +383,7 @@ var main_menu_passenger = {
           [{
             text: 'Найти авто'
           }],
-          ['Мои данные'],
+          ['Мои данные.'],
           [{
             text: 'Вы сейчас пассажир'
           }]
@@ -235,7 +403,7 @@ function pass_again(query){
           [{
             text: 'Найти авто'
           }],
-          ['Мои данные'],
+          ['Мои данные.'],
           [{
             text: 'Вы сейчас пассажир'
           }]
@@ -2684,6 +2852,8 @@ console.log(gender[1]);
               else if (msg.text === 'Отменить поиск попутчиков'){are_u_sure(msg)}
               else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
               else if (msg.text === 'Нет') {search_regime(msg)}
+              else if (msg.text === 'Мои данные') {edit_profile_driver(msg)}
+              else if (msg.text === 'Мои данные.') {edit_profile_pass(msg)}
               else if (msg.text === 'йцукен'){create_route_driver(msg)}
         else {console.log('Hmm')
 
