@@ -6,7 +6,7 @@ const select = require('./select')
 const date_format = require('date_format')
 const fs = require('fs')
 const TaskTimer = require('tasktimer')
-
+const database = require('./database')
 
 const bot = new TelegramBot(config.TOKEN, {
   polling: true
@@ -175,12 +175,12 @@ bot.onText(/\/tel (.+)/, (msg, [source, match]) => {
 
   const { id } = msg.chat
 
-        var mysql  = require('mysql');
-        var pool  = mysql.createPool({
-                host     : 'localhost',
-        user     : 'mybd_user',
-        password : 'admin123',
-        database : 'sitebot'
+    var mysql  = require('mysql');
+    var pool  = mysql.createPool({
+    host     : 'localhost',
+    user     : 'mybd_user',
+    password : 'admin123',
+    database : 'route_driver'
     })
 
 var user_id = msg.chat.id
@@ -198,10 +198,136 @@ pool.getConnection(function(err, connection) {
 
 
 
-bot.onText(/\/table/, msg => {
+bot.onText(/\/route (.+)/, (msg, [source, match]) => {
 
-create_table.create_table()
+    var mysql  = require('mysql');
+    var pool  = mysql.createPool({
+    host     : 'localhost',
+    user     : 'mybd_user',
+    password : 'admin123',
+    database : 'route_driver'
+    })
+
+var user_id = msg.chat.id;
+var route_driver = 'route'+user_id;
+var n_route_driver = 'n_route'+user_id;
+
+pool.getConnection(function(err, connection) {
+
+        var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+
+        connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+        if (err) throw err;
+        var route = JSON.parse(JSON.stringify(rows));
+        if (route.length !== 0) {
+        console.log('route-sql ',route);
+        console.log('route-sql street ',route[0].street);
+        var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+          for(var i = 1; i < route.length/2; i++){
+          text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+          }
+        console.log('route text ', text);
+            connection.query(' INSERT INTO saved_routes (id_user, id_route, route_name, route_text) VALUES (?,(SELECT id_route FROM ?? ORDER BY id_route DESC LIMIT 1),?,?) ',
+            [ user_id, route_driver, match, text ] ,function(err, rows, fields) {
+            if (err) throw err;
+
+            var text2 = 'Маршрут сохранен как: "' + match + '"\nТеперь укажите кол-во пассажиров';
+            bot.sendMessage(msg.chat.id, text2)
+            })
+        }
+      })
 })
+})
+
+
+
+function activate_route(query) {
+
+    var mysql  = require('mysql');
+    var pool  = mysql.createPool({
+    host     : 'localhost',
+    user     : 'mybd_user',
+    password : 'admin123',
+//    database : 'route_driver'
+    })
+
+var str = query.data;
+var res = str.split(" ");
+console.log('res0 is:', res[0]);
+console.log('res1 is:', res[1]);
+
+var user_id = query.message.chat.id;
+var route_driver = 'route'+user_id;
+var n_route_driver = 'n_route'+user_id;
+
+pool.getConnection(function(err, connection) {
+
+var sql1 = 'INSERT INTO route_driver.?? (id_user) VALUES (?)';
+connection.query( sql1 , [ n_route_driver, user_id ] ,function(err, rows, fields) {
+if (err) throw err;
+var route1 = JSON.parse(JSON.stringify(rows));
+
+      var sql = ' INSERT INTO sitebot.route (begend, id_user, district, id_route, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, limit_place, uje_seli, all_districts) ' +
+                ' SELECT begend, id_user, district, (SELECT id FROM route_driver.?? AS route2 ORDER BY id DESC LIMIT 1) AS id_route, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, NOW() AS time_beg, ADDTIME (NOW(), "00:40:00") AS time_end, status, limit_place, uje_seli, all_districts FROM route_driver.?? WHERE id_route = ? ' ;
+
+      connection.query( sql , [ n_route_driver, route_driver, res[1] ] ,function(err, rows, fields) {
+      if (err) throw err;
+      var route = JSON.parse(JSON.stringify(rows));
+      console.log('Activated saved route ',route);
+      })
+})
+})
+}
+
+
+function choose_route_toactivate(msg) {
+
+    var mysql  = require('mysql');
+    var pool  = mysql.createPool({
+    host     : 'localhost',
+    user     : 'mybd_user',
+    password : 'admin123',
+    database : 'route_driver'
+    })
+
+var user_id = msg.chat.id;
+var route_driver = 'route'+user_id;
+var n_route_driver = 'n_route'+user_id;
+
+pool.getConnection(function(err, connection) {
+
+      connection.query(' SELECT * FROM saved_routes WHERE id_user = ? ',
+      [ user_id ] ,function(err, rows, fields) {
+      if (err) throw err;
+      var route = JSON.parse(JSON.stringify(rows));
+
+         if (route.length !== 0){
+         for(var i = 0; i < route.length; i++){
+          var pasu_text = 'Название маршрута: "' + route[i].route_name + '"\n' +  route[i].route_text ;
+          var id_route = route[i].id_route;
+
+          console.log('PASU  ', pasu_text);
+          bot.sendMessage(user_id, pasu_text ,{
+                           reply_markup: {
+                             inline_keyboard: [
+                               [{
+                                 text: 'Активизировать этот маршрут',
+                                 callback_data:  'route ' + id_route
+                               }]
+                             ]
+                           }
+
+          })
+         }
+         }
+         else {
+         var pasu_text = 'У вас нет сохраненных маршрутов';
+         bot.sendMessage(user_id, pasu_text)
+         }
+      })
+})
+}
+
 
 
 function vibor() {
@@ -249,7 +375,7 @@ var zapros = msg.chat.id
 
         var mysql  = require('mysql');
         var pool  = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_passenger'
@@ -262,7 +388,7 @@ var n_route = 'n_route_p'+user_id;
 
 pool.getConnection(function(err, connection) {
 
-      connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) NOT NULL, id_user INT(11) NOT NULL, id_route INT(11) NOT NULL, district VARCHAR (20) NOT NULL, point_type INT(11) NOT NULL, id_street INT(11) NOT NULL, street VARCHAR (100), id_interception INT(11) NOT NULL, interception VARCHAR (100), id_point VARCHAR (10) NOT NULL, busstop VARCHAR (100) NOT NULL, ordinal INT(11) NOT NULL, nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30),  time_beg DATETIME, time_end DATETIME, status VARCHAR (30), n_pass INT(11) NOT NULL, all_districts VARCHAR (60), PRIMARY KEY(id)) ',[route_passenger] ,function(err, rows, fields) {
+      connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) NOT NULL, id_user INT(11) NOT NULL, id_route INT(11) NOT NULL, district VARCHAR (20) NOT NULL, point_type INT(11) NOT NULL, id_street INT(11), street VARCHAR (100), id_interception INT(11), interception VARCHAR (100), id_point VARCHAR (20) , busstop VARCHAR (100), ordinal INT(11), nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30),  time_beg DATETIME, time_end DATETIME, status VARCHAR (30), n_pass INT(11) NOT NULL, all_districts VARCHAR (60), PRIMARY KEY(id)) ',[route_passenger] ,function(err, rows, fields) {
         if (err) throw err;
         })
 
@@ -286,11 +412,13 @@ function pol(query){
 
     connection.connect()
 
-var pol = query.data
+  var str = query.data;
+  var res = str.split(" ");
+  console.log('res is:', res[0]);
 var zapros = query.message.chat.id
 
-    connection.query('UPDATE users SET pol = ? WHERE id_user = ? AND vibor = "passenger" AND pol IS NULL',[pol, zapros], function(err, rows, fields) {
-      if (err) throw err; bot.sendMessage(query.message.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234');
+    connection.query('UPDATE users SET pol = ? WHERE id_user = ? AND vibor = "passenger" AND pol IS NULL',[res[0], zapros], function(err, rows, fields) {
+      if (err) throw err;
 })
       connection.end()
 }
@@ -319,6 +447,9 @@ var zapros = msg.chat.id
 }
 
 
+
+
+
 function nomer(msg){
         var mysql  = require('mysql');
         var connection = mysql.createConnection({
@@ -334,8 +465,7 @@ var nomer = msg.text
 var zapros = msg.chat.id
 
     connection.query('UPDATE users SET nomer = ? WHERE id_user = ? AND nomer IS NULL AND marka IS NOT NULL',[nomer, zapros], function(err, rows, fields) {
-      if (err) throw err; bot.sendMessage(msg.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234');
-      console.log(marka);
+      if (err) throw err;
 })
       connection.end()
 }
@@ -363,33 +493,111 @@ var zapros = msg.chat.id
 }
 
 
+function register_pass_asdriv(query) {
+
+        var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+   connection.query( ' INSERT INTO users (vibor, id_user, fname, tel) VALUES ( "driver", ? , (SELECT fname FROM users AS users1 WHERE id_user = ?), (SELECT tel FROM users AS users2 WHERE id_user = ?) ) ', [ user_id, user_id, user_id ], function(err, rows, fields) {
+   if (err) throw err;
+   var passenger = JSON.parse(JSON.stringify(rows));
+   bot.sendMessage(user_id, 'Марка вашего автомобиля\nНапишите в таком формате:\nБелая Toyota Camry 30')
+   console.log('reg as driv first')
+   })
+})
+}
+
+
+
+function register_driv_aspass(query) {
+
+        var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+
+       connection.query( ' INSERT INTO users (vibor, id_user, fname, tel) VALUES ( "passenger", ? , (SELECT fname FROM users AS users1 WHERE id_user = ?), (SELECT tel FROM users AS users2 WHERE id_user = ?) ) ',
+       [ user_id, user_id, user_id ],
+       function(err, rows, fields) {
+       if (err) throw err;
+
+       // Затем предлагаем указать пол
+       mujorjen(query);
+       })
+})
+}
+
+
 function pass(msg){
 
     const chatId = msg.chat.id
 
-    if (msg.text === 'Вы сейчас пассажир'){bot.sendMessage(chatId, 'asd', {
+    if (msg.text === 'Стать водителем'){bot.sendMessage(chatId, 'asd', {
                                                  reply_markup: {remove_keyboard:true}})}
 
     else {
     const chatId = msg.chat.id
-    const text_keyboard = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\nЧтобы изменить номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим водителя нажмите "Вы сейчас пассажир"'
+    const text_keyboard = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\nЧтобы изменить номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим водителя нажмите "Стать водителем"'
     bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
     }
 }
+
+
+function pass_query(query){
+
+    const chatId = query.message.chat.id
+    if (query.data === 'yes_to_pass'){ bot.sendMessage(chatId, 'Теперь вы в режиме пассажира', main_menu_passenger)  }
+
+}
+
 
 var main_menu_passenger = {
       reply_markup: {
         keyboard: [
           [{
-            text: 'Найти авто'
+            text: '🚗 Найти авто'
           }],
-          ['Мои данные.'],
+          ['💾 Мои данные.'],
           [{
-            text: 'Вы сейчас пассажир'
+            text: 'Стать водителем'
           }]
         ],
+        resize_keyboard: true
       }
 }
+
+var main_menu_passenger_query = {
+      reply_markup: {
+        keyboard: [
+          [{
+            text: '🚗 Найти авто'
+          }],
+          ['💾 Мои данные.'],
+          [{
+            text: 'Стать водителем'
+          }]
+        ],
+        resize_keyboard: true
+      }
+}
+
 
 
 
@@ -401,13 +609,14 @@ function pass_again(query){
       reply_markup: {
         keyboard: [
           [{
-            text: 'Найти авто'
+            text: '🚗 Найти авто'
           }],
-          ['Мои данные.'],
+          ['💾 Мои данные.'],
           [{
-            text: 'Вы сейчас пассажир'
+            text: 'Стать водителем'
           }]
         ],
+        resize_keyboard: true
       }
     })
 }
@@ -416,7 +625,9 @@ function pass_again(query){
 
 function choose_direction(msg) {
 const chatId = msg.chat.id
-const text = 'Маршрут создается в три шага\n1) Вы выбираете направление\n2) Выбираете пересечение откуда вы начинаете свой маршрут\nВторой и третий шаг объясню на примере\nНапример вы начинаете свой маршрут с ДК "Майкудук" с перекрестка Магнитогорская - Архитектурная и едите по Магнитогорской до Таттимбета и далее по маршруту... Сначала указываете Архитектурную. Затем из списка выбираете Магнитогорскую.\n3) Потом выбираете улицу (Таттимбета), до которой едите по Магнитогорской и так далее до конца вашего маршрута\n4) Когда заканчиваете свой маршрут нажмите на "Завершить маршрут"'
+//const text = 'Маршрут создается в три шага\n1) Вы выбираете направление\n2) Выбираете пересечение откуда вы начинаете свой маршрут\nВторой и третий шаг объясню на примере\nНапример вы начинаете свой маршрут с ДК "Майкудук" с перекрестка Магнитогорская - Архитектурная и едите по Магнитогорской до Таттимбета и далее по маршруту... Сначала указываете Архитектурную. Затем из списка выбираете Магнитогорскую.\n3) Потом выбираете улицу (Таттимбета), до которой едите по Магнитогорской и так далее до конца вашего маршрута\n4) Когда заканчиваете свой маршрут нажмите на "Завершить маршрут"'
+
+const text = 'Указав направление (ОТКУДА >> КУДА),\nПостройте свой маршрут, выбрав по порядку улицы, по которым проедите. Затем, как укажете последнюю улицу вашего маршрута, нажмите "Завершить маршрут".\n\nP.S. Когда указываете начало маршрута (стартовое пересечение), сначала выберите пересекающую улицу, а затем ту по которой поедите'
 bot.sendMessage(chatId, text, {
                      reply_markup: {
                        keyboard: [
@@ -429,35 +640,263 @@ bot.sendMessage(chatId, text, {
                          }],
 
                          [{
-                           text: 'Назад'
+                           text: '⬅️ Назад на главное меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
 
-bot.sendMessage(chatId, 'Выберите направление', {
+// Теперь отправляем карту
+bot.sendPhoto(chatId, fs.readFileSync(__dirname + '/picture-map.png'), {
+caption: 'На карте указаны границы районов'
+})
+
+bot.sendMessage(chatId, 'Выберите направление. ОТКУДА', {
                      reply_markup: {
-                       inline_keyboard: [
+                      inline_keyboard: [
                          [{
-                           text: 'Из Майкудука в центр',
+                           text: 'Из майкудука',
                            callback_data: 'mkdk'
                          }],
                          [{
-                           text: 'Из центра в Майкудук',
+                           text: 'Из центра',
                            callback_data: 'grd'
                          }],
                          [{
-                         text: 'Из центра в центр',
-                         callback_data: 'grd'
+                           text: 'Из юго-востока',
+                           callback_data: 'yug'
                          }],
                          [{
-                         text: 'Из Майкудука в Майкудук',
-                         callback_data: 'mkdk'
+                           text: 'Из района базара',
+                           callback_data: 'bazar'
+                         }],
+                         [{
+                           text: 'Из пришахтинска',
+                           callback_data: 'prihon'
+                         }],
+                         [{
+                           text: 'Из новоузенки',
+                           callback_data: 'novouzenka'
+                         }],
+                         [{
+                           text: 'Из района ЖБИ',
+                           callback_data: 'zhbi'
+                         }],
+                         [{
+                           text: 'Из сарани',
+                           callback_data: 'saran'
+                         }],
+                         [{
+                           text: 'Из малой сарани',
+                           callback_data: 'malsaran'
+                         }],
+                         [{
+                           text: 'Из актаса',
+                           callback_data: 'aktas'
+                         }],
+                         [{
+                           text: 'Из дубовки',
+                           callback_data: 'dubovka'
+                         }],
+                         [{
+                           text: 'Из федоровки',
+                           callback_data: 'fedorovka'
+                         }],
+                         [{
+                           text: 'Из сортировки',
+                           callback_data: 'srt'
+                         }],
+                         [{
+                           text: 'Из доскея',
+                           callback_data: 'doskey'
+                         }],
+                         [{
+                           text: 'Из поселка Трудовое',
+                           callback_data: 'trud'
+                         }],
+                         [{
+                           text: 'Из уштобе',
+                           callback_data: 'uwtobe'
                          }]
                        ]
                      }
                    })
+
+}
+
+
+
+function choose_direction_to(query) {
+
+const chatId = query.message.chat.id
+
+bot.sendMessage(chatId, 'Выберите направление. КУДА:', {
+                     reply_markup: {
+                       inline_keyboard: [
+                         [{
+                           text: 'В майкудук',
+                           callback_data: 'mkdk2'
+                         }],
+                         [{
+                           text: 'В центр',
+                           callback_data: 'grd2'
+                         }],
+                         [{
+                           text: 'На юго-восток',
+                           callback_data: 'yug2'
+                         }],
+                         [{
+                           text: 'В район базара',
+                           callback_data: 'bazar2'
+                         }],
+                         [{
+                           text: 'В пришахтинск',
+                           callback_data: 'prihon2'
+                         }],
+                         [{
+                           text: 'В новоузенку',
+                           callback_data: 'novouzenka2'
+                         }],
+                         [{
+                           text: 'В район ЖБИ',
+                           callback_data: 'zhbi2'
+                         }],
+                         [{
+                           text: 'В сарань',
+                           callback_data: 'saran2'
+                         }],
+                         [{
+                           text: 'В малую сарань',
+                           callback_data: 'malsaran2'
+                         }],
+                         [{
+                           text: 'В актас',
+                           callback_data: 'aktas2'
+                         }],
+                         [{
+                           text: 'В дубовку',
+                           callback_data: 'dubovka2'
+                         }],
+                         [{
+                           text: 'В федоровку',
+                           callback_data: 'fedorovka2'
+                         }],
+                         [{
+                           text: 'В сортировку',
+                           callback_data: 'srt2'
+                         }],
+                         [{
+                           text: 'В доскей',
+                           callback_data: 'doskey2'
+                         }],
+                         [{
+                           text: 'В поселок Трудовое',
+                           callback_data: 'trud2'
+                         }],
+                         [{
+                           text: 'В уштобе',
+                           callback_data: 'uwtobe2'
+                         }]
+                       ]
+                     }
+                   })
+}
+
+
+
+function choose_from_district_driver(query) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'route_driver'
+    })
+
+pool.getConnection(function(err, connection) {
+
+var user_id = query.message.chat.id
+var route_driver = 'route'+user_id;
+var n_route = 'n_route'+user_id;
+  var str = query.data;
+  var res = str.split(" ");
+console.log(res[0]);
+
+if (res[0] == 'mkdk'){ var district = 'mkdk';}
+else if (res[0] == 'grd'){ var district = 'grd';}
+else if (res[0] == 'saran'){ var district = 'saran';}
+else if (res[0] == 'aktas'){ var district = 'aktas';}
+else if (res[0] == 'dubovka'){ var district = 'dubovka';}
+else if (res[0] == 'fedorovka'){ var district = 'fedorovka';}
+else if (res[0] == 'bazar'){ var district = 'bazar';}
+else if (res[0] == 'yug'){ var district = 'yug';}
+else if (res[0] == 'srt'){ var district = 'srt';}
+else if (res[0] == 'doskey'){ var district = 'doskey';}
+else if (res[0] == 'trud'){ var district = 'trud';}
+else if (res[0] == 'uwtobe'){ var district = 'uwtobe';}
+else if (res[0] == 'prihon'){ var district = 'prihon';}
+else if (res[0] == 'zhbi'){ var district = 'zhbi';}
+else if (res[0] == 'novouzenka'){ var district = 'novouzenka';}
+else if (res[0] == 'malsaran'){ var district = 'malsaran';}
+
+connection.query('INSERT INTO ?? (id_user, start) VALUES(?,?) ',
+[ n_route, user_id, district], function(err, rows, fields) {
+if (err) throw err;
+console.log(rows);
+})
+
+})
+
+choose_direction_to(query);
+}
+
+
+
+function choose_to_district_driver(query) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'route_driver'
+    })
+
+pool.getConnection(function(err, connection) {
+
+var user_id = query.message.chat.id
+var route_driver = 'route'+user_id;
+var n_route = 'n_route'+user_id;
+  var str = query.data;
+  var res = str.split(" ");
+console.log(res[0]);
+
+if (res[0] == 'mkdk2'){ var district = 'mkdk';}
+else if (res[0] == 'grd2'){ var district = 'grd';}
+else if (res[0] == 'saran2'){ var district = 'saran';}
+else if (res[0] == 'aktas2'){ var district = 'aktas';}
+else if (res[0] == 'dubovka2'){ var district = 'dubovka';}
+else if (res[0] == 'fedorovka2'){ var district = 'fedorovka';}
+else if (res[0] == 'bazar2'){ var district = 'bazar';}
+else if (res[0] == 'yug2'){ var district = 'yug';}
+else if (res[0] == 'srt2'){ var district = 'srt';}
+else if (res[0] == 'doskey2'){ var district = 'doskey';}
+else if (res[0] == 'trud2'){ var district = 'trud';}
+else if (res[0] == 'uwtobe2'){ var district = 'uwtobe';}
+else if (res[0] == 'prihon2'){ var district = 'prihon';}
+else if (res[0] == 'zhbi2'){ var district = 'zhbi';}
+else if (res[0] == 'novouzenka2'){ var district = 'novouzenka';}
+else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
+
+connection.query(' UPDATE ?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM ??) AS route2 )',
+[ n_route, district, n_route ], function(err, rows, fields) {
+if (err) throw err;})
+
+})
+choose_street(query);
 }
 
 
@@ -469,17 +908,18 @@ const chatId = msg.chat.id
                      reply_markup: {
                        keyboard: [
                          [{
-                           text: 'Создать новый маршрут'
+                           text: '▶️ Создать новый маршрут'
                          }],
 
                          [{
-                           text: 'Активизировать сохраненные маршруты'
+                           text: '⏯ Активизировать сохраненные маршруты'
                          }],
 
                          [{
-                           text: 'Назад на главное меню'
+                           text: '⬅️ Назад на главное меню'
                          }]
                        ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -487,18 +927,39 @@ const chatId = msg.chat.id
 
 function driv(msg){
     const chatId = msg.chat.id
+    const omenu = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\nЧтобы изменить марку авто или номер авто или номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим пассажира нажмите "Стать пассажиром"'
+            bot.sendMessage(chatId, omenu, {
+                     reply_markup: {
+                       keyboard: [
+                         [{
+                           text: '🙋‍♂️ Найти попутчиков'
+                         }],
+                         ['💽 Мои данные'],
+                         [{
+                           text: 'Стать пассажиром'
+                         }]
+                       ],
+                       resize_keyboard: true
+                     }
+                   })
+}
+
+
+function driv_query (query){
+    const chatId = query.message.chat.id
     const omenu = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\nЧтобы изменить марку авто или номер авто или номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим пассажира нажмите "Вы сейчс водитель"'
             bot.sendMessage(chatId, omenu, {
                      reply_markup: {
                        keyboard: [
                          [{
-                           text: 'Найти попутчиков'
+                           text: '🙋‍♂️ Найти попутчиков'
                          }],
-                         ['Мои данные'],
+                         ['💽 Мои данные'],
                          [{
-                           text: 'Вы сейчас водитель'
+                           text: 'Стать пассажиром'
                          }]
                        ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -511,13 +972,14 @@ function driv_again(query){
                      reply_markup: {
                        keyboard: [
                          [{
-                           text: 'Найти попутчиков'
+                           text: '🙋‍♂️ Найти попутчиков'
                          }],
-                         ['Мои данные'],
+                         ['💽 Мои данные'],
                          [{
-                           text: 'Вы сейчас водитель'
+                           text: 'Стать пассажиром'
                          }]
                        ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -552,45 +1014,33 @@ function create_user(query){
 
 
 function choose_street(query) {
- var mysql  = require('mysql');
-        var connection = mysql.createConnection({
-                host     : 'localhost',
+
+        var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_driver'
-    })
+        })
 
-    connection.connect()
-
-var zapros = query.data
-var user_id = query.message.chat.id
+var zapros = query.data;
+var user_id = query.message.chat.id;
 var route_driver = 'route'+user_id;
 var n_route_driver = 'n_route'+user_id;
 
-    connection.query('INSERT INTO ?? (id_user, start) VALUES(?,?) ',[n_route_driver, user_id, zapros], function(err, rows, fields) {
-                           if (err) throw err;})
+pool.getConnection(function(err, connection) {
 
     connection.query('INSERT INTO ?? (begend, n_zapros, id_user, id_route) VALUES(?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??) )) ',
     [ route_driver, 'beg', 1, user_id, n_route_driver, user_id, n_route_driver ], function(err, rows, fields) {
     if (err) throw err;
-    })
 
-    connection.query('SELECT * FROM kowe WHERE district1 = ? OR district2 = ? ', [ zapros, zapros ], function(err, rows, fields) {
+
+    connection.query('SELECT * FROM kowe WHERE district1 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) OR district2 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) ',
+     [ n_route_driver, n_route_driver, n_route_driver, n_route_driver ], function(err, rows, fields) {
     if (err) throw err;
     var interception = JSON.parse(JSON.stringify(rows));
+    console.log('int chosen', interception);
 
-//    var goods = [];
-//
-//    for(var i = 0; i < rows.length; i++){
-//    goods[goods.length] = rows[i].streetname;
-//    }
-//      bot.sendMessage(query.message.chat.id, 'Выберите пересекающую улицу', { reply_markup: JSON.stringify({
-//                                                        inline_keyboard: goods.map((x, xi) => ([{
-//                                                            text: x,
-//                                                            callback_data: 'beg_inter1 ' + zapros + ' ' + x,
-//                                                        }])),
-//
-//                                           }),})
     var keyboard = [];
     for(var i = 0; i < rows.length; i++){
     keyboard.push([{'text': ( interception[i].streetname ) , 'callback_data': ('beg_inter1#' + interception[i].district1 + '#' + interception[i].id_str)}]);
@@ -605,8 +1055,8 @@ var n_route_driver = 'n_route'+user_id;
      )
 
     })
-
-      connection.end()
+    })
+})
 }
 
 
@@ -672,12 +1122,12 @@ var route_driver = 'route'+user_id;
 var n_route_driver = 'n_route'+user_id;
   var str = query.data;
   var res = str.split("#");
-  console.log('Район', res[1]);
+  console.log('ID interception', res[1]);
 
 pool.getConnection(function(err, connection) {
 
 connection.query('SELECT * FROM points WHERE id_street = ? AND id_interception = (SELECT id_interception FROM ?? WHERE begend = "beg" ORDER BY id DESC LIMIT 1) ',
-[ res[1], route_driver, route_driver ], function(err, rows, fields) {
+[ res[1], route_driver ], function(err, rows, fields) {
 if (err) throw err;
 var beg_inter = JSON.parse(JSON.stringify(rows));
 console.log('Данные стрита для первого интерсепшна ', beg_inter);
@@ -730,7 +1180,6 @@ var route_driver = 'route'+user_id;
 pool.getConnection(function(err, connection) {
 
 // Выбор и ввод в БД точек пересечения между текущим и последним перекрестком
-//connection.beginTransaction(function(err) {
 
    connection.query('SELECT n_zapros, id_route, street, ordinal FROM ?? WHERE id_user = ? ORDER BY id DESC LIMIT 1 ',
    [route_driver, user_id], function(err, rows, fields) {
@@ -772,8 +1221,13 @@ pool.getConnection(function(err, connection) {
                   if (err) throw err;
 
                         // Выбор последнего перекрестка
-                        connection.query('SELECT * FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ',
-                        [ res[1], route_driver ], function(err, rows, fields) {
+                        var last_sql1 = ' SELECT district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, ' +
+                                        ' (SELECT point_parinter_min5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_min5, ' +
+                                        ' (SELECT point_parinter_plu5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_plu5  ' +
+                                        ' FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ';
+
+                        connection.query( last_sql1 ,
+                        [ street, res[1], street, res[1], res[1], route_driver ], function(err, rows, fields) {
                         if (err) throw err;
                         console.log(rows);
                         var str_vse = JSON.parse(JSON.stringify(rows));
@@ -792,8 +1246,13 @@ pool.getConnection(function(err, connection) {
              }
              else{
                         // Выбор последнего перекрестка
-                        connection.query('SELECT * FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ',
-                        [ res[1], route_driver ], function(err, rows, fields) {
+                        var last_sql1 = ' SELECT district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, ' +
+                                        ' (SELECT point_parinter_min5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_min5, ' +
+                                        ' (SELECT point_parinter_plu5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_plu5  ' +
+                                        ' FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ';
+
+                        connection.query( last_sql1 ,
+                        [ street, res[1], street, res[1], res[1], route_driver ], function(err, rows, fields) {
                         if (err) throw err;
                         console.log(rows);
                         var str_vse = JSON.parse(JSON.stringify(rows));
@@ -838,8 +1297,13 @@ console.log('di_route',di_route);
              if (err) throw err;
 
                         // Выбор последнего перекрестка
-                        connection.query('SELECT * FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ',
-                        [ res[1], route_driver ], function(err, rows, fields) {
+                        var last_sql1 = ' SELECT district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, ' +
+                                        ' (SELECT point_parinter_min5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_min5, ' +
+                                        ' (SELECT point_parinter_plu5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_plu5  ' +
+                                        ' FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ';
+
+                        connection.query( last_sql1 ,
+                        [ street, res[1], street, res[1], res[1], route_driver ], function(err, rows, fields) {
                         if (err) throw err;
                         console.log(rows);
                         var str_vse = JSON.parse(JSON.stringify(rows));
@@ -858,8 +1322,13 @@ console.log('di_route',di_route);
           }
           else{
                         // Выбор последнего перекрестка
-                        connection.query('SELECT * FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ',
-                        [ res[1], route_driver ], function(err, rows, fields) {
+                        var last_sql1 = ' SELECT district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, ' +
+                                        ' (SELECT point_parinter_min5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_min5, ' +
+                                        ' (SELECT point_parinter_plu5 FROM points WHERE street = ? AND interception = ?) AS point_parinter_plu5  ' +
+                                        ' FROM points WHERE  street = ? AND interception = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) ';
+
+                        connection.query( last_sql1 ,
+                        [ street, res[1], street, res[1], res[1], route_driver ], function(err, rows, fields) {
                         if (err) throw err;
                         console.log(rows);
                         var str_vse = JSON.parse(JSON.stringify(rows));
@@ -868,7 +1337,7 @@ console.log('di_route',di_route);
                         for(var i = 0; i < rows.length; i++){
                             test0.push([ n_zapros, user_id, di_route, str_vse[i].district, str_vse[i].point_type, str_vse[i].id_street, str_vse[i].street, str_vse[i].id_interception, str_vse[i].interception, str_vse[i].id_point, str_vse[i].busstop, str_vse[i].ordinal, str_vse[i].nearby_interception, str_vse[i].point_parinter_min5, str_vse[i].point_parinter_plu5 ]);
                         }
-                        console.log(test0);
+                        console.log('ничего МЕЖДУ ДВУМЯ ПЕРЕКРЕСТКАМИ! ');
 
                                // Ввод последнего перекрестка в БД
                                connection.query(' INSERT INTO ?? (n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5) VALUES ? ', [ route_driver, test0 ], function(err, rows, fields) {
@@ -880,8 +1349,6 @@ console.log('di_route',di_route);
          })
 
    })
-//}
-//})
 
 
 // Выдача списка улиц пользователю
@@ -889,19 +1356,37 @@ console.log('di_route',di_route);
     connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
     if (err) throw err;
     var user = JSON.stringify(rows);
-
     var goods = [];
 
     for(var i = 0; i < rows.length; i++){
     goods[goods.length] = rows[i].interception;
     }
-      bot.sendMessage(query.message.chat.id, `Вы едите по улице ${res[1]} до ...`, { reply_markup: JSON.stringify({
+
+        var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+
+        connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+        if (err) throw err;
+        var route = JSON.parse(JSON.stringify(rows));
+        if (route.length !== 0) {
+        console.log('route-sql ',route);
+            console.log('route-sql street ',route[0].street);
+        var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+          for(var i = 1; i < route.length/2; i++){
+          text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+          }
+        text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
+        console.log('route-sql-текст ',text);
+        }
+
+        text += '\nпо ' + res[1] + ' до ...'
+        bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
                                                         inline_keyboard: goods.map((x, xi) => ([{
                                                             text: x,
                                                             callback_data: 'kbd#' + x,
                                                         }])),
 
                                            }),})
+        })
     })
 })
 }
@@ -910,7 +1395,7 @@ console.log('di_route',di_route);
 function indicate_number_of_places(msg) {
 
 const chatId = msg.chat.id
-const text = 'Сколько пассажиров можете забрать?'
+const text = 'Перед тем как указать кол-во пассажиров, вы можете сохранить этот маршрут набрав\n/route пробел и название маршрута\nНапример:\n/route С работы до дома\n\nСколько пассажиров можете забрать?'
 bot.sendMessage(chatId, text, {
                      reply_markup: {
                        inline_keyboard: [
@@ -1099,6 +1584,7 @@ console.log('Добавили колво мест и установили вре
 })
 //connection.release()
 //connection.end()
+bot.deleteMessage(query.message.chat.id, query.message.message_id)
 }
 
 bot.onText(/\/start_timer_driver/, msg => {
@@ -1173,13 +1659,31 @@ var last_n_zapros = str_parse[0].n_zapros;
                  for(var i = 0; i < rows.length; i++){
                  goods[goods.length] = rows[i].interception;
                  }
-                 bot.sendMessage(msg.chat.id, `Вы едите по улице ${by_street} до ...`, { reply_markup: JSON.stringify({
-                                                                       inline_keyboard: goods.map((x, xi) => ([{
-                                                                           text: x,
-                                                                           callback_data: 'kbd#' + x,
-                                                                       }])),
 
-                                                          }),})
+                     var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+
+                     connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+                     if (err) throw err;
+                     var route = JSON.parse(JSON.stringify(rows));
+                     if (route.length !== 0) {
+                     console.log('route-sql ',route);
+                         console.log('route-sql street ',route[0].street);
+                     var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+                       for(var i = 1; i < route.length/2; i++){
+                       text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                       }
+                     text += '\nпо ' + route[route.length-1].street + ' до ...'
+                     console.log('route-sql-текст ',text);
+                     }
+
+                     bot.sendMessage(msg.chat.id, text, { reply_markup: JSON.stringify({
+                                                                     inline_keyboard: goods.map((x, xi) => ([{
+                                                                         text: x,
+                                                                         callback_data: 'kbd#' + x,
+                                                                     }])),
+
+                                                        }),})
+                     })
                  })
        })
 })
@@ -1252,6 +1756,29 @@ function mujorjen (query){
 }
 
 
+
+function mujorjen_msg (msg){
+
+ bot.sendMessage(msg.chat.id, 'Выберите ваш пол:', {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: 'Мужской',
+            callback_data: 'man msg'
+          },
+          {
+            text: 'Женский',
+            callback_data: 'woman msg'
+          }
+        ]
+      ]
+    }
+  })
+}
+
+
+
 function vodorpas (msg){
 
  const chatId = msg.chat.id
@@ -1273,6 +1800,31 @@ function vodorpas (msg){
     }
   })
 }
+
+
+
+function vodorpas_query (query){
+
+ const chatId = query.message.chat.id
+
+ bot.sendMessage(chatId, 'Выберите:', {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: 'Я водитель',
+            callback_data: 'driver'
+          },
+          {
+            text: 'Я пассажир',
+            callback_data: 'passenger'
+          }
+        ]
+      ]
+    }
+  })
+}
+
 
 
 function vodorpas_again (msg){
@@ -1299,21 +1851,6 @@ function vodorpas_again (msg){
 
 
 
-
-function menumap(msg){
-var menu = ['zero','one','two','three'];
-
- const chatId = msg.chat.id
-
-  bot.sendMessage(chatId, 'Kkeyboard', { reply_markup: JSON.stringify({
-                                                    inline_keyboard: menu.map((x, xi) => ([{
-                                                        text: x,
-                                                        callback_data: String(xi + 1),
-                                                    }])),
-
-                                       }),})
-}
-
 function create_route_driver(msg){
 
   var mysql  = require('mysql');
@@ -1331,7 +1868,7 @@ function create_route_driver(msg){
       var route = 'route'+user_id;
       var n_route = 'n_route'+user_id;
 
-      connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) NOT NULL, id_user INT(11) NOT NULL, id_route INT(11) NOT NULL, district VARCHAR (20) NOT NULL, point_type INT(11) NOT NULL, id_street INT(11) NOT NULL, street VARCHAR (100), id_interception INT(11) NOT NULL, interception VARCHAR (100), id_point VARCHAR (10) NOT NULL, busstop VARCHAR (100) NOT NULL, ordinal INT(11) NOT NULL, nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30), time_beg DATETIME, time_end DATETIME, status VARCHAR (30), limit_place INT(11) NOT NULL, uje_seli INT(11) NOT NULL, all_districts VARCHAR (60), PRIMARY KEY(id)) ',[route] ,function(err, rows, fields) {
+      connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) NOT NULL, id_user INT(11) NOT NULL, id_route INT(11) NOT NULL, district VARCHAR (20) NOT NULL, point_type INT(11) NOT NULL, id_street INT(11), street VARCHAR (100), id_interception INT(11), interception VARCHAR (100), id_point VARCHAR (20), busstop VARCHAR (100) NOT NULL, ordinal INT(11), nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30), time_beg DATETIME, time_end DATETIME, status VARCHAR (30), limit_place INT(11) NOT NULL, uje_seli INT(11) NOT NULL, all_districts VARCHAR (60), PRIMARY KEY(id)) ',[route] ,function(err, rows, fields) {
         if (err) throw err;
         })
       connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, id_user INT(11), route_name VARCHAR (100), start VARCHAR (20) NOT NULL, finish VARCHAR (20) NOT NULL, n_inter INT(11), PRIMARY KEY(id)) ',[n_route] ,function(err, rows, fields) {
@@ -1357,7 +1894,8 @@ bot.sendMessage(chatId, text, {
                            text: 'Назад в меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -1377,7 +1915,8 @@ bot.sendMessage(chatId, text, {
                            text: 'Назад в меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -1402,7 +1941,34 @@ bot.sendMessage(chatId, text, {
                            text: 'Назад в меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
+                     }
+                   })
+}
+
+
+function after_choosing_end_interception (query) {
+
+const chatId = query.message.chat.id
+const text = 'Если неправильно указали начало вашего пути, можете исправить нажав на "Исправить начало пути"'
+bot.sendMessage(chatId, text, {
+                     reply_markup: {
+                       keyboard: [
+                         [{
+                           text: 'Указать автобусную остановку'
+                         }],
+
+                         [{
+                           text: 'Исправить конец пути.'
+                         }],
+
+                         [{
+                           text: 'Назад в меню'
+                         }]
+
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -1420,14 +1986,41 @@ bot.sendMessage(chatId, text, {
                          }],
 
                          [{
-                           text: 'Исправить начало пути'
+                           text: 'Исправить начало пути.'
                          }],
 
                          [{
                            text: 'Назад в меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
+                     }
+                   })
+}
+
+
+function after_choosing_beg_interception_msg(msg) {
+
+const chatId = msg.chat.id
+const text = 'Если неправильно указали начало вашего пути, можете исправить нажав на "Исправить начало пути"'
+bot.sendMessage(chatId, text, {
+                     reply_markup: {
+                       keyboard: [
+                         [{
+                           text: 'Указать автобусную остановку'
+                         }],
+
+                         [{
+                           text: 'Исправить начало пути.'
+                         }],
+
+                         [{
+                           text: 'Назад в меню'
+                         }]
+
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -1452,7 +2045,8 @@ bot.sendMessage(chatId, text, {
                            text: 'Назад в меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -1475,7 +2069,8 @@ bot.sendMessage(chatId, text, {
                            text: 'Назад в меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -1489,18 +2084,19 @@ bot.sendMessage(chatId, text, {
                      reply_markup: {
                        keyboard: [
                          [{
-                           text: 'Показать попутчиков по району'
+                           text: '🔴 Показать попутчиков по району'
                          }],
 
                          [{
-                           text: 'Отменить поиск попутчиков'
+                           text: '🔵 Отменить поиск попутчиков'
                          }],
 
                          [{
-                           text: 'На главное меню'
+                           text: '⚫️ На главное меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
@@ -1515,29 +2111,31 @@ bot.sendMessage(chatId, text, {
                      reply_markup: {
                        keyboard: [
                          [{
-                           text: 'Показать попутчиков по району'
+                           text: '🔴 Показать попутчиков по району'
                          }],
 
                          [{
-                           text: 'Отменить поиск попутчиков'
+                           text: '🔵 Отменить поиск попутчиков'
                          }],
 
                          [{
-                           text: 'На главное меню'
+                           text: '⚫️ На главное меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
 }
 
 
 function to_busy_regime(msg) {
+
 const chatId = msg.chat.id
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
@@ -1551,11 +2149,11 @@ connection.query(' UPDATE route SET status = "busy" WHERE id_user = ? ',[ chatId
 }
 
 
-function edit_beg_busstop(msg){
+function edit_beg_interception (msg){
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_passenger'
@@ -1563,7 +2161,7 @@ var mysql  = require('mysql');
 
 pool.getConnection(function(err, connection) {
 
-var user_id = msg.chat.id
+var user_id = msg.chat.id;
 var route_p = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
 
@@ -1572,22 +2170,156 @@ after_choosing_district_msg(msg);
 connection.query('DELETE FROM ?? WHERE id_route = (SELECT MAX(id) FROM ??) ',[ route_p, n_route_p ], function(err, rows, fields) {
                            if (err) throw err;})
 
-    connection.query('SELECT * FROM points WHERE district = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) AND point_type = 0',[ n_route_p, n_route_p ], function(err, rows, fields) {
-      if (err) throw err;
+    connection.query('SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',[ n_route_p, n_route_p], function(err, rows, fields) {
+    if (err) throw err;
+    var district = JSON.parse(JSON.stringify(rows));
+    console.log(district);
 
-    var goods = [];
+    connection.query('SELECT * FROM kowe WHERE district1 = ? ',[district[0].start], function(err, rows, fields) {
+    if (err) throw err;
+    var streetname = JSON.parse(JSON.stringify(rows));
+    var keyboard = [];
 
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].busstop;
+    for(var i = 0; i < streetname.length; i++){
+    keyboard.push([{'text': ( streetname[i].streetname ) , 'callback_data': ('11 ' + streetname[i].id_str)}]);
     }
-      bot.sendMessage(msg.chat.id, 'Выберите стартовую автобусную остановку из списка ниже\nИЛИ\nУкажите пересечение улиц, нажав на "Указать пересечение улиц"', { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: 'busstop_beg ' + x,
-                                                        }])),
 
-                                           }),})
+    bot.sendMessage( user_id, 'Выберите одну из улиц вашего пересечения ',
+    {
+    'reply_markup': JSON.stringify({
+    inline_keyboard: keyboard
+                                   })
+    }
+    )
     })
+    })
+
+})
+}
+
+
+function edit_end_interception (msg){
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'route_passenger'
+    })
+
+pool.getConnection(function(err, connection) {
+
+var user_id = msg.chat.id;
+var route_p = 'route_p'+user_id;
+var n_route_p = 'n_route_p'+user_id;
+
+after_choosing_district_msg(msg);
+
+connection.query(' DELETE FROM ?? WHERE id_route = (SELECT MAX(id) FROM ??) AND begend = "end" ',[ route_p, n_route_p ], function(err, rows, fields) {
+                           if (err) throw err;})
+
+    connection.query('SELECT finish FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',[ n_route_p, n_route_p], function(err, rows, fields) {
+    if (err) throw err;
+    var district = JSON.parse(JSON.stringify(rows));
+    console.log(district);
+
+    connection.query('SELECT * FROM kowe WHERE district1 = ? ',[district[0].finish], function(err, rows, fields) {
+    if (err) throw err;
+    var streetname = JSON.parse(JSON.stringify(rows));
+    var keyboard = [];
+
+    for(var i = 0; i < streetname.length; i++){
+    keyboard.push([{'text': ( streetname[i].streetname ) , 'callback_data': ('21 ' + streetname[i].id_str)}]);
+    }
+
+    bot.sendMessage( user_id, 'Выберите одну из улиц вашего пересечения ',
+    {
+    'reply_markup': JSON.stringify({
+    inline_keyboard: keyboard
+                                   })
+    }
+    )
+    })
+    })
+
+})
+}
+
+
+
+function edit_beg_busstop(msg){
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'route_passenger'
+    })
+
+pool.getConnection(function(err, connection) {
+
+var user_id = msg.chat.id;
+var route_p = 'route_p'+user_id;
+var n_route_p = 'n_route_p'+user_id;
+
+after_choosing_district_msg(msg);
+
+connection.query('DELETE FROM ?? WHERE id_route = (SELECT MAX(id) FROM ??) ',[ route_p, n_route_p ], function(err, rows, fields) {
+                           if (err) throw err;})
+
+connection.query(' SELECT * FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',
+[ n_route_p, n_route_p ], function(err, rows, fields) {
+if (err) throw err;
+var start = JSON.parse(JSON.stringify(rows));
+
+// Если стартовый district равен "grd"
+    if (start[0].start === 'grd'){
+
+        var page1 = [];
+
+        for(var i = 0; i < bet1.length; i++){
+        page1.push([{'text': ( bet1[i].busstop ) , 'callback_data': ('busstop_beg ' + bet1[i].id_point)}]);
+        }
+        page1.push([ {'text': '1️⃣' , 'callback_data': 'page1'},   {'text': '2️⃣' , 'callback_data': 'page2'},  {'text': '3️⃣' , 'callback_data': 'page3'},  {'text': '4️⃣' , 'callback_data': 'page4'} ]);
+
+        var text = 'Выберите стартовую автобусную остановку из списка ниже\nИЛИ\nУкажите пересечение улиц, нажав на "Указать пересечение улиц"' ;
+
+        bot.sendMessage( msg.chat.id, text,
+        {
+        'reply_markup': JSON.stringify({
+        inline_keyboard: page1
+                                       })
+        }
+        )
+    }
+
+// В остальных случаях делаем стандартно
+    else {
+
+         connection.query(' SELECT busstop, id_point FROM points WHERE district = (SELECT start FROM ?? WHERE id = ((SELECT MAX(id) FROM ??))) AND point_type = 0 ',
+         [ n_route_p, n_route_p ], function(err, rows, fields) {
+         if (err) throw err;
+         var busstop = JSON.parse(JSON.stringify(rows));
+         var keyboard = [];
+
+         for(var i = 0; i < busstop.length; i++){
+         keyboard.push([{'text': ( busstop[i].busstop ) , 'callback_data': ('busstop_beg ' + busstop[i].id_point)}]);
+         }
+
+         var text = 'Выберите стартовую автобусную остановку из списка ниже\nИЛИ\nУкажите пересечение улиц, нажав на "Указать пересечение улиц"' ;
+
+         bot.sendMessage( user_id, text,
+         {
+         'reply_markup': JSON.stringify({
+         inline_keyboard: keyboard
+                                       })
+         }
+         )
+    })
+    }
+})
 })
 }
 
@@ -1604,7 +2336,7 @@ var mysql  = require('mysql');
 
 pool.getConnection(function(err, connection) {
 
-var user_id = msg.chat.id
+var user_id = msg.chat.id;
 var route_p = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
 
@@ -1613,23 +2345,57 @@ after_choosing_beg_busstop_msg(msg);
 connection.query('DELETE FROM ?? WHERE id_route = (SELECT MAX(id) FROM ??) AND begend = ? ',[ route_p, n_route_p, 'end' ], function(err, rows, fields) {
                            if (err) throw err;})
 
-    connection.query('SELECT * FROM points WHERE district = (SELECT finish FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) AND point_type = 0',[ n_route_p, n_route_p ], function(err, rows, fields) {
-      if (err) throw err;
+connection.query(' SELECT finish FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',
+[ n_route_p, n_route_p ], function(err, rows, fields) {
+if (err) throw err;
+var start = JSON.parse(JSON.stringify(rows));
 
-    var goods = [];
+// Если стартовый district равен "grd"
+    if (start[0].finish === 'grd'){
 
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].busstop;
+        var page1 = [];
+
+        for(var i = 0; i < bet1.length; i++){
+        page1.push([{'text': ( bet1[i].busstop ) , 'callback_data': ('busstop_end ' + bet1[i].id_point)}]);
+        }
+        page1.push([ {'text': '1️⃣' , 'callback_data': 'page1_end'},   {'text': '2️⃣' , 'callback_data': 'page2_end'},  {'text': '3️⃣' , 'callback_data': 'page3_end'},  {'text': '4️⃣' , 'callback_data': 'page4_end'} ]);
+
+        var text = 'Выберите конечную автобусную остановку' ;
+
+        bot.sendMessage( msg.chat.id, text,
+        {
+        'reply_markup': JSON.stringify({
+        inline_keyboard: page1
+                                       })
+        }
+        )
     }
-      bot.sendMessage(msg.chat.id, 'Выберите конечную автобусную остановку', { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: 'busstop_end ' + x,
-                                                        }])),
 
-                                           }),})
+// В остальных случаях делаем стандартно
+    else {
+
+         connection.query(' SELECT busstop, id_point FROM points WHERE district = (SELECT finish FROM ?? WHERE id = ((SELECT MAX(id) FROM ??))) AND point_type = 0 ',
+         [ n_route_p, n_route_p ], function(err, rows, fields) {
+         if (err) throw err;
+         var busstop = JSON.parse(JSON.stringify(rows));
+         var keyboard = [];
+
+         for(var i = 0; i < busstop.length; i++){
+         keyboard.push([{'text': ( busstop[i].busstop ) , 'callback_data': ('busstop_end ' + busstop[i].id_point)}]);
+         }
+
+         var text = 'Выберите конечную автобусную остановку' ;
+
+         bot.sendMessage( user_id, text,
+         {
+         'reply_markup': JSON.stringify({
+         inline_keyboard: keyboard
+                                       })
+         }
+         )
     })
-})
+    }
+})})
 }
 
 
@@ -1667,7 +2433,7 @@ var mysql  = require('mysql');
 
 pool.getConnection(function(err, connection) {
 
-var user_id = query.message.chat.id
+var user_id = query.message.chat.id;
 var route_p = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
 
@@ -1773,7 +2539,7 @@ bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
 function passenger_plan_time(query){
 
 
-var user_id = query.message.chat.id
+var user_id = query.message.chat.id;
 var route_p = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
 
@@ -1891,7 +2657,7 @@ var mysql  = require('mysql');
 
 pool.getConnection(function(err, connection) {
 
-var user_id = query.message.chat.id
+var user_id = query.message.chat.id;
 var route_p = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
 
@@ -2006,46 +2772,172 @@ bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
 function choose_direction_passenger(msg) {
 
 const chatId = msg.chat.id
-const text = 'Чтобы найти попутное авто вам нужно сделать 2 действия пошагово:\n1) Выбрать направление (с какого района в какой район едите)\n2) Указать перекресток или автобусную остановку начала и конца вашего пути\nИЛИ\n сделайте это все в один шаг указав ранее сохраненный маршрут нажав на "Сохраненные маршруты"  '
+const text = 'Чтобы найти попутное авто вам нужно сделать 2 действия пошагово:\n1) Выбрать направление (с какого района в какой район едите)\n2) Указать перекресток или автобусную остановку начала и конца вашего пути\n  '
 bot.sendMessage(chatId, text, {
                      reply_markup: {
                        keyboard: [
-                         [{
-                           text: 'Сохраненные маршруты'
-                         }],
 
                          [{
                            text: 'Назад в меню'
                          }]
 
-                       ]
+                       ],
+                       resize_keyboard: true
                      }
                    })
+// Теперь отправляем карту
+bot.sendPhoto(chatId, fs.readFileSync(__dirname + '/picture-map.png'), {
+caption: 'На карте указаны границы районов'
+})
 
-bot.sendMessage(chatId, '1-ый шаг: Сейчас выберите направление', {
+bot.sendMessage(chatId, '1-ый шаг: Сейчас выберите направление. ОТКУДА:', {
                      reply_markup: {
                        inline_keyboard: [
                          [{
-                           text: 'Из Майкудука в центр',
-                           callback_data: 'mkdk_pass grd'
+                           text: 'Из майкудука',
+                           callback_data: 'mkdk_pass1'
                          }],
                          [{
-                           text: 'Из центра в Майкудук',
-                           callback_data: 'grd_pass mkdk'
+                           text: 'Из центра',
+                           callback_data: 'grd_pass1'
                          }],
                          [{
-                           text: 'Из центра в центр',
-                           callback_data: 'grd_pass grd'
+                           text: 'Из юго-востока',
+                           callback_data: 'yug_pass1'
                          }],
                          [{
-                           text: 'Из Майкудука в Майкудук',
-                           callback_data: 'mkdk_pass mkdk'
+                           text: 'Из района базара',
+                           callback_data: 'bazar_pass1'
+                         }],
+                         [{
+                           text: 'Из пришахтинска',
+                           callback_data: 'prihon_pass1'
+                         }],
+                         [{
+                           text: 'Из новоузенки',
+                           callback_data: 'novouzenka_pass1'
+                         }],
+                         [{
+                           text: 'Из района ЖБИ',
+                           callback_data: 'zhbi_pass1'
+                         }],
+                         [{
+                           text: 'Из сарани',
+                           callback_data: 'saran_pass1'
+                         }],
+                         [{
+                           text: 'Из малой сарани',
+                           callback_data: 'malsaran_pass1'
+                         }],
+                         [{
+                           text: 'Из актаса',
+                           callback_data: 'aktas_pass1'
+                         }],
+                         [{
+                           text: 'Из дубовки',
+                           callback_data: 'dubovka_pass1'
+                         }],
+                         [{
+                           text: 'Из федоровки',
+                           callback_data: 'fedorovka_pass1'
+                         }],
+                         [{
+                           text: 'Из сортировки',
+                           callback_data: 'srt_pass1'
+                         }],
+                         [{
+                           text: 'Из доскея',
+                           callback_data: 'doskey_pass1'
+                         }],
+                         [{
+                           text: 'Из поселка Трудовое',
+                           callback_data: 'trud_pass1'
+                         }],
+                         [{
+                           text: 'Из уштобе',
+                           callback_data: 'uwtobe_pass1'
                          }]
                        ]
                      }
                    })
 }
 
+
+function choose_direction_passenger_2(query) {
+
+const chatId = query.message.chat.id
+
+bot.sendMessage(chatId, '2-ой шаг: Сейчас выберите направление. КУДА:', {
+                     reply_markup: {
+                       inline_keyboard: [
+                         [{
+                           text: 'В майкудук',
+                           callback_data: 'mkdk_pass2'
+                         }],
+                         [{
+                           text: 'В центр',
+                           callback_data: 'grd_pass2'
+                         }],
+                         [{
+                           text: 'На юго-восток',
+                           callback_data: 'yug_pass2'
+                         }],
+                         [{
+                           text: 'В район базара',
+                           callback_data: 'bazar_pass2'
+                         }],
+                         [{
+                           text: 'В пришахтинск',
+                           callback_data: 'prihon_pass2'
+                         }],
+                         [{
+                           text: 'В новоузенку',
+                           callback_data: 'novouzenka_pass2'
+                         }],
+                         [{
+                           text: 'В район ЖБИ',
+                           callback_data: 'zhbi_pass2'
+                         }],
+                         [{
+                           text: 'В сарань',
+                           callback_data: 'saran_pass2'
+                         }],
+                         [{
+                           text: 'В малую сарань',
+                           callback_data: 'malsaran_pass2'
+                         }],
+                         [{
+                           text: 'В актас',
+                           callback_data: 'aktas_pass2'
+                         }],
+                         [{
+                           text: 'В дубовку',
+                           callback_data: 'dubovka_pass2'
+                         }],
+                         [{
+                           text: 'В федоровку',
+                           callback_data: 'fedorovka_pass2'
+                         }],
+                         [{
+                           text: 'В сортировку',
+                           callback_data: 'srt_pass2'
+                         }],
+                         [{
+                           text: 'В доскей',
+                           callback_data: 'doskey_pass2'
+                         }],
+                         [{
+                           text: 'В поселок Трудовое',
+                           callback_data: 'trud_pass2'
+                         }],
+                         [{
+                           text: 'В уштобе',
+                           callback_data: 'uwtobe_pass2'
+                         }]
+                       ]
+                     }
+                   })
+}
 
 
 function are_u_sure(msg) {
@@ -2069,11 +2961,216 @@ bot.sendMessage(chatId, text, {
 }
 
 
-function choose_busstop(query) {
+function choose_from_district(query) {
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'route_passenger'
+    })
+
+pool.getConnection(function(err, connection) {
+
+var user_id = query.message.chat.id
+var route_passenger = 'route_p'+user_id;
+var n_route_p = 'n_route_p'+user_id;
+  var str = query.data;
+  var res = str.split(" ");
+console.log(res[0]);
+
+if (res[0] == 'mkdk_pass1'){ var district = 'mkdk';}
+else if (res[0] == 'grd_pass1'){ var district = 'grd';}
+else if (res[0] == 'saran_pass1'){ var district = 'saran';}
+else if (res[0] == 'aktas_pass1'){ var district = 'aktas';}
+else if (res[0] == 'dubovka_pass1'){ var district = 'dubovka';}
+else if (res[0] == 'fedorovka_pass1'){ var district = 'fedorovka';}
+else if (res[0] == 'bazar_pass1'){ var district = 'bazar';}
+else if (res[0] == 'yug_pass1'){ var district = 'yug';}
+else if (res[0] == 'srt_pass1'){ var district = 'srt';}
+else if (res[0] == 'doskey_pass1'){ var district = 'doskey';}
+else if (res[0] == 'trud_pass1'){ var district = 'trud';}
+else if (res[0] == 'uwtobe_pass1'){ var district = 'uwtobe';}
+else if (res[0] == 'prihon_pass1'){ var district = 'prihon';}
+else if (res[0] == 'zhbi_pass1'){ var district = 'zhbi';}
+else if (res[0] == 'novouzenka_pass1'){ var district = 'novouzenka';}
+else if (res[0] == 'malsaran_pass1'){ var district = 'malsaran';}
+
+connection.query('INSERT INTO ?? (id_user, start) VALUES(?,?) ',
+[ n_route_p, user_id, district], function(err, rows, fields) {
+if (err) throw err;
+console.log(rows);
+})
+
+})
+
+choose_direction_passenger_2(query);
+}
+
+
+bot.onText(/\/kolvo_direction/, msg => {database.kolvo_direction()})
+
+bot.onText(/\/base/, msg => {database.base()})
+
+
+const bet1 = [ { busstop: 'ДСК', id_point: '305000000000S01' },
+               { busstop: 'Шахта им. Т.Кузембаева',
+                 id_point: '305000000000S02' },
+               { busstop: 'Станционная', id_point: '211000000000S01' },
+               { busstop: 'Стадион Шахтер', id_point: '211000000000S02' },
+               { busstop: '15-й магазин', id_point: '211000000000S03' },
+               { busstop: 'ДК Горняков', id_point: '211000000000S04' },
+               { busstop: 'ЦУМ', id_point: '211000000000S05' },
+               { busstop: 'ТД Абзал', id_point: '211000000000S06' },
+               { busstop: '45-й квартал', id_point: '211000000000S07' },
+               { busstop: 'Кронштадская', id_point: '283000000000S01' },
+               { busstop: 'Аманжолова', id_point: '283000000000S02' },
+               { busstop: 'Комиссионный', id_point: '283000000000S03' },
+               { busstop: 'Хлебзавод', id_point: '283000000000S04' },
+               { busstop: 'Боулинг', id_point: '283000000000S05' },
+               { busstop: 'Магазин Юбилейный по Гоголя',
+                 id_point: '283000000000S06' },
+               { busstop: '92-й квартал', id_point: '261000000000S01' },
+               { busstop: 'Таксокомбинат', id_point: '261000000000S02' },
+               { busstop: 'Санаторий Березка', id_point: '261000000000S03' },
+               { busstop: 'ЖД Вокзал', id_point: '308000000000S01' },
+               { busstop: 'Детсад ул. Ержанова', id_point: '278000000000S01' }]
+
+const bet2 = [ { busstop: 'ЦОН ул. Ержанова', id_point: '278000000000S02' },
+               { busstop: 'СТО москвич', id_point: '265000000000S01' },
+               { busstop: 'Экономический университет',
+                 id_point: '263000000000S01' },
+               { busstop: 'КЮИ', id_point: '259000000000S01' },
+               { busstop: 'Гостиница Турист', id_point: '259000000000S02' },
+               { busstop: 'Чкалова', id_point: '253000000000S01' },
+               { busstop: 'Медучилище', id_point: '253000000000S02' },
+               { busstop: 'Медучилище по Кривогуза',
+                 id_point: '239000000000S01' },
+               { busstop: 'Кривогуза', id_point: '239000000000S02' },
+               { busstop: 'Детсад ул. Кривогуза', id_point: '239000000000S03' },
+               { busstop: 'Онкология', id_point: '239000000000S04' },
+               { busstop: 'Новонижняя', id_point: '239000000000S05' },
+               { busstop: 'Баженова', id_point: '229000000000S01' },
+               { busstop: 'Баженова по Прогресса',
+                 id_point: '237000000000S01' },
+               { busstop: 'Прогресса', id_point: '237000000000S02' },
+               { busstop: 'Лесхоз', id_point: '237000000000S03' },
+               { busstop: 'Мясокомбинат', id_point: '237000000000S04' },
+               { busstop: 'Кирзавод 3-4', id_point: '243000000000S01' },
+               { busstop: 'ЖБИ Михайловка', id_point: '227000000000S01' },
+               { busstop: 'Геология', id_point: '227000000000S02' } ]
+
+const bet3 = [ { busstop: 'Баня по Сейфуллина', id_point: '225000000000S01' },
+               { busstop: 'Поликлиника ул. Сейфуллина',
+                 id_point: '225000000000S02' },
+               { busstop: 'Строительная', id_point: '225000000000S03' },
+               { busstop: 'Михайловский рынок', id_point: '272000000000S01' },
+               { busstop: 'Школа №21', id_point: '272000000000S02' },
+               { busstop: 'Горноспасательная', id_point: '313000000000S01' },
+               { busstop: 'Олимпийская', id_point: '313000000000S02' },
+               { busstop: 'Охотская', id_point: '313000000000S03' },
+               { busstop: 'ДСУ - 19', id_point: '213000000000S01' },
+               { busstop: 'Волгодонская', id_point: '288000000000S01' },
+               { busstop: 'Казэнерго', id_point: '288000000000S02' },
+               { busstop: 'Аманжолова по Волгодонской',
+                 id_point: '288000000000S03' },
+               { busstop: '19-й квартал', id_point: '296000000000S01' },
+               { busstop: 'Овощной магазин по Жангозина',
+                 id_point: '296000000000S02' },
+               { busstop: 'Площадь Гагарина', id_point: '296000000000S03' },
+               { busstop: 'Городской акимат', id_point: '296000000000S04' },
+               { busstop: 'Акимат по Мира', id_point: '298000000000S01' },
+               { busstop: 'Политех', id_point: '298000000000S02' },
+               { busstop: 'Ердос', id_point: '298000000000S03' },
+               { busstop: 'Поликлиника №2', id_point: '298000000000S04' } ]
+
+const bet4 = [ { busstop: 'Театр им. Станиславского',
+                 id_point: '298000000000S05' },
+               { busstop: 'Ерубаева по Мира', id_point: '298000000000S06' },
+               { busstop: 'Диетстоловая', id_point: '298000000000S07' },
+               { busstop: 'Детский сад по Нуркена Абдирова',
+                 id_point: '304000000000S01' },
+               { busstop: 'Магазин Юбилейный по Нуркена',
+                 id_point: '304000000000S02' },
+               { busstop: 'Парикмахерская Айсулу',
+                 id_point: '304000000000S03' },
+               { busstop: 'Магазин Мечта', id_point: '304000000000S04' },
+               { busstop: '1000 мелочей', id_point: '304000000000S05' },
+               { busstop: 'Валют Транзит', id_point: '304000000000S06' },
+               { busstop: 'Меридиан', id_point: '282000000000S01' },
+               { busstop: 'Автосервис ул. Терешкова',
+                 id_point: '282000000000S02' },
+               { busstop: 'Терешкова', id_point: '282000000000S03' },
+               { busstop: '32-й квартал по Терешкова',
+                 id_point: '282000000000S04' },
+               { busstop: 'УВК', id_point: '299000000000S01' },
+               { busstop: 'Поспелова', id_point: '287000000000S01' },
+               { busstop: '32-й квартал по Мустафина',
+                 id_point: '293000000000S01' },
+               { busstop: '26-й квартал', id_point: '293000000000S02' },
+               { busstop: 'КУБУП', id_point: '291000000000S01' },
+               { busstop: 'Аэлита', id_point: '291000000000S02' } ]
+
+
+function through_pages (query) {
+
+if (query.data === 'page1') { var bet = bet1; }
+else if (query.data === 'page2') { var bet = bet2; }
+else if (query.data === 'page3') { var bet = bet3; }
+else if (query.data === 'page4') { var bet = bet4; }
+
+        var page = [];
+
+        for(var i = 0; i < bet.length; i++){
+        page.push([{'text': ( bet[i].busstop ) , 'callback_data': ('busstop_beg ' + bet[i].id_point)}]);
+        }
+        page.push([ {'text': '1️⃣' , 'callback_data': 'page1'},   {'text': '2️⃣' , 'callback_data': 'page2'},  {'text': '3️⃣' , 'callback_data': 'page3'},  {'text': '4️⃣' , 'callback_data': 'page4'} ]);
+
+        var text = 'Выберите стартовую автобусную остановку из списка ниже\nИЛИ\nУкажите пересечение улиц, нажав на "Указать пересечение улиц"' ;
+
+        bot.sendMessage( query.message.chat.id, text,
+        {
+        'reply_markup': JSON.stringify({
+        inline_keyboard: page
+                                       })
+        }
+        )
+
+}
+
+function through_pages_end (query) {
+
+if (query.data === 'page1_end') { var bet = bet1; }
+else if (query.data === 'page2_end') { var bet = bet2; }
+else if (query.data === 'page3_end') { var bet = bet3; }
+else if (query.data === 'page4_end') { var bet = bet4; }
+
+        var page = [];
+
+        for(var i = 0; i < bet.length; i++){
+        page.push([{'text': ( bet[i].busstop ) , 'callback_data': ('busstop_end ' + bet[i].id_point)}]);
+        }
+        page.push([ {'text': '1️⃣' , 'callback_data': 'page1_end'},   {'text': '2️⃣' , 'callback_data': 'page2_end'},  {'text': '3️⃣' , 'callback_data': 'page3_end'},  {'text': '4️⃣' , 'callback_data': 'page4_end'} ]);
+
+        var text = 'Выберите конечную автобусную остановку' ;
+
+        bot.sendMessage( query.message.chat.id, text,
+        {
+        'reply_markup': JSON.stringify({
+        inline_keyboard: page
+                                       })
+        }
+        )
+
+}
+
+
+function choose_to_district(query) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_passenger'
@@ -2087,41 +3184,88 @@ var n_route_p = 'n_route_p'+user_id;
   var str = query.data;
   var res = str.split(" ");
 
-after_choosing_district(query);
 
-if (res[0] == 'mkdk_pass'){ var district = 'mkdk'; var finish = res[1];}
-else {var district = 'grd'; var finish = res[1];}
 
-    connection.query('INSERT INTO ?? (id_user, start, finish) VALUES(?,?,?) ',[ n_route_p, user_id, district, finish], function(err, rows, fields) {
-                           if (err) throw err;})
+if (res[0] == 'mkdk_pass2'){ var district = 'mkdk';}
+else if (res[0] == 'grd_pass2'){ var district = 'grd';}
+else if (res[0] == 'saran_pass2'){ var district = 'saran';}
+else if (res[0] == 'aktas_pass2'){ var district = 'aktas';}
+else if (res[0] == 'dubovka_pass2'){ var district = 'dubovka';}
+else if (res[0] == 'fedorovka_pass2'){ var district = 'fedorovka';}
+else if (res[0] == 'bazar_pass2'){ var district = 'bazar';}
+else if (res[0] == 'yug_pass2'){ var district = 'yug';}
+else if (res[0] == 'srt_pass2'){ var district = 'srt';}
+else if (res[0] == 'doskey_pass2'){ var district = 'doskey';}
+else if (res[0] == 'trud_pass2'){ var district = 'trud';}
+else if (res[0] == 'uwtobe_pass2'){ var district = 'uwtobe';}
+else if (res[0] == 'prihon_pass2'){ var district = 'prihon';}
+else if (res[0] == 'zhbi_pass2'){ var district = 'zhbi';}
+else if (res[0] == 'novouzenka_pass2'){ var district = 'novouzenka';}
+else if (res[0] == 'malsaran_pass2'){ var district = 'malsaran';}
 
-//    connection.query('INSERT INTO ?? (begend, n_zapros, id_user, id_route) VALUES(?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??) )) ',[ route_passenger, 'beg', 1, user_id, n_route_p, user_id, n_route_p ], function(err, rows, fields) {
-//    if (err) throw err;
-//    })
+connection.query(' SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',
+[ n_route_p, n_route_p ], function(err, rows, fields) {
+if (err) throw err;
+var start = JSON.parse(JSON.stringify(rows));
 
-    connection.query('SELECT * FROM points WHERE district = ? AND point_type = 0',[district], function(err, rows, fields) {
-      if (err) throw err;
+// Если стартовый district равен "grd"
+    if (start[0].start === 'grd'){
 
-    var goods = [];
+    connection.query(' UPDATE ?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM ??) AS route2 )',
+    [ n_route_p, district, n_route_p ], function(err, rows, fields) {
+    if (err) throw err;
 
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].busstop;
-    }
-      bot.sendMessage(query.message.chat.id, 'Выберите стартовую автобусную остановку из списка ниже\nИЛИ\nУкажите пересечение улиц, нажав на "Указать пересечение улиц"', { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: 'busstop_beg ' + x,
-                                                        }])),
+        var page1 = [];
 
-                                           }),})
+        for(var i = 0; i < bet1.length; i++){
+        page1.push([{'text': ( bet1[i].busstop ) , 'callback_data': ('busstop_beg ' + bet1[i].id_point)}]);
+        }
+        page1.push([ {'text': '1️⃣' , 'callback_data': 'page1'},   {'text': '2️⃣' , 'callback_data': 'page2'},  {'text': '3️⃣' , 'callback_data': 'page3'},  {'text': '4️⃣' , 'callback_data': 'page4'} ]);
 
-    console.log(goods);
-     console.log(query.data);
+        var text = 'Выберите стартовую автобусную остановку из списка ниже\nИЛИ\nУкажите пересечение улиц, нажав на "Указать пересечение улиц"' ;
+
+        bot.sendMessage( query.message.chat.id, text,
+        {
+        'reply_markup': JSON.stringify({
+        inline_keyboard: page1
+                                       })
+        }
+        )
     })
+    }
 
+// В остальных случаях делаем стандартно
+    else {
 
+    connection.query(' UPDATE ?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM ??) AS route2 )',
+    [ n_route_p, district, n_route_p ], function(err, rows, fields) {
+    if (err) throw err;
+
+         connection.query(' SELECT busstop, id_point FROM points WHERE district = (SELECT start FROM ?? WHERE id = ((SELECT MAX(id) FROM ??))) AND point_type = 0 ',
+         [ n_route_p, n_route_p ], function(err, rows, fields) {
+         if (err) throw err;
+         var busstop = JSON.parse(JSON.stringify(rows));
+         var keyboard = [];
+
+         for(var i = 0; i < busstop.length; i++){
+         keyboard.push([{'text': ( busstop[i].busstop ) , 'callback_data': ('busstop_beg ' + busstop[i].id_point)}]);
+         }
+
+         var text = 'Выберите стартовую автобусную остановку из списка ниже\nИЛИ\nУкажите пересечение улиц, нажав на "Указать пересечение улиц"' ;
+
+         bot.sendMessage( query.message.chat.id, text,
+         {
+         'reply_markup': JSON.stringify({
+         inline_keyboard: keyboard
+                                       })
+         }
+         )
+    })
+    })
+    }
 })
-
+})
+after_choosing_district(query);
 }
 
 
@@ -2141,23 +3285,53 @@ var user_id = msg.chat.id
 var route_passenger = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
 
-connection.query('SELECT * FROM points WHERE district = (SELECT finish FROM ?? ORDER BY id DESC LIMIT 1) AND point_type = 0',[ n_route_p ], function(err, rows, fields) {
+connection.query(' SELECT finish FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',
+[ n_route_p, n_route_p ], function(err, rows, fields) {
 if (err) throw err;
+var start = JSON.parse(JSON.stringify(rows));
 
-    var goods = [];
+// Если конечный district равен "grd"
+    if (start[0].finish === 'grd'){
 
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].busstop;
+        var page1 = [];
+
+        for(var i = 0; i < bet1.length; i++){
+        page1.push([{'text': ( bet1[i].busstop ) , 'callback_data': ('busstop_end ' + bet1[i].id_point)}]);
+        }
+        page1.push([ {'text': '1️⃣' , 'callback_data': 'page1_end'},   {'text': '2️⃣' , 'callback_data': 'page2_end'},  {'text': '3️⃣' , 'callback_data': 'page3_end'},  {'text': '4️⃣' , 'callback_data': 'page4_end'} ]);
+
+        var text = 'Выберите конечную автобусную остановку' ;
+
+        bot.sendMessage( user_id, text,
+        {
+        'reply_markup': JSON.stringify({
+        inline_keyboard: page1
+                                       })
+        }
+        )
     }
-      bot.sendMessage(msg.chat.id, 'Выберите конечную автобусную остановку ', { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: 'busstop_end ' + x,
-                                                        }])),
 
-                                           }),})
+else {
+    connection.query(' SELECT * FROM points WHERE district = (SELECT finish FROM ?? ORDER BY id DESC LIMIT 1) AND point_type = 0  ORDER BY busstop ',[ n_route_p ], function(err, rows, fields) {
+    if (err) throw err;
+    var busstop = JSON.parse(JSON.stringify(rows));
+    var keyboard = [];
+
+    for(var i = 0; i < busstop.length; i++){
+    keyboard.push([{'text': ( busstop[i].busstop ) , 'callback_data': ('busstop_end ' + busstop[i].id_point)}]);
+    }
+
+    bot.sendMessage( user_id, 'Выберите конечную автобусную остановку ',
+    {
+    'reply_markup': JSON.stringify({
+    inline_keyboard: keyboard
+                                   })
+    }
+    )
     })
+}
 
+})
 
 })
 
@@ -2168,7 +3342,7 @@ function insert_busstop_beg(query) {
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_passenger'
@@ -2181,34 +3355,75 @@ var route_passenger = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
   var str = query.data;
   var res = str.split(" ");
-  var res2 = res.shift();
-  var ostanovka = res.join(" ");
+  console.log('res1 ', res[1]);
+  console.log('res0 ', res[0]);
 
+var sql_insert = ' INSERT INTO ?? (begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_point, busstop, ordinal, nearby_interception)' +
+                 ' VALUES (?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)) , ' +
+                 ' (SELECT start FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)), ?, ' +
+                 ' (SELECT id_street FROM points WHERE id_point = ?), (SELECT street FROM points WHERE id_point = ?), ' +
+                 ' ?, (SELECT busstop FROM points WHERE id_point = ? AND point_type = 0), ' +
+                 ' (SELECT ordinal FROM points WHERE id_point = ?), (SELECT nearby_interception FROM points WHERE id_point = ?) )';
 
-connection.query('INSERT INTO ?? (begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_point, busstop, ordinal, nearby_interception) VALUES(?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)) , (SELECT start FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)), ?, (SELECT id_street FROM points WHERE busstop = ?), (SELECT street FROM points WHERE busstop = ?), (SELECT id_point FROM points WHERE busstop = ?), ?, (SELECT ordinal FROM points WHERE busstop = ?), (SELECT nearby_interception FROM points WHERE busstop = ?) ) ',
-    [ route_passenger, 'beg', 1, user_id, n_route_p, user_id, n_route_p, n_route_p, user_id, n_route_p, 0, ostanovka, ostanovka, ostanovka, ostanovka, ostanovka, ostanovka ], function(err, rows, fields) {
+connection.query( sql_insert,
+    [ route_passenger, 'beg', 1, user_id, n_route_p, user_id, n_route_p, n_route_p, user_id, n_route_p, 0, res[1], res[1], res[1], res[1], res[1], res[1] ], function(err, rows, fields) {
     if (err) throw err;
-//    })
+    })
 
-    connection.query('SELECT * FROM points WHERE district = (SELECT finish FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)) AND point_type = 0',[ n_route_p, user_id, n_route_p ], function(err, rows, fields) {
-      if (err) throw err;
+connection.query(' SELECT finish FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',
+[ n_route_p, n_route_p ], function(err, rows, fields) {
+if (err) throw err;
+var start = JSON.parse(JSON.stringify(rows));
+    console.log('startd', start)
+// Если конечный district равен "grd"
+    if (start[0].finish === 'grd'){
+    console.log('grd')
 
-    var goods = [];
+        var page1 = [];
 
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].busstop;
+        for(var i = 0; i < bet1.length; i++){
+        page1.push([{'text': ( bet1[i].busstop ) , 'callback_data': ('busstop_end ' + bet1[i].id_point)}]);
+        }
+        page1.push([ {'text': '1️⃣' , 'callback_data': 'page1_end'},   {'text': '2️⃣' , 'callback_data': 'page2_end'},  {'text': '3️⃣' , 'callback_data': 'page3_end'},  {'text': '4️⃣' , 'callback_data': 'page4_end'} ]);
+
+        var text = 'Выберите конечную автобусную остановку' ;
+
+        bot.sendMessage( user_id, text,
+        {
+        'reply_markup': JSON.stringify({
+        inline_keyboard: page1
+                                       })
+        }
+        )
     }
 
-    bot.sendMessage(query.message.chat.id, 'Выберите конечную автобусную остановку', { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: 'busstop_end ' + x,
-                                                        }])),
+else {
+    connection.query(' SELECT * FROM points WHERE district = (SELECT finish FROM ?? ORDER BY id DESC LIMIT 1) AND point_type = 0',[ n_route_p ], function(err, rows, fields) {
+    if (err) throw err;
+    var busstop = JSON.parse(JSON.stringify(rows));
+    var keyboard = [];
 
-                                           }),})
+    for(var i = 0; i < busstop.length; i++){
+    keyboard.push([{'text': ( busstop[i].busstop ) , 'callback_data': ('busstop_end ' + busstop[i].id_point)}]);
+    }
+
+    bot.sendMessage( user_id, 'Выберите конечную автобусную остановку ',
+    {
+    'reply_markup': JSON.stringify({
+    inline_keyboard: keyboard
+                                   })
+    }
+    )
     })
-})
+}
+          connection.query(' SELECT busstop FROM points WHERE id_point = ? AND point_type = 0  ORDER BY busstop ' ,
+          [ res[1] ], function(err, rows, fields) {
+          if (err) throw err;
+          var busstop = JSON.parse(JSON.stringify(rows));
 
+          bot.sendMessage(query.message.chat.id, 'Ваша начальная остановка: ' + busstop[0].busstop);
+          })
+    })
 })
 }
 
@@ -2217,7 +3432,7 @@ function insert_busstop_end(query) {
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_passenger'
@@ -2230,14 +3445,27 @@ var route_passenger = 'route_p'+user_id;
 var n_route_p = 'n_route_p'+user_id;
   var str = query.data;
   var res = str.split(" ");
-  var res2 = res.shift();
-  var ostanovka = res.join(" ");
 
 
-connection.query('INSERT INTO ?? (begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_point, busstop, ordinal, nearby_interception) VALUES(?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)) , (SELECT finish FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)), ?, (SELECT id_street FROM points WHERE busstop = ?), (SELECT street FROM points WHERE busstop = ?), (SELECT id_point FROM points WHERE busstop = ?), ?, (SELECT ordinal FROM points WHERE busstop = ?), (SELECT nearby_interception FROM points WHERE busstop = ?) ) ',
-    [ route_passenger, 'end', 2, user_id, n_route_p, user_id, n_route_p, n_route_p, user_id, n_route_p, 0, ostanovka, ostanovka, ostanovka, ostanovka, ostanovka, ostanovka ], function(err, rows, fields) {
+var sql_insert = ' INSERT INTO ?? (begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_point, busstop, ordinal, nearby_interception)' +
+                 ' VALUES (?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)) , ' +
+                 ' (SELECT finish FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)), ?, ' +
+                 ' (SELECT id_street FROM points WHERE id_point = ?), (SELECT street FROM points WHERE id_point = ?), ' +
+                 ' ?, (SELECT busstop FROM points WHERE id_point = ? AND point_type = 0), ' +
+                 ' (SELECT ordinal FROM points WHERE id_point = ?), (SELECT nearby_interception FROM points WHERE id_point = ?) )';
+
+//'INSERT INTO ?? (begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_point, busstop, ordinal, nearby_interception) VALUES(?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)) , (SELECT finish FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??)), ?, (SELECT id_street FROM points WHERE busstop = ?), (SELECT street FROM points WHERE busstop = ?), (SELECT id_point FROM points WHERE busstop = ?), ?, (SELECT ordinal FROM points WHERE busstop = ?), (SELECT nearby_interception FROM points WHERE busstop = ?) ) '
+connection.query(sql_insert,
+[ route_passenger, 'end', 2, user_id, n_route_p, user_id, n_route_p, n_route_p, user_id, n_route_p, 0, res[1], res[1], res[1], res[1], res[1], res[1] ], function(err, rows, fields) {
+if (err) throw err;
+
+    connection.query(' SELECT busstop FROM points WHERE id_point = ? AND point_type = 0  ORDER BY busstop ' ,
+    [ res[1] ], function(err, rows, fields) {
     if (err) throw err;
-    bot.sendMessage(query.message.chat.id, 'Ваша конечная остановка: ' + ostanovka);
+    var busstop = JSON.parse(JSON.stringify(rows));
+
+    bot.sendMessage(query.message.chat.id, 'Ваша конечная остановка: ' + busstop[0].busstop);
+    })
 })
 
 })
@@ -2257,31 +3485,31 @@ var mysql  = require('mysql');
 var zapros = msg.text;
 var user_id = msg.chat.id;
 var point_type = 1;
-var route_passenger = 'n_route_p'+user_id;
+var n_route_p = 'n_route_p'+user_id;
 
 pool.getConnection(function(err, connection) {
 
-    connection.query('SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',[route_passenger, route_passenger], function(err, rows, fields) {
+    connection.query('SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',[ n_route_p, n_route_p ], function(err, rows, fields) {
     if (err) throw err;
     var district = JSON.parse(JSON.stringify(rows));
     console.log(district);
 
-    connection.query('SELECT streetname FROM kowe WHERE district1 = ? ',[district[0].start], function(err, rows, fields) {
+    connection.query('SELECT * FROM kowe WHERE district1 = ?  ORDER BY streetname ',[district[0].start], function(err, rows, fields) {
     if (err) throw err;
-    var user = JSON.stringify(rows);
+    var streetname = JSON.parse(JSON.stringify(rows));
+    var keyboard = [];
 
-    var goods = [];
-
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].streetname;
+    for(var i = 0; i < streetname.length; i++){
+    keyboard.push([{'text': ( streetname[i].streetname ) , 'callback_data': ('11 ' + streetname[i].id_str)}]);
     }
-    bot.sendMessage(msg.chat.id, `Выберите одну из улиц вашего пересечения`, { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: '11 ' + x
-                                                        }])),
 
-                                           }),})
+    bot.sendMessage( user_id, 'Выберите одну из улиц вашего пересечения ',
+    {
+    'reply_markup': JSON.stringify({
+    inline_keyboard: keyboard
+                                   })
+    }
+    )
     })
     })
 })
@@ -2305,27 +3533,27 @@ var route_passenger = 'n_route_p'+user_id;
 
 pool.getConnection(function(err, connection) {
 
-    connection.query('SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',[route_passenger, route_passenger], function(err, rows, fields) {
+    connection.query('SELECT finish FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',[route_passenger, route_passenger], function(err, rows, fields) {
     if (err) throw err;
     var district = JSON.parse(JSON.stringify(rows));
     console.log(district);
 
-    connection.query('SELECT streetname FROM kowe WHERE district1 = ? ',[district[0].start], function(err, rows, fields) {
+    connection.query('SELECT * FROM kowe WHERE district1 = ?  ORDER BY streetname ',[district[0].finish], function(err, rows, fields) {
     if (err) throw err;
-    var user = JSON.stringify(rows);
+    var streetname = JSON.parse(JSON.stringify(rows));
+    var keyboard = [];
 
-    var goods = [];
-
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].streetname;
+    for(var i = 0; i < streetname.length; i++){
+    keyboard.push([{'text': ( streetname[i].streetname ) , 'callback_data': ('21 ' + streetname[i].id_str)}]);
     }
-    bot.sendMessage(msg.chat.id, `Выберите одну из улиц вашего пересечения`, { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: '21 ' + x
-                                                        }])),
 
-                                           }),})
+    bot.sendMessage( user_id, 'Выберите одну из улиц вашего пересечения ',
+    {
+    'reply_markup': JSON.stringify({
+    inline_keyboard: keyboard
+                                   })
+    }
+    )
     })
     })
 })
@@ -2347,16 +3575,9 @@ var user_id = query.message.chat.id;
 var point_type = 1;
 var n_route_passenger = 'n_route_p'+user_id;
 var route_passenger = 'route_p'+user_id;
-var zapros_v_massiv = zapros.split(" ");
-var zapros_v_massiv2 = zapros_v_massiv.shift();
-var zapros_v_massiv3 = zapros_v_massiv.join(" ");
-console.log('Запрос',zapros);
-console.log('Запрос улица1',zapros_v_massiv[1]);
-console.log('Запрос улица0',zapros_v_massiv[0]);
-console.log('Запрос улица z',zapros_v_massiv);
-console.log('Запрос улица z2',zapros_v_massiv2);
-console.log('Запрос улица z3-0',zapros_v_massiv3[0]);
-console.log('Запрос улица z3',zapros_v_massiv3);
+  var str = query.data;
+  var res = str.split(" ");
+  console.log('#insert_11_interception   res is:', res[1]);
 
 pool.getConnection(function(err, connection) {
 
@@ -2364,7 +3585,8 @@ pool.getConnection(function(err, connection) {
     if (err) throw err;
     var district = JSON.parse(JSON.stringify(rows));
     console.log('Номер маршрута',district);
-    connection.query('SELECT * FROM kowe WHERE streetname = ? ',[zapros_v_massiv3], function(err, rows, fields) {
+
+    connection.query('SELECT * FROM kowe WHERE id_str = ? ',[ res[1] ], function(err, rows, fields) {
     if (err) throw err;
     var street = JSON.parse(JSON.stringify(rows));
     console.log('Из таблицы коше',street);
@@ -2374,22 +3596,22 @@ pool.getConnection(function(err, connection) {
        if (err) throw err;
        console.log('ИНсертед 11');
 
-           connection.query('SELECT * FROM points WHERE street = ? AND point_type = 1 ',[ zapros_v_massiv3 ], function(err, rows, fields) {
+           connection.query('SELECT * FROM points WHERE id_street = ? AND point_type = 1 AND district = ?  ORDER BY ordinal ',[ res[1], district[0].start ], function(err, rows, fields) {
            if (err) throw err;
-           var user = JSON.stringify(rows);
+           var street = JSON.parse(JSON.stringify(rows));
+           var keyboard = [];
 
-           var goods = [];
-
-           for(var i = 0; i < rows.length; i++){
-           goods[goods.length] = rows[i].interception;
+           for(var i = 0; i < street.length; i++){
+           keyboard.push([{'text': ( street[i].interception ) , 'callback_data': ('12 ' + street[i].id_interception)}]);
            }
-           bot.sendMessage(query.message.chat.id, `Вы выбрали ${zapros}\nТеперь выберите вторую улицу вашего пересечения`, { reply_markup: JSON.stringify({
-                                                               inline_keyboard: goods.map((x, xi) => ([{
-                                                                   text: x,
-                                                                   callback_data: '12 ' + x
-                                                               }])),
 
-                                                  }),})
+           bot.sendMessage( user_id, `Вы выбрали ${street[0].street }\nТеперь выберите вторую улицу вашего пересечения`,
+           {
+           'reply_markup': JSON.stringify({
+           inline_keyboard: keyboard
+                                          })
+           }
+           )
            })
        })
     })
@@ -2415,16 +3637,9 @@ var user_id = query.message.chat.id;
 var point_type = 1;
 var n_route_passenger = 'n_route_p'+user_id;
 var route_passenger = 'route_p'+user_id;
-var zapros_v_massiv = zapros.split(" ");
-var zapros_v_massiv2 = zapros_v_massiv.shift();
-var zapros_v_massiv3 = zapros_v_massiv.join(" ");
-console.log('Запрос',zapros);
-console.log('Запрос улица1',zapros_v_massiv[1]);
-console.log('Запрос улица0',zapros_v_massiv[0]);
-console.log('Запрос улица z',zapros_v_massiv);
-console.log('Запрос улица z2',zapros_v_massiv2);
-console.log('Запрос улица z3-0',zapros_v_massiv3[0]);
-console.log('Запрос улица z3',zapros_v_massiv3);
+  var str = query.data;
+  var res = str.split(" ");
+  console.log('res is:', res[1]);
 
 pool.getConnection(function(err, connection) {
 
@@ -2433,38 +3648,37 @@ pool.getConnection(function(err, connection) {
     var street = JSON.parse(JSON.stringify(rows));
     console.log('11 street',street);
 
-    connection.query(' SELECT * FROM points WHERE id_street = ? AND interception = ?',[street[0].id_street, zapros_v_massiv3], function(err, rows, fields) {
+    connection.query(' SELECT * FROM points WHERE id_street = ? AND id_interception = ? ',[ street[0].id_street, res[1] ], function(err, rows, fields) {
     if (err) throw err;
     var interception = JSON.parse(JSON.stringify(rows));
     console.log('11 interception',interception);
 
       connection.query(' UPDATE ?? SET id_interception = ?, interception = ?, id_point = ?, busstop = ?, nearby_interception = ?, point_parinter_min5 = ?, point_parinter_plu5 = ? WHERE id = ? ',
-      [route_passenger, interception[0].id_interception, zapros_v_massiv3, interception[0].id_point, interception[0].busstop, interception[0].nearby_interception, interception[0].point_parinter_min5, interception[0].point_parinter_plu5, street[0].id], function(err, rows, fields) {
+      [route_passenger, interception[0].id_interception, interception[0].interception, interception[0].id_point, interception[0].busstop, interception[0].nearby_interception, interception[0].point_parinter_min5, interception[0].point_parinter_plu5, street[0].id], function(err, rows, fields) {
       if (err) throw err;
       console.log('12 updated');
 
         connection.query('SELECT finish FROM ?? WHERE id = (SELECT MAX(id) FROM ??) ',[n_route_passenger, n_route_passenger], function(err, rows, fields) {
+        if (err) throw err;
+        var district = JSON.parse(JSON.stringify(rows));
+        console.log(district);
+
+            connection.query('SELECT * FROM kowe WHERE district1 = ?  ORDER BY streetname ',[district[0].finish], function(err, rows, fields) {
             if (err) throw err;
-            var district = JSON.parse(JSON.stringify(rows));
-            console.log(district);
+               var streetname = JSON.parse(JSON.stringify(rows));
+               var keyboard = [];
 
-            connection.query('SELECT streetname FROM kowe WHERE district1 = ? ',[district[0].finish], function(err, rows, fields) {
-            if (err) throw err;
-            var user = JSON.stringify(rows);
+               for(var i = 0; i < streetname.length; i++){
+               keyboard.push([{'text': ( streetname[i].streetname ) , 'callback_data': ('21 ' + streetname[i].id_str)}]);
+               }
 
-            var goods = [];
-
-            for(var i = 0; i < rows.length; i++){
-            goods[goods.length] = rows[i].streetname;
-            }
-            bot.sendMessage(query.message.chat.id, `Ваша пункт отправления ${interception[0].street} - ${zapros_v_massiv3}\nТеперь укажите пункт назначения, указав пересечение или автобусную остановку, нажав на Указать автобусную остановку`,
-                                                      { reply_markup: JSON.stringify({
-                                                                inline_keyboard: goods.map((x, xi) => ([{
-                                                                    text: x,
-                                                                    callback_data: '21 ' + x
-                                                                }])),
-
-                                                   }),})
+               bot.sendMessage( user_id, `Ваша пункт отправления ${interception[0].street} - ${interception[0].interception}\nТеперь укажите пункт назначения, указав пересечение или автобусную остановку, нажав на Указать автобусную остановку`,
+               {
+               'reply_markup': JSON.stringify({
+               inline_keyboard: keyboard
+                                              })
+               }
+               )
             })
             })
 
@@ -2490,16 +3704,9 @@ var user_id = query.message.chat.id;
 var point_type = 1;
 var n_route_passenger = 'n_route_p'+user_id;
 var route_passenger = 'route_p'+user_id;
-var zapros_v_massiv = zapros.split(" ");
-var zapros_v_massiv2 = zapros_v_massiv.shift();
-var zapros_v_massiv3 = zapros_v_massiv.join(" ");
-console.log('Запрос',zapros);
-console.log('Запрос улица1',zapros_v_massiv[1]);
-console.log('Запрос улица0',zapros_v_massiv[0]);
-console.log('Запрос улица z',zapros_v_massiv);
-console.log('Запрос улица z2',zapros_v_massiv2);
-console.log('Запрос улица z3-0',zapros_v_massiv3[0]);
-console.log('Запрос улица z3',zapros_v_massiv3);
+  var str = query.data;
+  var res = str.split(" ");
+  console.log('res is:', res[1]);
 
 pool.getConnection(function(err, connection) {
 
@@ -2507,7 +3714,7 @@ pool.getConnection(function(err, connection) {
     if (err) throw err;
     var district = JSON.parse(JSON.stringify(rows));
     console.log('Номер маршрута',district);
-    connection.query('SELECT * FROM kowe WHERE streetname = ? ',[zapros_v_massiv3], function(err, rows, fields) {
+    connection.query('SELECT * FROM kowe WHERE id_str = ? ',[ res[1]], function(err, rows, fields) {
     if (err) throw err;
     var street = JSON.parse(JSON.stringify(rows));
     console.log('Из таблицы коше',street);
@@ -2517,22 +3724,22 @@ pool.getConnection(function(err, connection) {
        if (err) throw err;
        console.log('ИНсертед 21');
 
-           connection.query('SELECT * FROM points WHERE street = ? AND point_type = 1 ',[zapros_v_massiv3], function(err, rows, fields) {
+           connection.query('SELECT * FROM points WHERE id_street = ? AND point_type = 1 AND district = ? ORDER BY ordinal ',[ res[1], district[0].finish ], function(err, rows, fields) {
            if (err) throw err;
-           var user = JSON.stringify(rows);
+              var street = JSON.parse(JSON.stringify(rows));
+               var keyboard = [];
 
-           var goods = [];
+               for(var i = 0; i < street.length; i++){
+               keyboard.push([{'text': ( street[i].interception ) , 'callback_data': ('22 ' + street[i].id_interception)}]);
+               }
 
-           for(var i = 0; i < rows.length; i++){
-           goods[goods.length] = rows[i].interception;
-           }
-           bot.sendMessage(query.message.chat.id, `Вы выбрали ${zapros}\nТеперь выберите вторую улицу вашего пересечения`, { reply_markup: JSON.stringify({
-                                                               inline_keyboard: goods.map((x, xi) => ([{
-                                                                   text: x,
-                                                                   callback_data: '22 ' + x
-                                                               }])),
-
-                                                  }),})
+               bot.sendMessage( user_id, `Вы выбрали ${street[0].street}\nТеперь выберите вторую улицу вашего пересечения`,
+               {
+               'reply_markup': JSON.stringify({
+               inline_keyboard: keyboard
+                                              })
+               }
+               )
            })
        })
     })
@@ -2590,16 +3797,9 @@ var user_id = query.message.chat.id;
 var point_type = 1;
 var n_route_passenger = 'n_route_p'+user_id;
 var route_passenger = 'route_p'+user_id;
-var zapros_v_massiv = zapros.split(" ");
-var zapros_v_massiv2 = zapros_v_massiv.shift();
-var zapros_v_massiv3 = zapros_v_massiv.join(" ");
-console.log('Запрос',zapros);
-console.log('Запрос улица1',zapros_v_massiv[1]);
-console.log('Запрос улица0',zapros_v_massiv[0]);
-console.log('Запрос улица z',zapros_v_massiv);
-console.log('Запрос улица z2',zapros_v_massiv2);
-console.log('Запрос улица z3-0',zapros_v_massiv3[0]);
-console.log('Запрос улица z3',zapros_v_massiv3);
+  var str = query.data;
+  var res = str.split(" ");
+  console.log('res is:', res[1]);
 
 pool.getConnection(function(err, connection) {
 
@@ -2608,13 +3808,13 @@ pool.getConnection(function(err, connection) {
     var street = JSON.parse(JSON.stringify(rows));
     console.log('11 street',street);
 
-    connection.query(' SELECT * FROM points WHERE id_street = ? AND interception = ?',[street[0].id_street, zapros_v_massiv3], function(err, rows, fields) {
+    connection.query(' SELECT * FROM points WHERE id_street = ? AND id_interception = ?',[street[0].id_street, res[1] ], function(err, rows, fields) {
     if (err) throw err;
     var interception = JSON.parse(JSON.stringify(rows));
     console.log('11 interception',interception);
 
       connection.query(' UPDATE ?? SET id_interception = ?, interception = ?, id_point = ?, busstop = ?, nearby_interception = ?, point_parinter_min5 = ?, point_parinter_plu5 = ?  WHERE id = ? ',
-      [route_passenger, interception[0].id_interception, zapros_v_massiv3, interception[0].id_point, interception[0].busstop, interception[0].nearby_interception, interception[0].point_parinter_min5, interception[0].point_parinter_plu5, street[0].id], function(err, rows, fields) {
+      [route_passenger, interception[0].id_interception, interception[0].interception, interception[0].id_point, interception[0].busstop, interception[0].nearby_interception, interception[0].point_parinter_min5, interception[0].point_parinter_plu5, street[0].id], function(err, rows, fields) {
       if (err) throw err;
       console.log('22 updated');
 // Теперь даем два варианта Сейчас или Потом
@@ -2622,6 +3822,8 @@ pool.getConnection(function(err, connection) {
       })
     })
     })
+// Выдаем новое меню кнопок, где есть кнопка редактировать последний перекресток
+      after_choosing_end_interception (query);
 })
 }
 
@@ -2671,6 +3873,50 @@ pool.getConnection(function(err, connection) {
 }
 
 
+function pass_to_driv (msg) {
+
+const chatId = msg.chat.id
+const text = 'Вы точно хотите перейти в режим водителя'
+bot.sendMessage(chatId, text, {
+                     reply_markup: {
+                       inline_keyboard: [
+                         [{
+                           text: 'Да, точно',
+                           callback_data: 'yes_to_driv'
+                         }],
+
+                         [{
+                           text: 'Нет, нечаянно нажал',
+                           callback_data: 'no_to_driv'
+                         }]
+                       ]
+                     }
+                })
+}
+
+
+function driv_to_pass (msg) {
+
+const chatId = msg.chat.id
+const text = 'Вы точно хотите перейти в режим пассажира'
+bot.sendMessage(chatId, text, {
+                     reply_markup: {
+                       inline_keyboard: [
+                         [{
+                           text: 'Да, да',
+                           callback_data: 'yes_to_pass'
+                         }],
+
+                         [{
+                           text: 'Нет, нечаянно нажал.',
+                           callback_data: 'no_to_pass'
+                         }]
+                       ]
+                     }
+                })
+}
+
+
 //bot.on('polling_error', (error) => {
 //  console.log(error.code);  // => 'EFATAL'
 //})
@@ -2704,21 +3950,23 @@ bot.on('callback_query', query => {
 
 
   if (query.data =='driver') {create_user(query);
-  bot.sendMessage(query.message.chat.id, 'Марка вашего автомобиля\nНапишите в таком формате:\nToyota Camry 30')}
-  else if (query.data =='passenger'){create_user(query);
-  mujorjen (query)}
-  else if (query.data =='man'){pol(query)}
-  else if (query.data =='woman'){pol(query)}
-  else if (query.data =='mkdk' || query.data =='grd') {  choose_street(query) }
+  bot.sendMessage(query.message.chat.id, 'Марка вашего автомобиля\nНапишите в таком формате:\nБелая Toyota Camry 30')}
+  else if (query.data =='passenger'){create_user(query);  mujorjen (query)}
+  else if (query.data =='man' || query.data =='woman' ){pol(query); bot.sendMessage(query.message.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234')}
+  else if (query.data =='man msg' || query.data =='woman msg' ){pol(query); pass_again(query)}
+  else if (query.data =='mkdk' || query.data =='grd' || query.data =='saran' || query.data =='aktas' || query.data =='dubovka' || query.data =='fedorovka' || query.data =='bazar' || query.data =='yug' || query.data =='srt' || query.data =='doskey' || query.data =='trud' || query.data =='uwtobe' || query.data =='prihon' || query.data =='zhbi' || query.data =='novouzenka' || query.data =='malsaran' )
+  { choose_from_district_driver(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (query.data =='mkdk2' || query.data =='grd2' || query.data =='saran2' || query.data =='aktas2' || query.data =='dubovka2' || query.data =='fedorovka2' || query.data =='bazar2' || query.data =='yug2' || query.data =='srt2' || query.data =='doskey2' || query.data =='trud2' || query.data =='uwtobe2' || query.data =='prihon2' || query.data =='zhbi2' || query.data =='novouzenka2' || query.data =='malsaran2' )
+  { choose_to_district_driver(query); bot.deleteMessage(query.message.chat.id, query.message.message_id)  }
   else if (query.data =='driver_again') { driv_again(query) }
   else if (query.data =='passenger_again') { pass_again(query) }
   else if (query.data =='ready now') { passenger_update_time(query) }
   else if (query.data =='plan time') { passenger_plan_time(query) }
   else if (res[0] == 'time') { passenger_update_plan_time(query) }
-  else if (res[0] == '11') { insert_11_interception(query) }
-  else if (res[0] == '12') { insert_12_interception(query) }
-  else if (res[0] == '21') { insert_21_interception(query) }
-  else if (res[0] == '22') { insert_22_interception(query) }
+  else if (res[0] == '11') { insert_11_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (res[0] == '12') { insert_12_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (res[0] == '21') { insert_21_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (res[0] == '22') { insert_22_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == 'n_pass') { insert_number_of_passengers(query) }
   else if (res[0] == 'n_place') { end_route(query); search_regime_query(query)  }
   else if (res[0] == 'map') { console.log('callback mapa: ', query.data) }
@@ -2729,19 +3977,62 @@ bot.on('callback_query', query => {
   else if (res2[0] == 'beg_inter2') { console.log('beg inter 2 выбран', query.data); choose_beg_inter2(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res2[0] == 'kbd') { console.log('kbd 2 выбран', query.data); kbd(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == 'confirm_pass') { console.log('confirm_pass ', query.data); offer_to_pass(query) }
+  else if (res[0] == 'route') { activate_route(query) }
+  else if (query.data === 'page1' || query.data === 'page2' || query.data === 'page3' || query.data === 'page4' ) { through_pages(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (query.data === 'page1_end' || query.data === 'page2_end' || query.data === 'page3_end' || query.data === 'page4_end' ) { through_pages_end(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (query.data === 'no_to_pass'){ driv_query (query) }
+  else if (query.data === 'no_to_driv'){ const chatId = query.message.chat.id; const text_keyboard = 'Вы на главном меню'; bot.sendMessage(chatId, text_keyboard, main_menu_passenger_query) }
+  else if (query.data === 'yes_to_driv'){
+     var mysql  = require('mysql');
+             var pool = mysql.createPool({
+             host     : 'localhost',
+             user     : 'mybd_user',
+             password : 'admin123',
+             database : 'sitebot'
+         })
+
+     pool.getConnection(function(err, connection) {
+     var user_id = query.message.chat.id;
+     connection.query ('SELECT * FROM users WHERE id_user = ? ',[user_id], function(err, rows, fields) {
+          if (err) throw err;
+          var str_parse_rows = JSON.parse(JSON.stringify(rows));
+          console.log('yes to driv STR PARSE', str_parse_rows );
+           if (str_parse_rows.length > 1){
+           driv_query(query)
+           }
+           else {register_pass_asdriv(query)}
+      })
+      })
+      }
+  else if (query.data === 'yes_to_pass'){
+     var user_id = query.message.chat.id;
+     var mysql  = require('mysql');
+             var pool = mysql.createPool({
+             host     : 'localhost',
+             user     : 'mybd_user',
+             password : 'admin123',
+             database : 'sitebot'
+         })
+
+     pool.getConnection(function(err, connection) {
+     connection.query ('SELECT * FROM users WHERE id_user = ? ',[user_id], function(err, rows, fields) {
+     if (err) throw err;
+     var str_parse_rows = JSON.parse(JSON.stringify(rows));
+           if (str_parse_rows.length > 1){
+           pass_query(query)
+           }
+           else {register_driv_aspass(query)}
+      })
+      })
+      }
   else {
 
    if ( res[0] == 'busstop_beg' || res[0] == 'busstop_end' ){
-      console.log('БАССТОП бег или енд выбран!');
+      console.log('БАССТОП бег или енд выбран!');  bot.deleteMessage(query.message.chat.id, query.message.message_id);
       if (res[0] == 'busstop_beg') {
       after_choosing_beg_busstop(query);
       console.log('БЕГ БАССТОП выбран!');
-      var res2 = res.shift();
-      var ostanovka = res.join(" ");
-            console.log('res2', res2);
-      bot.sendMessage(query.message.chat.id, 'Ваша начальная остановка: ' + ostanovka);
       insert_busstop_beg(query);
-
       }
       else {
       after_choosing_end_busstop(query);
@@ -2750,16 +4041,20 @@ bot.on('callback_query', query => {
       indicate_number_of_passengers(query);
       }
    }
-   else if (res[0] == 'mkdk_pass' || res[0] == 'grd_pass') { console.log('Район выбран!'); choose_busstop(query) }
+   else if (res[0] == 'mkdk_pass1' || res[0] == 'grd_pass1' || res[0] =='saran_pass1' || res[0] =='aktas_pass1' || res[0] =='dubovka_pass1' || res[0] =='fedorovka_pass1' || res[0] =='bazar_pass1' || res[0] =='yug_pass1' || res[0] =='srt_pass1' || res[0] =='doskey_pass1' || res[0] =='trud_pass1' || res[0] =='uwtobe_pass1' || res[0] =='prihon_pass1' || res[0] =='zhbi_pass1' || res[0] =='novouzenka_pass1' || res[0] =='malsaran_pass1' )
+   { console.log('ОТКУДА Район выбран!'); choose_from_district(query);  bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+   else if (res[0] == 'mkdk_pass2' || res[0] == 'grd_pass2' || res[0] =='saran_pass2' || res[0] =='aktas_pass2' || res[0] =='dubovka_pass2' || res[0] =='fedorovka_pass2' || res[0] =='bazar_pass2' || res[0] =='yug_pass2' || res[0] =='srt_pass2' || res[0] =='doskey_pass2' || res[0] =='trud_pass2' || res[0] =='uwtobe_pass2' || res[0] =='prihon_pass2' || res[0] =='zhbi_pass2' || res[0] =='novouzenka_pass2' || res[0] =='malsaran_pass2' )
+   { console.log('КУДА Район выбран!'); choose_to_district(query);  bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+
+//   else if (res[0] == 'mkdk_dir1' || res[0] == 'grd_dir1' || res[0] =='saran_dir1' || res[0] =='aktas_dir1' || res[0] =='dubovka_dir1' || res[0] =='fedorovka_dir1' || res[0] =='bazar_dir1' || res[0] =='yug_dir1' || res[0] =='srt_dir1' || res[0] =='doskey_dir1' || res[0] =='trud_dir1' || res[0] =='uwtobe_dir1' || res[0] =='prihon_dir1' || res[0] =='zhbi_dir1' || res[0] =='novouzenka_dir1' || res[0] =='malsaran_dir1' )
+//   { update_direct1(query); vibor_direct2(query) }
+//   else if (res[0] == 'mkdk_dir2' || res[0] == 'grd_dir2' || res[0] =='saran_dir2' || res[0] =='aktas_dir2' || res[0] =='dubovka_dir2' || res[0] =='fedorovka_dir2' || res[0] =='bazar_dir2' || res[0] =='yug_dir2' || res[0] =='srt_dir2' || res[0] =='doskey_dir2' || res[0] =='trud_dir2' || res[0] =='uwtobe_dir2' || res[0] =='prihon_dir2' || res[0] =='zhbi_dir2' || res[0] =='novouzenka_dir2' || res[0] =='malsaran_dir2' )
+//   { update_direct2(query)}
+
    else {kbd(query)}
    }
 })
 
-
-bot.onText(/\/structure/, msg => {
-  const {id} = msg.chat
-  bot.sendMessage(id, debug(msg))
-})
 
 
 bot.on('message', msg => {
@@ -2816,44 +4111,50 @@ console.log(gender[1]);
         }
 
         if (msg.text === '/start') {
-                   if (str_parse_rows[0] !== undefined) {
+              if (str_parse_rows[0] !== undefined) {
                                  if (str_parse_rows[1] !== undefined) { vodorpas_again (msg) }
                                  else { if (str_parse_rows[0].vibor === 'driver') {driv(msg)}    else {pass(msg)} }
-                                 }
-                   else {
+              }
+              else {
                    const text = `Здравствуйте, ${msg.from.first_name}\nЭтот робот помогает водителям авто находить попутных пассажиров`
-                   bot.sendMessage(helper.getChatId(msg), text)
-                   vodorpas(msg)
-                        }
+                   bot.sendMessage(helper.getChatId(msg), text);
+                   vodorpas(msg);
+              }
         }
-
-              else if (goods[0] === null && rejim[0] === 'driver') { marka(msg)}
-              else if (goods[0] !== null && nomerok[0] === null) { nomer(msg)}
+//              else if (goods[0] === null && rejim[0] === null && str_parse_rows[0].direct !== null)  { vodorpas_query(query) }
+              else if (goods[0] === null && rejim[0] === 'driver' && str_parse_rows.length == 1 ) { marka(msg)}
+              else if (goods[1] === null && rejim[1] === 'driver' && str_parse_rows.length == 2) { marka(msg)}
+              else if (goods[0] !== null && nomerok[0] === null && str_parse_rows.length == 1 && rejim[0] === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234') }
+              else if (goods[1] !== null && nomerok[1] === null && str_parse_rows.length == 2 && rejim[1] === 'driver') { nomer(msg); create_route_driver(msg); driv(msg)}
               else if (nomerok[0] !== null && telefon[0] === null) { tel(msg)}
               else if  (gender[0] !== null && telefon[0] === null) {telpas(msg)  }
               else if  (gender[1] !== null && gender[1] !== undefined && telefon[1] === null) {telpas(msg)  }
 // Кнопки водителя
-              else if (msg.text === 'Найти попутчиков'){findpas(msg)}
-              else if (msg.text === 'Вы сейчас пассажир'){driv(msg)}
-              else if (msg.text === 'Создать новый маршрут'){choose_direction(msg)}
-              else if (msg.text === 'Завершить маршрут'){indicate_number_of_places(msg)}
-              else if (msg.text === 'Назад на главное меню'){driv(msg)}
-              else if (msg.text === 'На главное меню'){driv(msg)}
+              else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
+              else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
+              else if (msg.text === '▶️ Создать новый маршрут'){choose_direction(msg)}
+              else if (msg.text === '⏯ Активизировать сохраненные маршруты'){choose_route_toactivate(msg)}
+              else if (msg.text === 'Завершить маршрут'){ indicate_number_of_places(msg);   bot.deleteMessage(msg.chat.id, msg.message_id); }
+              else if (msg.text === '⬅️ Назад на главное меню'){driv(msg)}
+              else if (msg.text === '⚫️ На главное меню'){driv(msg)}
               else if (msg.text === 'Назад на прежний перекресток'){back_to_prev(msg)}
+              else if (msg.text === '💽 Мои данные') {edit_profile_driver(msg)}
 // Кнопки пассажира
-              else if (msg.text === 'Найти авто'){choose_direction_passenger(msg)}
+              else if (msg.text === 'Стать водителем'){pass_to_driv(msg)}
+              else if (msg.text === '🚗 Найти авто'){choose_direction_passenger(msg)}
               else if (msg.text === 'Назад в меню'){ const chatId = msg.chat.id; const text_keyboard = 'Вы на главном меню'; bot.sendMessage(chatId, text_keyboard, main_menu_passenger) }
               else if (msg.text === 'Исправить начало пути'){edit_beg_busstop(msg)}
-              else if (msg.text === 'Исправить конец пути'){edit_end_busstop(msg)}
-              else if (msg.text === 'Указать пересечение улиц'){show_interception_topass(msg)}
-              else if (msg.text === 'Указать пересечение улиц.'){show_interception_topass_21(msg)}
+              else if (msg.text === 'Исправить начало пути.'){ edit_beg_interception(msg) }
+              else if (msg.text === 'Исправить конец пути'){ edit_end_busstop(msg) }
+              else if (msg.text === 'Исправить конец пути.'){ edit_end_interception(msg) }
+              else if (msg.text === 'Указать пересечение улиц'){show_interception_topass(msg); bot.deleteMessage(msg.chat.id, msg.message_id)}
+              else if (msg.text === 'Указать пересечение улиц.'){show_interception_topass_21(msg); after_choosing_beg_interception_msg(msg)}
               else if (msg.text === 'Указать автобусную остановку'){choose_end_busstop(msg)}
-              else if (msg.text === 'Показать попутчиков по району'){send_rayon_poputi(msg)}
-              else if (msg.text === 'Отменить поиск попутчиков'){are_u_sure(msg)}
+              else if (msg.text === '🔴 Показать попутчиков по району'){send_rayon_poputi(msg)}
+              else if (msg.text === '🔵 Отменить поиск попутчиков'){are_u_sure(msg)}
               else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
               else if (msg.text === 'Нет') {search_regime(msg)}
-              else if (msg.text === 'Мои данные') {edit_profile_driver(msg)}
-              else if (msg.text === 'Мои данные.') {edit_profile_pass(msg)}
+              else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
               else if (msg.text === 'йцукен'){create_route_driver(msg)}
         else {console.log('Hmm')
 
@@ -2906,12 +4207,11 @@ var timer = new TaskTimer(1000);
 timer.addTask({
     name: 'job1',       // unique name of the task
     tickInterval: 30,    // run every 5 ticks (5 x interval = 5000 ms)
-    totalRuns: 1,      // run 10 times only. (set to 0 for unlimited times)
+    totalRuns: 15,      // run 10 times only. (set to 0 for unlimited times)
     callback: function (task) {
         // code to be executed on each run
-//        tabu_driver_poputi2();
-//        tabu_pass_on_parinter2();
-//          exper();
+        tabu_driver_poputi2();
+        tabu_pass_on_parinter2();
         console.log(task.name + ' task has run ' + task.currentRuns + ' times.');
     }
 });
@@ -2944,7 +4244,7 @@ pool.getConnection(function(err, connection) {
    if (err) throw err;
    var passenger = JSON.parse(JSON.stringify(rows));
    console.log('Нашли пассажиров', passenger);
-   if (passenger === []) { console.log('Сейчас нет пассажиров не плохо было бы остановить таймер', passenger); timer.pause(); }
+   if (passenger.length === 0) { console.log('Сейчас нет пассажиров не плохо было бы остановить таймер', passenger); timer.pause(); }
    else{
    console.log('есть пассажиры', passenger)
 
@@ -2984,17 +4284,17 @@ pool.getConnection(function(err, connection) {
 // Затем преобразовываем all_districts в массив с районами
              var splited = active_drivers[0].all_districts.split("00");
              if (splited.length == 2){
-             var like = 'LIKE "%' + active_drivers[0].all_districts + '%"';
+             var like = 'LIKE "%' + active_drivers[0].all_districts + '%" ) ';
              }
              else if (splited.length == 3) {
-             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR LIKE "%' + splited[0] + '00' + splited[2] + '%" ';
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" ) ';
              }
              else if (splited.length == 4) {
-             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR LIKE "%' + splited[0] + '00' + splited[2] + '%" '+ 'OR LIKE "%' + splited[2] + '00' + splited[3] + '%" '  + 'OR LIKE "%' + splited[0] + '00' + splited[3] + '%" '  + 'OR LIKE "%' + splited[1] + '00' + splited[3] + '%" ';
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" '+ 'OR all_districts LIKE "%' + splited[2] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[3] + '%" ) ';
              }
              else{}
              console.log('лайки', like)
-             var select = ' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" AND all_districts ' + like;
+             var select = ' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" AND (all_districts ' + like;
 // active_drivers[i].id_user
              connection.query( select, function(err, rows, fields) {
              if (err) throw err;
@@ -3053,16 +4353,6 @@ pool.getConnection(function(err, connection) {
                  }
                 )
                 }
-//                var variant_joined = variant.join();
-//                console.log('variant_joined ',variant_joined)
-
-//                bot.sendMessage( user_id, variant_joined,
-//                 {
-//                  'reply_markup': JSON.stringify({
-//                    inline_keyboard: keyboard
-//                  })
-//                 }
-//                )
                 }
              })
       }
@@ -3099,18 +4389,18 @@ pool.getConnection(function(err, connection) {
              var splited = active_drivers[0].all_districts.split("00");
 
              if (splited.length == 2){
-             var like = 'LIKE "%' + active_drivers[i].all_districts + '%"';
+             var like = 'LIKE "%' + active_drivers[i].all_districts + '%" ) ';
              }
              else if (splited.length == 3) {
-             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR LIKE "%' + splited[0] + '00' + splited[2] + '%" ';
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" ) ';
              }
              else if (splited.length == 4) {
-             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR LIKE "%' + splited[0] + '00' + splited[2] + '%" '+ 'OR LIKE "%' + splited[2] + '00' + splited[3] + '%" '  + 'OR LIKE "%' + splited[0] + '00' + splited[3] + '%" '  + 'OR LIKE "%' + splited[1] + '00' + splited[3] + '%" ';
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" '+ 'OR all_districts LIKE "%' + splited[2] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[3] + '%" ) ';
              }
              else{}
 
              console.log('лайки', like)
-             var select = ' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" AND all_districts ' + like;
+             var select = ' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" AND (all_districts ' + like;
              connection.query( select, function(err, rows, fields) {
              if (err) throw err;
              var passenger_poputi_district = JSON.parse(JSON.stringify(rows));
@@ -3555,52 +4845,6 @@ else {}
 }
 
 
-var mysql  = require('mysql');
-        var pool = mysql.createPool({
-        host     : 'localhost',
-        user     : 'mybd_user',
-        password : 'admin123',
-        database : 'sitebot'
-    })
-
-pool.getConnection(function(err, connection) {
-
-var sql = ' SELECT DISTINCT PP_id_user, PP_id_route, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
-             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end  ' +
-                 ' FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end ' +
-                     ' FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 ' +
-                         ' JOIN route  WHERE route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg"  AND ' +
-                            ' EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end  ' +
-                                ' FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 ' +
-                                    ' JOIN route  WHERE route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 '
-
-connection.query( sql , function(err, rows, fields) {
-if (err) throw err;
-var driver = JSON.parse(JSON.stringify(rows));
-console.log('experiment ', driver);
-
-})
-})
-
-pool.getConnection(function(err, connection) {
-
-var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg' +
-             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
-                ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
-                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 ' +
-                         ' JOIN route  WHERE  route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
-                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 JOIN route ' +
-                                   ' WHERE  route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5   ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
-
-connection.query(sql,function(err, rows, fields) {
-if (err) throw err;
-var driver = JSON.parse(JSON.stringify(rows));
-console.log('par interception ', driver);
-})
-})
-
-
-
 function tabu_driver_poputi2 (msg){
 
 var mysql  = require('mysql');
@@ -3613,18 +4857,18 @@ var mysql  = require('mysql');
 
 pool.getConnection(function(err, connection) {
 
-var sql = ' SELECT DISTINCT PP_id_user, PP_id_route, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
-             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end  ' +
-                 ' FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end ' +
+// Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
+var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg' +
+             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+                ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
 // Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
-                     ' FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 ' +
-// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
-                         ' JOIN route  WHERE route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg"  AND ' +
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()   ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
 // Возвращает TRUE если запрос, указанный ниже подтверждается
-                            ' EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end  ' +
-                                ' FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 ' +
-// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2
-                                    ' JOIN route  WHERE route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 '
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
 
 connection.query( sql , function(err, rows, fields) {
 if (err) throw err;
@@ -3672,13 +4916,13 @@ var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_in
              ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
                 ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
 // Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
-                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 ' +
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE  time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
 // Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
-                         ' JOIN route  WHERE  route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
 // Возвращает TRUE если запрос, указанный ниже подтверждается
-                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p ) AS route_p1 JOIN route ' +
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
 // Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
-                                   ' WHERE  route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5   ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
 
 connection.query( sql , function(err, rows, fields) {
 if (err) throw err;
@@ -3716,212 +4960,64 @@ console.log('parallel interception ', driver);
     })
    }
    }
+
+// Если нет попутных водителей т.е. driver.length == 0, то таймер ставиться на паузу
+   else { timer.pause(); console.log('Timer paused cause no drivers match passengers');}
 })
 })
 
 }
 
+// В setInterval после функции нельзя ставить ()
+bot.onText(/\/insert_paral_inter_ord/, msg => {setInterval(database.insert_paral_inter_ord, 3000)})
 
-bot.onText(/\/insert_paral_inter_ord/, msg => {setInterval(insert_paral_inter_ord, 10000)})
-
-bot.onText(/\/insert_paral_inter_idpoint/, msg => {setInterval(insert_paral_inter_idpoint, 10000)})
-
-
-function insert_paral_inter_ord(msg){
-
- var mysql  = require('mysql');
-         var pool = mysql.createPool({
-         host     : 'localhost',
-         user     : 'mybd_user',
-         password : 'admin123',
-         database : 'sitebot'
-     })
-
- pool.getConnection(function(err, connection) {
+bot.onText(/\/insert_paral_inter_idpoint/, msg => {setInterval(database.insert_paral_inter_idpoint, 3000)})
 
 
- connection.query(' SELECT id, id_point, id_street, id_interception FROM points1 WHERE id = (SELECT MIN(id) FROM points1 WHERE point_type = 1 AND ord_parinter_min5 IS NULL AND ord_parinter_plu5 IS NULL) ',
-
-     function(err, rows, fields) {
-     if (err) throw err;
-     var par = JSON.parse(JSON.stringify(rows));
-     console.log('Параллельные пересечения', par);
-     var test = [];
-     for(var i = 0; i < rows.length; i++){
-     test.push([ par[i].id_street, par[i].id_interception ]);
-     }
-     console.log('В ассоц массиве', test);
+bot.onText(/\/send/, msg => {send(msg)})
 
 
-     connection.query(' SELECT id, id_point, id_street, id_interception, ordinal FROM points1 WHERE (id_interception, id_street) IN (?) ',
-     [test] ,
-     function(err, rows, fields) {
-     if (err) throw err;
-     var par2 = JSON.parse(JSON.stringify(rows));
-     console.log('Порядковый обратного пересечения', par2);
+function send(msg) {
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
 
-                if( par2[0] !== undefined ){
-                     connection.query(' UPDATE points1 SET ord_parinter_min5 = ?, ord_parinter_plu5 = ? WHERE id = ? ',
-                     [ par2[0].ordinal-5, par2[0].ordinal+5, par[0].id ] ,
-                     function(err, rows, fields) {
-                     if (err) throw err;
-                     })
-                console.log('since par2 is NOT undefined', par2);
-                }
-                else {
-                     connection.query(' UPDATE points1 SET ord_parinter_min5 = ?, ord_parinter_plu5 = ? WHERE id = ? ',
-                     [ 0, 0, par[0].id ] ,
-                     function(err, rows, fields) {
-                     if (err) throw err;
-                     })
-                console.log('since min5 is undefined', par2);
-                }
-     })
- })
- })
- }
+var zapros = msg.chat.text;
+var user_id = msg.chat.id;
+var n_route_driver = 'n_route'+user_id;
+var route_driver = 'route'+user_id;
 
 
-function insert_paral_inter_idpoint(msg){
+pool.getConnection(function(err, connection) {
 
-          var mysql  = require('mysql');
-          var pool = mysql.createPool({
-                  host     : 'localhost',
-          user     : 'mybd_user',
-          password : 'admin123',
-          database : 'sitebot'
-      })
+   connection.query(' SELECT all_districts FROM route WHERE time_end > NOW() AND id_user = ? ', [ user_id ],  function(err, rows, fields) {
+   if (err) throw err;
+   var active_drivers = JSON.parse(JSON.stringify(rows));
+   console.log('Нашли водителей', active_drivers);
 
-  pool.getConnection(function(err, connection) {
-
-  connection.query(' SELECT id, id_interception, ord_parinter_min5, ord_parinter_plu5 FROM points1 WHERE id = (SELECT MIN(id) FROM points1 WHERE point_type = 1 AND point_parinter_min5 IS NULL AND point_parinter_plu5 IS NULL)',
-      function(err, rows, fields) {
-      if (err) throw err;
-      var par = JSON.parse(JSON.stringify(rows));
-      console.log('id_inter and ordinals +-5 ', par);
-
-           connection.query(' SELECT id_point FROM points1 WHERE EXISTS (SELECT id_point FROM points1 WHERE id_street = ? AND ordinal = ?) AND id_street = ? AND ordinal = ? ',
-           [ par[0].id_interception, par[0].ord_parinter_min5, par[0].id_interception, par[0].ord_parinter_min5 ] ,
-           function(err, rows, fields) {
-           if (err) throw err;
-           var par2 = JSON.parse(JSON.stringify(rows));
-           console.log('idpoint min5', par2);
-
-           if( par2[0] !== undefined ){
-                connection.query(' UPDATE points1 SET point_parinter_min5 = ? WHERE id = ? ',
-                [ par2[0].id_point, par[0].id ] ,
-                function(err, rows, fields) {
-                if (err) throw err;
-                })
-           console.log('since min5 is NOT undefined', par2);
-           }
-           else {
-                connection.query(' UPDATE points1 SET point_parinter_min5 = ? WHERE id = ? ',
-                [ 0, par[0].id ] ,
-                function(err, rows, fields) {
-                if (err) throw err;
-                })
-           console.log('since min5 is undefined', par2);
-           }
-           })
-
-           connection.query(' SELECT id_point FROM points1 WHERE EXISTS (SELECT id_point FROM points1 WHERE id_street = ? AND ordinal = ?) AND id_street = ? AND ordinal = ? ',
-           [ par[0].id_interception, par[0].ord_parinter_plu5, par[0].id_interception, par[0].ord_parinter_plu5 ] ,
-           function(err, rows, fields) {
-           if (err) throw err;
-           var par3 = JSON.parse(JSON.stringify(rows));
-           console.log('idpoint plu5', par3);
-           if( par3[0] !== undefined ){
-              connection.query(' UPDATE points1 SET point_parinter_plu5 = ? WHERE id = ? ',
-              [ par3[0].id_point, par[0].id ] ,
-              function(err, rows, fields) {
-              if (err) throw err;
-              })
-           console.log('since plu5 is NOT undefined', par3);
-           }
-           else{
-                connection.query(' UPDATE points1 SET point_parinter_plu5 = ? WHERE id = ? ',
-                [ 0, par[0].id ] ,
-                function(err, rows, fields) {
-                if (err) throw err;
-                })
-           console.log('since plu5 is undefined', par3);
-           }
-           })
-
-
-  })
-  })
-
-//  pool.getConnection(function(err, connection) {
-//
-//  connection.query(' SELECT id, id_interception, ord_parinter_min5, ord_parinter_plu5 FROM points1 WHERE id<10 AND point_type = 1 ',
-//      function(err, rows, fields) {
-//      if (err) throw err;
-//      var par = JSON.parse(JSON.stringify(rows));
-//      console.log('id_inter and ordinals +-5 ', par);
-//      console.log('par вначале ', par[0]);
-//      var test = [];
-//      for(var i = 0; i < rows.length; i++){
-//      test.push([ par[i].id, par[i].id_interception, par[i].ord_parinter_min5, par[i].ord_parinter_plu5 ]);
-//      console.log('В ассоц массиве Iki', i);
-//      }
-//      console.log('В ассоц массиве', test);
-//
-//      for(var i = 0; i < rows.length; i++){
-////           connection.query(' SELECT id_point FROM points1 WHERE EXISTS (SELECT id_point FROM points1 WHERE id_street = 41 AND ordinal = 20) AND id_street = 41 AND ordinal = 20 ',
-//////           [ par[i].id_interception, par[i].ord_parinter_min5, par[i].id_interception, par[i].ord_parinter_min5 ] ,
-////           function(err, rows, fields) {
-////           if (err) throw err;
-////           var par2 = JSON.parse(JSON.stringify(rows));
-////           console.log('idpoint min5', par2);
-////           console.log('idpoint min5 par', par.id);
-////           console.log('IIIki min5 ', i);
-////
-//////           if( par2[i] !== undefined ){
-//////                connection.query(' UPDATE points1 SET point_parinter_min5 = ? WHERE id = ? ',
-//////                [ par2[i].id_point, par[i].id ] ,
-//////                function(err, rows, fields) {
-//////                if (err) throw err;
-//////                })
-//////           }
-//////           else {
-//////                connection.query(' UPDATE points1 SET point_parinter_min5 = ? WHERE id = ? ',
-//////                [ 0, par[i].id ] ,
-//////                function(err, rows, fields) {
-//////                if (err) throw err;
-//////                })
-//////           console.log('since min5 is undefined', par2);
-//////           }
-////           })
-//
-//           connection.query(' SELECT id_point FROM points1 WHERE EXISTS (SELECT id_point FROM points1 WHERE id_street = ? AND ordinal = ?) AND id_street = ? AND ordinal = ? ',
-//           [ par[i].id_interception, par[i].ord_parinter_plu5, par[i].id_interception, par[i].ord_parinter_plu5 ] ,
-//           function(err, rows, fields) {
-//           if (err) throw err;
-//           var par3 = JSON.parse(JSON.stringify(rows));
-//           console.log('idpoint plu5', par3);
-//           console.log('par plu5 ', par[i]);
-//           console.log('IIIki ', i);
-//           console.log('par вначале ', par[0]);
-////           if( par3[i] !== undefined ){
-////              connection.query(' UPDATE points1 SET point_parinter_plu5 = ? WHERE id = ? ',
-////              [ par3[i].id_point, par[i].id ] ,
-////              function(err, rows, fields) {
-////              if (err) throw err;
-////              })
-////           }
-////           else{
-////                connection.query(' UPDATE points1 SET point_parinter_plu5 = ? WHERE id = ? ',
-////                [ 0, par[i].id ] ,
-////                function(err, rows, fields) {
-////                if (err) throw err;
-////                })
-////           console.log('since plu5 is undefined', par3);
-////           }
-//           })
-//         console.log('IIIki za ifom', i);
-//      }
-//  })
-//  })
+             var splited = active_drivers[0].all_districts.split("00");
+             if (splited.length == 2){
+             var like = 'LIKE "%' + active_drivers[0].all_districts + '%" ) ';
+             }
+             else if (splited.length == 3) {
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" ) ';
+             }
+             else if (splited.length == 4) {
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" '+ 'OR all_districts LIKE "%' + splited[2] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[3] + '%" ) ';
+             }
+             else{}
+             console.log('лайки', like)
+             var select = ' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" AND (all_districts ' + like;
+             console.log('SQL select', select)
+             connection.query( select, function(err, rows, fields) {
+             if (err) throw err;
+             var passenger_poputi_district = JSON.parse(JSON.stringify(rows));
+             console.log('passenger_poputi_district ', passenger_poputi_district)
+             })
+             })
+             })
 }

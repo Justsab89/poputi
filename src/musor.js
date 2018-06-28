@@ -803,3 +803,365 @@ else{}
 })
 })
 }
+
+
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+pool.getConnection(function(err, connection) {
+
+var sql = ' SELECT DISTINCT PP_id_user, PP_id_route, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
+             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end  ' +
+                 ' FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end ' +
+// Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
+                     ' FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
+                         ' JOIN route  WHERE (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point) AND route.time_end > NOW() ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg"  AND ' +
+// Возвращает TRUE если запрос, указанный ниже подтверждается
+                            ' EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end  ' +
+                                ' FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2
+                                    ' JOIN route  WHERE (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point)  AND route.time_end > NOW() ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 '
+
+connection.query( sql , function(err, rows, fields) {
+if (err) throw err;
+var driver = JSON.parse(JSON.stringify(rows));
+console.log('experiment ', driver);
+
+})
+})
+
+pool.getConnection(function(err, connection) {
+
+// Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
+var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg' +
+             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+                ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
+// Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+// Возвращает TRUE если запрос, указанный ниже подтверждается
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5 )  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
+
+connection.query(sql,function(err, rows, fields) {
+if (err) throw err;
+var driver = JSON.parse(JSON.stringify(rows));
+console.log('par interception ', driver);
+})
+})
+
+
+
+pool.getConnection(function(err, connection) {
+
+var sql = ' SELECT route_p.id_user AS P_id_user, route_p.id_route AS P_id_route, route_p.begend AS P_begend, route_p.street AS P_street, route_p.interception AS P_interception, ' +
+          ' route.id_user AS D_id_user, route.id_route AS D_id_route, route.begend AS D_begend, route.street AS D_street, route.interception AS D_interception ' +
+          ' FROM route_p JOIN route ' +
+          ' WHERE (route_p.id_point = route.id_point  OR  route_p.id_point = route.point_parinter_plu5  OR  route_p.id_point = route.point_parinter_min5) AND route.time_end > NOW() AND route_p.time_end > NOW() ' ;
+
+// AND status <> "busy"
+// Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
+var sql1 = ' SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+                ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
+// Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+// Возвращает TRUE если запрос, указанный ниже подтверждается
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,4) AS near1, SUBSTRING (nearby_interception, 8,4) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ';
+
+connection.query( sql ,function(err, rows, fields) {
+if (err) throw err;
+var driver = JSON.parse(JSON.stringify(rows));
+console.log('zanovo ', driver);
+})
+})
+
+
+
+
+function update_direct1(query){
+
+        var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+        })
+
+var user_id = query.message.chat.id;
+var zapros = query.data;
+  var str = query.data;
+  var res = str.split(" ");
+  console.log('res is:', res[1]);
+
+if (res[0] == 'mkdk_dir1'){ var district = 'mkdk';}
+else if (res[0] == 'grd_dir1'){ var district = 'grd';}
+else if (res[0] == 'saran_dir1'){ var district = 'saran';}
+else if (res[0] == 'aktas_dir1'){ var district = 'aktas';}
+else if (res[0] == 'dubovka_dir1'){ var district = 'dubovka';}
+else if (res[0] == 'fedorovka_dir1'){ var district = 'fedorovka';}
+else if (res[0] == 'bazar_dir1'){ var district = 'bazar';}
+else if (res[0] == 'yug_dir1'){ var district = 'yug';}
+else if (res[0] == 'srt_dir1'){ var district = 'srt';}
+else if (res[0] == 'doskey_dir1'){ var district = 'doskey';}
+else if (res[0] == 'trud_dir1'){ var district = 'trud';}
+else if (res[0] == 'uwtobe_dir1'){ var district = 'uwtobe';}
+else if (res[0] == 'prihon_dir1'){ var district = 'prihon';}
+else if (res[0] == 'zhbi_dir1'){ var district = 'zhbi';}
+else if (res[0] == 'novouzenka_dir1'){ var district = 'novouzenka';}
+else if (res[0] == 'malsaran_dir1'){ var district = 'malsaran';}
+
+pool.getConnection(function(err, connection) {
+
+    connection.query(' INSERT INTO users (id_user, direct1) VALUES (?,?) ',[ user_id, district, user_id ], function(err, rows, fields) {
+      if (err) throw err;
+      console.log('direct 1 is inserted');
+    })
+})
+
+}
+
+
+
+function update_direct2(query){
+
+        var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+        })
+
+var user_id = query.message.chat.id;
+var zapros = query.data;
+  var str = query.data;
+  var res = str.split(" ");
+  console.log('res is:', res[1]);
+
+if (res[0] == 'mkdk_dir2'){ var district = 'mkdk';}
+else if (res[0] == 'grd_dir2'){ var district = 'grd';}
+else if (res[0] == 'saran_dir2'){ var district = 'saran';}
+else if (res[0] == 'aktas_dir2'){ var district = 'aktas';}
+else if (res[0] == 'dubovka_dir2'){ var district = 'dubovka';}
+else if (res[0] == 'fedorovka_dir2'){ var district = 'fedorovka';}
+else if (res[0] == 'bazar_dir2'){ var district = 'bazar';}
+else if (res[0] == 'yug_dir2'){ var district = 'yug';}
+else if (res[0] == 'srt_dir2'){ var district = 'srt';}
+else if (res[0] == 'doskey_dir2'){ var district = 'doskey';}
+else if (res[0] == 'trud_dir2'){ var district = 'trud';}
+else if (res[0] == 'uwtobe_dir2'){ var district = 'uwtobe';}
+else if (res[0] == 'prihon_dir2'){ var district = 'prihon';}
+else if (res[0] == 'zhbi_dir2'){ var district = 'zhbi';}
+else if (res[0] == 'novouzenka_dir2'){ var district = 'novouzenka';}
+else if (res[0] == 'malsaran_dir2'){ var district = 'malsaran';}
+
+pool.getConnection(function(err, connection) {
+
+    connection.query(' UPDATE users SET direct2 = ?  WHERE id_user = ? ',[ district, user_id ], function(err, rows, fields) {
+    if (err) throw err;
+    console.log('direct 2 is updated');
+
+              connection.query(' SELECT DISTINCT direct1 FROM users WHERE id_user = ?  ',[ user_id ], function(err, rows, fields) {
+              if (err) throw err;
+              var dir = JSON.parse(JSON.stringify(rows));
+              var direction = dir[0].direct1 + '00' + district;
+              console.log('direction ', direction);
+
+                            connection.query(' UPDATE users SET direction = ? WHERE id_user = ? ',[ direction, user_id ], function(err, rows, fields) {
+                            if (err) throw err;
+                            console.log('direction is updated');
+                            })
+              })
+    })
+})
+// Теперь выдаем опцию с выбором режима
+vodorpas_query(query);
+}
+
+
+
+function vibor_direct1(msg) {
+
+const chatId = msg.chat.id
+
+const text = 'Небольшой опрос перед регистрацией.\nУкажите в каком направлений вы часто ездите. Например из дома на работу\nУкажите сначала ОТКУДА'
+
+
+// Теперь отправляем карту
+bot.sendPhoto(chatId, fs.readFileSync(__dirname + '/picture-map.png'), {
+caption: 'На карте указаны границы районов'
+})
+
+bot.sendMessage(chatId, text, {
+                     reply_markup: {
+                      inline_keyboard: [
+                         [{
+                           text: 'Из майкудука',
+                           callback_data: 'mkdk_dir1'
+                         }],
+                         [{
+                           text: 'Из центра',
+                           callback_data: 'grd_dir1'
+                         }],
+                         [{
+                           text: 'Из юго-востока',
+                           callback_data: 'yug_dir1'
+                         }],
+                         [{
+                           text: 'Из района базара',
+                           callback_data: 'bazar_dir1'
+                         }],
+                         [{
+                           text: 'Из пришахтинска',
+                           callback_data: 'prihon_dir1'
+                         }],
+                         [{
+                           text: 'Из новоузенки',
+                           callback_data: 'novouzenka_dir1'
+                         }],
+                         [{
+                           text: 'Из района ЖБИ',
+                           callback_data: 'zhbi_dir1'
+                         }],
+                         [{
+                           text: 'Из сарани',
+                           callback_data: 'saran_dir1'
+                         }],
+                         [{
+                           text: 'Из малой сарани',
+                           callback_data: 'malsaran_dir1'
+                         }],
+                         [{
+                           text: 'Из актаса',
+                           callback_data: 'aktas_dir1'
+                         }],
+                         [{
+                           text: 'Из дубовки',
+                           callback_data: 'dubovka_dir1'
+                         }],
+                         [{
+                           text: 'Из федоровки',
+                           callback_data: 'fedorovka_dir1'
+                         }],
+                         [{
+                           text: 'Из сортировки',
+                           callback_data: 'srt_dir1'
+                         }],
+                         [{
+                           text: 'Из доскея',
+                           callback_data: 'doskey_dir1'
+                         }],
+                         [{
+                           text: 'Из поселка Трудовое',
+                           callback_data: 'trud_dir1'
+                         }],
+                         [{
+                           text: 'Из уштобе',
+                           callback_data: 'uwtobe_dir1'
+                         }]
+                       ]
+                     }
+                   })
+
+}
+
+
+
+function vibor_direct2(query) {
+
+const chatId = query.message.chat.id
+
+const text = 'Небольшой опрос перед регистрацией.\nУкажите в каком направлений вы часто ездите. Например из дома на работу\nТеперь укажите КУДА'
+
+
+// Теперь отправляем карту
+bot.sendPhoto(chatId, fs.readFileSync(__dirname + '/picture-map.png'), {
+caption: 'На карте указаны границы районов'
+})
+
+bot.sendMessage(chatId, text, {
+                     reply_markup: {
+                      inline_keyboard: [
+                         [{
+                           text: 'В майкудук',
+                           callback_data: 'mkdk_dir2'
+                         }],
+                         [{
+                           text: 'В центр',
+                           callback_data: 'grd_dir2'
+                         }],
+                         [{
+                           text: 'НА юго-восток',
+                           callback_data: 'yug_dir2'
+                         }],
+                         [{
+                           text: 'В район базара',
+                           callback_data: 'bazar_dir2'
+                         }],
+                         [{
+                           text: 'В пришахтинск',
+                           callback_data: 'prihon_dir2'
+                         }],
+                         [{
+                           text: 'В новоузенку',
+                           callback_data: 'novouzenka_dir2'
+                         }],
+                         [{
+                           text: 'В район ЖБИ',
+                           callback_data: 'zhbi_dir2'
+                         }],
+                         [{
+                           text: 'В сарань',
+                           callback_data: 'saran_dir2'
+                         }],
+                         [{
+                           text: 'В малую сарань',
+                           callback_data: 'malsaran_dir2'
+                         }],
+                         [{
+                           text: 'В актас',
+                           callback_data: 'aktas_dir2'
+                         }],
+                         [{
+                           text: 'В дубовку',
+                           callback_data: 'dubovka_dir2'
+                         }],
+                         [{
+                           text: 'В федоровку',
+                           callback_data: 'fedorovka_dir2'
+                         }],
+                         [{
+                           text: 'В сортировку',
+                           callback_data: 'srt_dir2'
+                         }],
+                         [{
+                           text: 'В доскей',
+                           callback_data: 'doskey_dir2'
+                         }],
+                         [{
+                           text: 'В поселок Трудовое',
+                           callback_data: 'trud_dir2'
+                         }],
+                         [{
+                           text: 'В уштобе',
+                           callback_data: 'uwtobe_dir2'
+                         }]
+                       ]
+                     }
+                   })
+
+}
