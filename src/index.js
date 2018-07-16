@@ -125,7 +125,7 @@ bot.onText(/\/nomer (.+)/, (msg, [source, match]) => {
 
         var mysql  = require('mysql');
         var pool  = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
@@ -151,7 +151,7 @@ bot.onText(/\/phone (.+)/, (msg, [source, match]) => {
 
         var mysql  = require('mysql');
         var pool  = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
@@ -274,6 +274,12 @@ var route1 = JSON.parse(JSON.stringify(rows));
       if (err) throw err;
       var route = JSON.parse(JSON.stringify(rows));
       console.log('Activated saved route ',route);
+
+                 const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
+                 bot.sendMessage(user_id, text)
+
+                                driv_offer_topass (query);
+                                driv_offer_todriv (query);
       })
 })
 })
@@ -367,9 +373,11 @@ pool.getConnection(function(err, connection) {
 var phone = msg.text
 var zapros = msg.chat.id
 
-    connection.query('UPDATE users SET tel = ? WHERE id_user = ? AND pol IS NOT NULL AND tel IS NULL',[phone, zapros], function(err, rows, fields) {
+    connection.query('UPDATE users SET tel = ?, date =  NOW()  WHERE id_user = ? AND pol IS NOT NULL AND tel IS NULL',[phone, zapros], function(err, rows, fields) {
       if (err) throw err;
       pass(msg);
+      bot.sendMessage( zapros, '‼️ Обязательно подпишитесь на канал t.me/popooti\nПройдите по ссылке t.me/popooti и нажмите "Подписаться"')
+      bot.sendMessage( 336243307, '👤 Еще один пассажир зарегался')
 })
 })
 
@@ -438,10 +446,13 @@ function tel(msg){
 var phone = msg.text
 var zapros = msg.chat.id
 
-    connection.query('UPDATE users SET tel = ? WHERE id_user = ? AND nomer IS NOT NULL AND tel IS NULL',[phone, zapros], function(err, rows, fields) {
+    connection.query('UPDATE users SET tel = ?, date =  NOW() WHERE id_user = ? AND nomer IS NOT NULL AND tel IS NULL',[phone, zapros], function(err, rows, fields) {
       if (err) throw err;
       driv(msg);
       create_route_driver(msg);
+      bot.sendMessage( zapros, '‼️ Обязательно подпишитесь на канал t.me/popooti\nПройдите по ссылке t.me/popooti и нажмите "Подписаться"')
+      bot.sendMessage( 336243307, '🚘 Еще один водитель зарегался')
+
 })
       connection.end()
 }
@@ -549,7 +560,7 @@ function pass(msg){
 
     const chatId = msg.chat.id
 
-    if (msg.text === 'Стать водителем'){bot.sendMessage(chatId, 'asd', {
+    if (msg.text === 'Стать водителем'){bot.sendMessage(chatId, '.', {
                                                  reply_markup: {remove_keyboard:true}})}
 
     else {
@@ -1451,7 +1462,6 @@ bot.sendMessage(chatId, text, {
 function end_route(query){
 
     var mysql      = require('mysql');
-//    var connection = mysql.createConnection({
     var pool  = mysql.createPool({
     host     : 'localhost',
     user     : 'mybd_user',
@@ -1545,7 +1555,6 @@ console.log('Добавили колво мест и установили вре
 
 // Вводим маршрут водителя в общую таблицу route в БД sitebot
                       var mysql      = require('mysql');
-                  //    var connection = mysql.createConnection({
                       var pool  = mysql.createPool({
                       host     : 'localhost',
                       user     : 'mybd_user',
@@ -1554,23 +1563,18 @@ console.log('Добавили колво мест и установили вре
                       })
 
                       pool.getConnection(function(err, connection) {
-                         connection.query(' SELECT DISTINCT id_user FROM route WHERE time_end > NOW() ', function (err, rows, fields) {
-                         if (err) throw err;
-                         var str_parse = JSON.parse(JSON.stringify(rows));
-                         console.log(str_parse);
-                         console.log('Сейчас столько активных водителей: ',str_parse.length);
-                         if(str_parse.length == 0){
-                         timer.resume();
-                         console.log('Новый водитель восстановил таймер');
-                              connection.query('INSERT INTO route ( begend, id_user, district, id_route, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, limit_place, uje_seli, all_districts ) VALUES ? ',[ test ], function (err, rows, fields) {
-                              if (err) throw err;})
-                         }
-                         else{
-                              connection.query('INSERT INTO route ( begend, id_user, district, id_route, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, limit_place, uje_seli, all_districts ) VALUES ? ',[ test ], function (err, rows, fields) {
-                              if (err) throw err;})
-                         }
-                         })
-                      })
+
+                          connection.query('INSERT INTO route ( begend, id_user, district, id_route, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, limit_place, uje_seli, all_districts ) VALUES ? ',[ test ], function (err, rows, fields) {
+                          if (err) throw err;
+// Затем находим попутчиков водителю
+
+
+                             const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
+                             bot.sendMessage(user_id, text)
+
+                          driv_offer_topass (query)
+                          driv_offer_todriv (query)
+                          })
 
                  })
              })
@@ -1580,10 +1584,9 @@ console.log('Добавили колво мест и установили вре
      })
   })
 })
-//connection.destroy()
 })
-//connection.release()
-//connection.end()
+})
+
 bot.deleteMessage(query.message.chat.id, query.message.message_id)
 }
 
@@ -2485,16 +2488,6 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                          database : 'sitebot'
                      })
                 pool.getConnection(function(err, connection) {
-                connection.query(' SELECT DISTINCT id_user FROM route_p WHERE time_end > NOW() ', function (err, rows, fields) {
-                if (err) throw err;
-                var active_passenger = JSON.parse(JSON.stringify(rows));
-                console.log(active_passenger);
-                console.log('Сейчас столько активных водителей: ',active_passenger.length);
-
-                if(active_passenger.length == 0){
-                timer.resume();
-                console.log('Новый пассажир восстановил таймер');
-
 
                 connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
                                  [ test ], function(err, rows, fields) {
@@ -2504,23 +2497,13 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 // Теперь отправляем карту
                  bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
 
+
+                const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
+                bot.sendMessage(user_id, text)
+
+                 pass_offer_topass (query);
+                 pass_offer_todriv (query);
                  })
-
-                 }
-                 else
-                 {
-
-                connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
-                                 [ test ], function(err, rows, fields) {
-                                 if (err) throw err;
-                                 console.log('Время вставили в общее!', rows);
-
-// Теперь отправляем карту
-                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
-                 })
-
-                 }
-            })
             })
             })
       })
@@ -2531,7 +2514,7 @@ console.log('Время вставили!');
 })
 //После окончания заказа на поиск авто возвращаемся в главное меню
 const chatId = query.message.chat.id;
-const text_keyboard = 'Сейчас бот ищет авто!\nТеперь каждые 30 секунд бот будет высылать вам варианты попутного авто\nВам нужно будет выбрать, нажав на один из вариантов';
+const text_keyboard = 'Сейчас бот ищет авто!\nТеперь бот будет высылать вам варианты попутного авто\nВам нужно будет выбрать, нажав на один из вариантов';
 bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
 }
 
@@ -2623,6 +2606,8 @@ bot.sendMessage(query.message.chat.id, 'Я буду стоять на остан
 }
 
 
+
+
 function passenger_update_plan_time(query){
 
   var str = query.data;
@@ -2712,45 +2697,51 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 
                 pool.getConnection(function(err, connection) {
 
-                connection.query(' SELECT DISTINCT id_user FROM route_p WHERE time_end > NOW() ', function (err, rows, fields) {
-                if (err) throw err;
-                var active_passenger = JSON.parse(JSON.stringify(rows));
-                console.log(active_passenger);
-                console.log('Сейчас столько активных водителей: ',active_passenger.length);
-
-                if(active_passenger.length == 0){
-                timer.resume();
-                console.log('Новый пассажир восстановил таймер');
+//                connection.query(' SELECT DISTINCT id_user FROM route_p WHERE time_end > NOW() ', function (err, rows, fields) {
+//                if (err) throw err;
+//                var active_passenger = JSON.parse(JSON.stringify(rows));
+//                console.log(active_passenger);
+//                console.log('Сейчас столько активных водителей: ',active_passenger.length);
+//
+//                if(active_passenger.length == 0){
+//                timer.resume();
+//                console.log('Новый пассажир восстановил таймер');
 
 //begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, time_beg, time_end
                  connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
                                  [ test ], function(err, rows, fields) {
                                  if (err) throw err;
                                  console.log('Время вставили в общее!', rows);
-//SELECT CURRENT_TIMESTAMP()   SET GLOBAL  log_timestamps  = 'SYSTEM'    SET @@session.time_zone="+00:00"    SET @@global.time_zone="+00:00"    SELECT @@global.time_zone, @@session.time_zone    SET GLOBAL time_zone = '+8:00'   SET GLOBAL time_zone = "Asia/Almaty"
+
 // Теперь отправляем карту
                  bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'), {
                  caption: 'В этих местах можно останавливаться водителю'
                  })
 
-                 })
+                 const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
+                 bot.sendMessage(user_id, text)
 
-                 }
-                 else
-                 {
-                 connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
-                                 [ test ], function(err, rows, fields) {
-                                 if (err) throw err;
-                                 console.log('Время вставили в общее!', rows);
-// Теперь отправляем карту
-                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'), {
-                 caption: 'В этих местах можно останавливаться водителю'
-                 })
+                 pass_offer_topass (query);
+                 pass_offer_todriv (query);
 
                  })
 
-                 }
-            })
+//                 }
+//                 else
+//                 {
+//                 connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
+//                                 [ test ], function(err, rows, fields) {
+//                                 if (err) throw err;
+//                                 console.log('Время вставили в общее!', rows);
+//// Теперь отправляем карту
+//                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'), {
+//                 caption: 'В этих местах можно останавливаться водителю'
+//                 })
+//
+//                 })
+//
+//                 }
+//            })
             })
             })
             })
@@ -3862,7 +3853,7 @@ console.log('N-pass',n_pass);
 
 pool.getConnection(function(err, connection) {
 
-      connection.query(' UPDATE ?? SET n_pass = ? WHERE id = (SELECT MAX(id) FROM (SELECT * FROM ??) AS route2) ',
+      connection.query(' UPDATE ?? SET n_pass = ? WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM ??) AS route2) ',
       [ route_passenger, n_pass, route_passenger ], function(err, rows, fields) {
       if (err) throw err;
       console.log('Добавили колво пассажиров');
@@ -3960,14 +3951,14 @@ bot.on('callback_query', query => {
   { choose_to_district_driver(query); bot.deleteMessage(query.message.chat.id, query.message.message_id)  }
   else if (query.data =='driver_again') { driv_again(query) }
   else if (query.data =='passenger_again') { pass_again(query) }
-  else if (query.data =='ready now') { passenger_update_time(query) }
-  else if (query.data =='plan time') { passenger_plan_time(query) }
-  else if (res[0] == 'time') { passenger_update_plan_time(query) }
+  else if (query.data =='ready now') { passenger_update_time(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (query.data =='plan time') { passenger_plan_time(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
+  else if (res[0] == 'time') { passenger_update_plan_time(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == '11') { insert_11_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == '12') { insert_12_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == '21') { insert_21_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == '22') { insert_22_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
-  else if (res[0] == 'n_pass') { insert_number_of_passengers(query) }
+  else if (res[0] == 'n_pass') { insert_number_of_passengers(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == 'n_place') { end_route(query); search_regime_query(query)  }
   else if (res[0] == 'map') { console.log('callback mapa: ', query.data) }
   else if (res[0] == 'driver') { console.log('driver: ', query.data); accept_driver(query) }
@@ -4207,11 +4198,11 @@ var timer = new TaskTimer(1000);
 timer.addTask({
     name: 'job1',       // unique name of the task
     tickInterval: 30,    // run every 5 ticks (5 x interval = 5000 ms)
-    totalRuns: 15,      // run 10 times only. (set to 0 for unlimited times)
+    totalRuns: 1,      // run 10 times only. (set to 0 for unlimited times)
     callback: function (task) {
         // code to be executed on each run
-        tabu_driver_poputi2();
-        tabu_pass_on_parinter2();
+//        tabu_driver_poputi2();
+//        tabu_pass_on_parinter2();
         console.log(task.name + ' task has run ' + task.currentRuns + ' times.');
     }
 });
@@ -4498,30 +4489,7 @@ pool.getConnection(function(err, connection) {
 })
 }
 
-bot.onText(/\/map/, msg => {
 
-var keyboard = [];
-var menu = ['Night0club', 'Par0ks', 'Restaur0ants', 'Tele0com', 'Inter0net'];
-
-for (var i = 0; i < menu.length; i++) {
-
-  var mm = menu[i];
-  var ww = mm.split("0");
-  var joined = ww.join("");
-  console.log(ww);
-  console.log(joined);
-  keyboard.push([{'text': menu[i], 'callback_data': ('map '+ i + 1 + joined)}]);
-
-}
-
-bot.sendMessage( msg.chat.id, 'Возможно, эти пассажиры вам попути:',
-{
-  'reply_markup': JSON.stringify({
-    inline_keyboard: keyboard
-  })
-}
-)
-})
 
 bot.onText(/\/like/, msg => {
 like(msg)
@@ -4612,6 +4580,7 @@ var pp1 = '%' + str_vse2[1].district + '%';
 }
 
 
+
 function pass_confirmed(query) {
 
 var user_id = query.message.chat.id;
@@ -4642,17 +4611,17 @@ if (err) throw err;
 var user = JSON.parse(JSON.stringify(rows));
 
 if (pass[0].interception !== null){
-var driveru_text = 'Пассажир подтвердил ваш запрос!\nЗаберите его/ее с ' + pass[0].street + '-' + pass[0].interception + '\nИмя: ' + user[0].fname + '. Номер тел.: ' + user[0].tel;
+var driveru_text = '🔴 Пассажир подтвердил ваш запрос!\nЗаберите его/ее с ' + pass[0].street + '-' + pass[0].interception + '\nИмя: ' + user[0].fname + '. Номер тел.: ' + user[0].tel;
    bot.sendMessage(res[2], driveru_text)
    console.log('sent to passenger ');
 }
 else{
-var driveru_text = 'Пассажир подтвердил ваш запрос!\nЗаберите его/ее с ост. ' + pass[0].busstop + ' по улице ' + pass[0].street + '\nИмя: ' + user[0].fname + '. Номер тел.: ' + user[0].tel;
+var driveru_text = '🔴 Пассажир подтвердил ваш запрос!\nЗаберите его/ее с ост. ' + pass[0].busstop + ' по улице ' + pass[0].street + '\nИмя: ' + user[0].fname + '. Номер тел.: ' + user[0].tel;
    bot.sendMessage(res[2], driveru_text)
    console.log('sent to passenger ');
 }
 
-var passu_text = 'Машина марки ' + user_driver[0].marka + ' с гос.номером ' + user_driver[0].nomer + ' едет за вами. Номер тел. ' + user_driver[0].tel + ' Ждите!';
+var passu_text = '🔴 Машина марки ' + user_driver[0].marka + ' с гос.номером ' + user_driver[0].nomer + ' едет за вами. Номер тел. ' + user_driver[0].tel + ' Ждите!';
    bot.sendMessage(user_id, passu_text)
    console.log('sent to passenger ');
 
@@ -4664,6 +4633,7 @@ var passu_text = 'Машина марки ' + user_driver[0].marka + ' с гос
 })
 })
 }
+
 
 
 function offer_to_pass(query) {
@@ -4688,7 +4658,7 @@ connection.query(' SELECT TIME(time_beg) AS time_beg, street, interception, id_u
 if (err) throw err;
 var driver = JSON.parse(JSON.stringify(rows));
 
-var passu_text = 'Водитель предлагает Вас забрать. Он выезжает с пер. ' + driver[0].street + '-' + driver[0].interception + ' в ' + driver[0].time_beg;
+var passu_text = '🔵 Водитель предлагает Вас забрать. Он выезжает с пер. ' + driver[0].street + '-' + driver[0].interception + ' в ' + driver[0].time_beg;
    bot.sendMessage(res[1], passu_text, {
                     reply_markup: {
                     inline_keyboard: [
@@ -4725,7 +4695,7 @@ var mysql  = require('mysql');
 pool.getConnection(function(err, connection) {
 
 // Сначала находим всех активных пассажиров
-connection.query(' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" and id_user = ?', [user_id], function(err, rows, fields) {
+connection.query(' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" and id_user = ? AND begend = "end"  ', [user_id], function(err, rows, fields) {
 if (err) throw err;
 var active_passenger = JSON.parse(JSON.stringify(rows));
 
@@ -4734,20 +4704,24 @@ var active_passenger = JSON.parse(JSON.stringify(rows));
    var user = JSON.parse(JSON.stringify(rows));
 
    if(active_passenger[0].interception === null){
-   var driveru_text = 'Пассажир по имени '+ user[0].fname + ' ждет вас на остановке ' + active_passenger[0].busstop + ' по улице ' + active_passenger[0].street +' Номер тел. ' + user[0].tel
+   var driveru_text = '🔴' + active_passenger[0].n_pass + ' попутчик/а по имени ' + user[0].fname + ' ждет вас на остановке ' + active_passenger[0].busstop + ' по улице ' + active_passenger[0].street +' Номер тел. ' + user[0].tel
    }
    else {
-   var driveru_text = 'Пассажир по имени '+ user[0].fname + ' ждет вас на перекрестке ' + active_passenger[0].street + ' - ' + active_passenger[0].interception +' Номер тел. ' + user[0].tel
+   var driveru_text = '🔴' + active_passenger[0].n_pass + ' попутчик/а по имени ' + user[0].fname + ' ждет вас на перекрестке ' + active_passenger[0].street + ' - ' + active_passenger[0].interception +' Номер тел. ' + user[0].tel
    }
 
    bot.sendMessage(res[1], driveru_text)
    console.log('sent to driver ');
+
+//      connection.query(' UPDATE route SET status = "busy" WHERE id_user = ? ',[ res[1]], function(err, rows, fields) {
+//      if (err) throw err;
+//      })
    })
 
    connection.query(' SELECT * FROM users WHERE id_user = ? AND vibor = "driver" ', [res[1]], function(err, rows, fields) {
    if (err) throw err;
    var user = JSON.parse(JSON.stringify(rows));
-   var passu_text = 'Машина марки ' + user[0].marka + ' с гос.номером ' + user[0].nomer + ' едет за вами. Номер тел. ' + user[0].tel + ' Ждите!';
+   var passu_text = '🔴 Машина марки ' + user[0].marka + ' с гос.номером ' + user[0].nomer + ' едет за вами. Номер тел. ' + user[0].tel + ' Ждите!';
 
    bot.sendMessage(user_id, passu_text)
    console.log('sent to passenger ');
@@ -4845,7 +4819,8 @@ else {}
 }
 
 
-function tabu_driver_poputi2 (msg){
+
+function pass_offer_topass (query) {
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
@@ -4855,43 +4830,332 @@ var mysql  = require('mysql');
         database : 'sitebot'
     })
 
+var user_id = query.message.chat.id;
+
 pool.getConnection(function(err, connection) {
 
 // Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
-var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg' +
-             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
-                ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
+var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, ' +
+               ' (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, ' +
+               ' (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, ' +
+               ' (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, ' +
+               '  DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ' +
+// Выбирает начальные данные street и interception водителя по "begend"-у выбирая "beg". Откуда этот водитель выезжает.
+               ' ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ' +
+               ' ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
+               ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+// Вытаскивает время из БД в формате TIME (без даты, только время)
+               ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
 // Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
-                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass  FROM route_p  WHERE time_end > NOW() AND status <> "busy" AND id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id DESC LIMIT 1) ) AS route_p1 ' +
 // Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
-                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()   ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point)  AND route.time_end > NOW() AND route.limit_place >= route_p1.P_n_pass ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
 // Возвращает TRUE если запрос, указанный ниже подтверждается
-                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass FROM route_p WHERE time_end > NOW() AND status <> "busy" AND id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id DESC LIMIT 1) ) AS route_p1 JOIN route ' +
 // Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
-                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point)  AND route.time_end > NOW() AND route.limit_place >= route_p1.P_n_pass ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
 
-connection.query( sql , function(err, rows, fields) {
+connection.query( sql , [ user_id, user_id, user_id, user_id ], function(err, rows, fields) {
 if (err) throw err;
 var driver = JSON.parse(JSON.stringify(rows));
-console.log('experiment ', driver);
+console.log('pass_offer_topass ', driver);
 
    if (driver.length !== 0){
-   for(var i = 0; i < driver.length; i++){
-    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
-    console.log('PASU  ', pasu_text);
-    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
-                     reply_markup: {
-                       inline_keyboard: [
-                         [{
-                           text: 'Выбрать попутное авто',
-                           callback_data:  'driver '+driver[i].DDD_id_user
-                         }]
-                       ]
-                     }
+       if(driver.length <= 30){
+       for(var i = 0; i < driver.length; i++){
 
-    })
-   }
+        var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+        console.log('ПОПУТИ 1-30 ', pasu_text);
+        bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                         reply_markup: {
+                           inline_keyboard: [
+                             [{
+                               text: 'Выбрать попутное авто',
+                               callback_data:  'driver '+driver[i].DDD_id_user
+                             }]
+                           ]
+                         }
+
+        })
+       }
+       }
+       else if(driver.length > 30 && driver.length <= 60){
+       setTimeout(driver_poputi1,500, 'funky');
+            function driver_poputi1 (msg){
+                   for(var i = 0; i <= 30; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+                   }
+       setTimeout(driver_poputi2, 10000, 'funky');
+            function driver_poputi2 (msg){
+                   for(var i = 30; i <= driver.length; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       }
+       else if(driver.length > 60 && driver.length <= 90){
+       setTimeout(driver_poputi1,500, 'funky');
+            function driver_poputi1 (msg){
+                   for(var i = 0; i <= 30; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+                   }
+       setTimeout(driver_poputi2, 5000, 'funky');
+            function driver_poputi2 (msg){
+                   for(var i = 30; i <= 60; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(driver_poputi3, 15000, 'funky');
+            function driver_poputi3 (msg){
+                   for(var i = 60; i <= driver.length; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       }
+       else if(driver.length > 90 && driver.length <= 120){
+       setTimeout(driver_poputi1,500, 'funky');
+            function driver_poputi1 (msg){
+                   for(var i = 0; i <= 30; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+                   }
+       setTimeout(driver_poputi2, 5000, 'funky');
+            function driver_poputi2 (msg){
+                   for(var i = 30; i <= 60; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(driver_poputi3, 15000, 'funky');
+            function driver_poputi3 (msg){
+                   for(var i = 60; i <= 90; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(driver_poputi4, 20000, 'funky');
+            function driver_poputi4 (msg){
+                   for(var i = 90; i <= driver.length; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       }
+       else if(driver.length > 120 && driver.length <= 150){
+              setTimeout(driver_poputi1,500, 'funky');
+                   function driver_poputi1 (msg){
+                          for(var i = 0; i <= 30; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                          }
+              setTimeout(driver_poputi2, 5000, 'funky');
+                   function driver_poputi2 (msg){
+                          for(var i = 30; i <= 60; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              setTimeout(driver_poputi3, 15000, 'funky');
+                   function driver_poputi3 (msg){
+                          for(var i = 60; i <= 90; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              setTimeout(driver_poputi4, 20000, 'funky');
+                   function driver_poputi4 (msg){
+                          for(var i = 90; i <= 120; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              setTimeout(driver_poputi5, 25000, 'funky');
+                   function driver_poputi5 (msg){
+                          for(var i = 120; i <= 150; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              }
+       else if(driver.length > 150) {  bot.sendMessage(  336243307, 'Уже больше 150 активных человек' )  }
    }
 })
 })
@@ -4899,7 +5163,8 @@ console.log('experiment ', driver);
 }
 
 
-function tabu_pass_on_parinter2(msg) {
+
+function pass_offer_todriv (query) {
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
@@ -4909,64 +5174,1603 @@ var mysql  = require('mysql');
         database : 'sitebot'
     })
 
+var user_id = query.message.chat.id;
+
 pool.getConnection(function(err, connection) {
 
-// Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
-var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg' +
-             ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
-                ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
+var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, ' +
+               ' (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, ' +
+               ' (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, ' +
+               ' (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, ' +
+               '  DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ' +
+// Выбирает начальные данные street и interception водителя по "begend"-у выбирая "beg". Откуда этот водитель выезжает.
+               ' ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ' +
+               ' ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
+               ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+// Вытаскивает время из БД в формате TIME (без даты, только время)
+               ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
 // Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
-                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE  time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass FROM route_p  WHERE id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id_route DESC LIMIT 1) ) AS route_p1 ' +
 // Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
-                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  AND route.limit_place >= route_p1.P_n_pass  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
 // Возвращает TRUE если запрос, указанный ниже подтверждается
-                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass FROM route_p WHERE time_end > NOW() AND status <> "busy" AND id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id_route DESC LIMIT 1) ) AS route_p1 JOIN route ' +
 // Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
-                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW() AND route.limit_place >= route_p1.P_n_pass  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
 
-connection.query( sql , function(err, rows, fields) {
+connection.query( sql , [ user_id, user_id, user_id, user_id ], function(err, rows, fields) {
 if (err) throw err;
 var driver = JSON.parse(JSON.stringify(rows));
-console.log('parallel interception ', driver);
+console.log('pass_offer_todriv ', driver);
 
    if (driver.length !== 0){
+       if(driver.length <= 30){
+           for(var i = 0; i < driver.length; i++){
 
-   for(var i = 0; i < driver.length; i++){
+           if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+           }
+           else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+           }
+           else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+           }
+           else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+           }
 
-   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
-   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
-   }
-   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
-   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
-   }
-   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
-   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
-   }
-   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
-   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+            console.log('PASU  ', pasu_text);
+            bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                             reply_markup: {
+                               inline_keyboard: [
+                                 [{
+                                  text: 'Отправить предложение пассажиру',
+                                  callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                 }]
+                               ]
+                             }
+
+            })
+           }
+       }
+       else if(driver.length > 30 && driver.length <= 60){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 30; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < driver.length; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 60 && driver.length <= 90){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 25; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < 60; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar3, 10000, 'funky');
+            function tabu_pass_onpar3 (msg){
+                              for(var i = 60; i < driver.length; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 90 && driver.length <= 120){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 25; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < 60; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar3, 10000, 'funky');
+            function tabu_pass_onpar3 (msg){
+                              for(var i = 60; i < 90; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar4, 15000, 'funky');
+            function tabu_pass_onpar4 (msg){
+                              for(var i = 90; i < driver.length; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 120 && driver.length <= 150){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 25; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < 60; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar3, 10000, 'funky');
+            function tabu_pass_onpar3 (msg){
+                              for(var i = 60; i < 90; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar4, 15000, 'funky');
+            function tabu_pass_onpar4 (msg){
+                              for(var i = 90; i < 120; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar5, 20000, 'funky');
+            function tabu_pass_onpar5 (msg){
+                              for(var i = 120; i < 150; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 150) {  bot.sendMessage(  336243307, 'Уже больше 150 активных человек функция Tabu_pass_on_parallel' )  }
    }
 
-    console.log('PASU  ', pasu_text);
-    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
-                     reply_markup: {
-                       inline_keyboard: [
-                         [{
-                          text: 'Отправить предложение пассажиру',
-                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
-                         }]
-                       ]
-                     }
-
-    })
+// Если нет попутных водителей т.е. driver.length == 0, то таймер ставиться на паузу     status <> "busy"  AND
+   else { timer.pause(); console.log('Timer paused cause no drivers match passengers');
+       var sql_else = ' SELECT DISTINCT id_user FROM route WHERE  time_end > NOW() ';
+       connection.query( sql_else , function(err, rows, fields) {
+       if (err) throw err;
+       var driver_act = JSON.parse(JSON.stringify(rows));
+       console.log('Vivel activnih', driver_act)
+          if(driver.length <= 30 && driver.length != 0){
+                 console.log('Vivel activnih', driver_act[0].id_user)
+                         for(var i = 0; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+          }
+          else if(driver.length > 30 && driver.length <= 60){
+          setTimeout(send_to_active_drivers1, 500, 'funky');
+               function send_to_active_drivers1 (msg){
+                         for(var i = 0; i < 30; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers2, 10000, 'funky');
+               function send_to_active_drivers2 (msg){
+                         for(var i = 30; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          }
+          else if(driver.length > 60 && driver.length <= 90){
+          setTimeout(send_to_active_drivers1, 500, 'funky');
+               function send_to_active_drivers1 (msg){
+                         for(var i = 0; i < 30; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers2, 5000, 'funky');
+               function send_to_active_drivers2 (msg){
+                         for(var i = 30; i < 60; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers3, 10000, 'funky');
+               function send_to_active_drivers3 (msg){
+                         for(var i = 60; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          }
+          else if(driver.length > 90 && driver.length <= 120){
+          setTimeout(send_to_active_drivers1, 500, 'funky');
+               function send_to_active_drivers1 (msg){
+                         for(var i = 0; i < 30; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers2, 5000, 'funky');
+               function send_to_active_drivers2 (msg){
+                         for(var i = 30; i < 60; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers3, 10000, 'funky');
+               function send_to_active_drivers3 (msg){
+                                         for(var i = 60; i < driver_act.length; i++){
+                                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                         }
+                               }
+          setTimeout(send_to_active_drivers4, 15000, 'funky');
+               function send_to_active_drivers4 (msg){
+                         for(var i = 90; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          }
+          else if(driver.length > 90 && driver.length <= 120){
+                    setTimeout(send_to_active_drivers1, 500, 'funky');
+                         function send_to_active_drivers1 (msg){
+                                   for(var i = 0; i < 30; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    setTimeout(send_to_active_drivers2, 5000, 'funky');
+                         function send_to_active_drivers2 (msg){
+                                   for(var i = 30; i < 60; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    setTimeout(send_to_active_drivers3, 10000, 'funky');
+                         function send_to_active_drivers3 (msg){
+                                                   for(var i = 60; i < driver_act.length; i++){
+                                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                                   }
+                                         }
+                    setTimeout(send_to_active_drivers4, 15000, 'funky');
+                         function send_to_active_drivers4 (msg){
+                                   for(var i = 90; i < 120; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    setTimeout(send_to_active_drivers5, 20000, 'funky');
+                         function send_to_active_drivers5 (msg){
+                                   for(var i = 120; i < driver_act.length; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    }
+       })
    }
-   }
-
-// Если нет попутных водителей т.е. driver.length == 0, то таймер ставиться на паузу
-   else { timer.pause(); console.log('Timer paused cause no drivers match passengers');}
 })
 })
 
 }
+
+
+
+function driv_offer_topass (query) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+// Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
+var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, ' +
+               ' (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, ' +
+               ' (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, ' +
+               ' (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, ' +
+               '  DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ' +
+// Выбирает начальные данные street и interception водителя по "begend"-у выбирая "beg". Откуда этот водитель выезжает.
+               ' ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ' +
+               ' ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
+               ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+// Вытаскивает время из БД в формате TIME (без даты, только время)
+               ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
+// Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass  FROM route_p  WHERE  time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point )  AND route.time_end > NOW() AND route.limit_place >= route_p1.P_n_pass AND route.id_user = ? AND  route.id_route = (SELECT id_route FROM route WHERE id_user = ? ORDER BY id_route DESC LIMIT 1)  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+// Возвращает TRUE если запрос, указанный ниже подтверждается
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point )  AND route.time_end > NOW() AND route.limit_place >= route_p1.P_n_pass AND route.id_user = ? AND  route.id_route = (SELECT id_route FROM route WHERE id_user = ? ORDER BY id_route DESC LIMIT 1) ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
+
+connection.query( sql , [ user_id, user_id, user_id, user_id ], function(err, rows, fields) {
+if (err) throw err;
+var driver = JSON.parse(JSON.stringify(rows));
+console.log('driv offer topass ', driver);
+
+   if (driver.length !== 0){
+
+       if(driver.length <= 30){
+
+
+              for(var i = 0; i < driver.length; i++){
+
+               var text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+               console.log('ПОПУТИ 1-30 ', text);
+               bot.sendMessage(driver[i].PP_id_user, text ,{
+                                reply_markup: {
+                                  inline_keyboard: [
+                                    [{
+                                      text: 'Выбрать попутное авто',
+                                      callback_data:  'driver '+driver[i].DDD_id_user
+                                    }]
+                                  ]
+                                }
+
+               })
+              }
+
+
+       }
+       else if(driver.length > 30 && driver.length <= 60){
+       setTimeout(driver_poputi1,500, 'funky');
+            function driver_poputi1 (msg){
+                   for(var i = 0; i <= 30; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+                   }
+       setTimeout(driver_poputi2, 10000, 'funky');
+            function driver_poputi2 (msg){
+                   for(var i = 30; i <= driver.length; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       }
+       else if(driver.length > 60 && driver.length <= 90){
+       setTimeout(driver_poputi1,500, 'funky');
+            function driver_poputi1 (msg){
+                   for(var i = 0; i <= 30; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+                   }
+       setTimeout(driver_poputi2, 5000, 'funky');
+            function driver_poputi2 (msg){
+                   for(var i = 30; i <= 60; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(driver_poputi3, 15000, 'funky');
+            function driver_poputi3 (msg){
+                   for(var i = 60; i <= driver.length; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       }
+       else if(driver.length > 90 && driver.length <= 120){
+       setTimeout(driver_poputi1,500, 'funky');
+            function driver_poputi1 (msg){
+                   for(var i = 0; i <= 30; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+                   }
+       setTimeout(driver_poputi2, 5000, 'funky');
+            function driver_poputi2 (msg){
+                   for(var i = 30; i <= 60; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(driver_poputi3, 15000, 'funky');
+            function driver_poputi3 (msg){
+                   for(var i = 60; i <= 90; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(driver_poputi4, 20000, 'funky');
+            function driver_poputi4 (msg){
+                   for(var i = 90; i <= driver.length; i++){
+                    var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                           text: 'Выбрать попутное авто',
+                                           callback_data:  'driver '+driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       }
+       else if(driver.length > 120 && driver.length <= 150){
+              setTimeout(driver_poputi1,500, 'funky');
+                   function driver_poputi1 (msg){
+                          for(var i = 0; i <= 30; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                          }
+              setTimeout(driver_poputi2, 5000, 'funky');
+                   function driver_poputi2 (msg){
+                          for(var i = 30; i <= 60; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              setTimeout(driver_poputi3, 15000, 'funky');
+                   function driver_poputi3 (msg){
+                          for(var i = 60; i <= 90; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              setTimeout(driver_poputi4, 20000, 'funky');
+                   function driver_poputi4 (msg){
+                          for(var i = 90; i <= 120; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              setTimeout(driver_poputi5, 25000, 'funky');
+                   function driver_poputi5 (msg){
+                          for(var i = 120; i <= 150; i++){
+                           var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
+
+                           console.log('PASU  ', pasu_text);
+                           bot.sendMessage(driver[i].PP_id_user, pasu_text ,{
+                                            reply_markup: {
+                                              inline_keyboard: [
+                                                [{
+                                                  text: 'Выбрать попутное авто',
+                                                  callback_data:  'driver '+driver[i].DDD_id_user
+                                                }]
+                                              ]
+                                            }
+
+                           })
+                          }
+                   }
+              }
+       else if(driver.length > 150) {  bot.sendMessage(  336243307, 'Уже больше 150 активных человек' )  }
+   }
+})
+})
+
+}
+
+
+
+function driv_offer_todriv (query) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+// Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
+var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, ' +
+               ' (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, ' +
+               ' (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, ' +
+               ' (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, ' +
+               '  DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ' +
+// Выбирает начальные данные street и interception водителя по "begend"-у выбирая "beg". Откуда этот водитель выезжает.
+               ' ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ' +
+               ' ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
+               ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+// Вытаскивает время из БД в формате TIME (без даты, только время)
+               ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
+// Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
+                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass  FROM route_p  WHERE  time_end > NOW() AND status <> "busy" ) AS route_p1 ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
+                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW() AND route.limit_place >= route_p1.P_n_pass  AND route.id_user = ? AND  route.id_route = (SELECT id_route FROM route WHERE id_user = ? ORDER BY id_route DESC LIMIT 1)  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+// Возвращает TRUE если запрос, указанный ниже подтверждается
+                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2, n_pass  AS P_n_pass FROM route_p  WHERE time_end > NOW() AND status <> "busy" ) AS route_p1 JOIN route ' +
+// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
+                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point  OR  route_p1.near1 = route.point_parinter_min5  OR  route_p1.near2 = route.point_parinter_plu5 OR  route_p1.near2 = route.point_parinter_min5  OR  route_p1.near1 = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_plu5  OR  route_p1.P_id_point = route.point_parinter_min5)  AND route.time_end > NOW() AND route.limit_place >= route_p1.P_n_pass  AND route.id_user = ? AND  route.id_route = (SELECT id_route FROM route WHERE id_user = ? ORDER BY id_route DESC LIMIT 1) ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
+
+connection.query( sql , [ user_id, user_id, user_id, user_id ], function(err, rows, fields) {
+if (err) throw err;
+var driver = JSON.parse(JSON.stringify(rows));
+console.log('driv_offer_todriv ', driver);
+
+   if (driver.length !== 0){
+       if(driver.length <= 30){
+           for(var i = 0; i < driver.length; i++){
+
+           if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+           }
+           else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+           }
+           else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+           }
+           else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+           var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+           }
+
+            console.log('PASU  ', pasu_text);
+            bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                             reply_markup: {
+                               inline_keyboard: [
+                                 [{
+                                  text: 'Отправить предложение пассажиру',
+                                  callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                 }]
+                               ]
+                             }
+
+            })
+           }
+       }
+       else if(driver.length > 30 && driver.length <= 60){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 30; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < driver.length; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 60 && driver.length <= 90){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 25; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < 60; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar3, 10000, 'funky');
+            function tabu_pass_onpar3 (msg){
+                              for(var i = 60; i < driver.length; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 90 && driver.length <= 120){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 25; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < 60; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar3, 10000, 'funky');
+            function tabu_pass_onpar3 (msg){
+                              for(var i = 60; i < 90; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar4, 15000, 'funky');
+            function tabu_pass_onpar4 (msg){
+                              for(var i = 90; i < driver.length; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 120 && driver.length <= 150){
+       setTimeout(tabu_pass_onpar1, 500, 'funky');
+            function tabu_pass_onpar1 (msg){
+                  for(var i = 0; i < 25; i++){
+
+                   if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                   }
+                   else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                   var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                   }
+
+                    console.log('PASU  ', pasu_text);
+                    bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                     reply_markup: {
+                                       inline_keyboard: [
+                                         [{
+                                          text: 'Отправить предложение пассажиру',
+                                          callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                         }]
+                                       ]
+                                     }
+
+                    })
+                   }
+            }
+       setTimeout(tabu_pass_onpar2, 5000, 'funky');
+            function tabu_pass_onpar2 (msg){
+                              for(var i = 30; i < 60; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar3, 10000, 'funky');
+            function tabu_pass_onpar3 (msg){
+                              for(var i = 60; i < 90; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar4, 15000, 'funky');
+            function tabu_pass_onpar4 (msg){
+                              for(var i = 90; i < 120; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       setTimeout(tabu_pass_onpar5, 20000, 'funky');
+            function tabu_pass_onpar5 (msg){
+                              for(var i = 120; i < 150; i++){
+
+                               if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception === null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end === null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
+                               }
+                               else if (driver[i].PP_interception !== null && driver[i].PP_interception_end !== null) {
+                               var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + driver[i].PP_interception + ' - ' + driver[i].PP_street + ' и едет до пер. ' + driver[i].PP_interception_end + ' - ' + driver[i].PP_street_end ;
+                               }
+
+                                console.log('PASU  ', pasu_text);
+                                bot.sendMessage(driver[i].DDD_id_user, pasu_text ,{
+                                                 reply_markup: {
+                                                   inline_keyboard: [
+                                                     [{
+                                                      text: 'Отправить предложение пассажиру',
+                                                      callback_data:  'confirm_pass '+ driver[i].PP_id_user + ' ' + driver[i].DDD_id_user
+                                                     }]
+                                                   ]
+                                                 }
+
+                                })
+                               }
+                        }
+       }
+       else if(driver.length > 150) {  bot.sendMessage(  336243307, 'Уже больше 150 активных человек функция Tabu_pass_on_parallel' )  }
+   }
+
+// Если нет попутных водителей т.е. driver.length == 0, то таймер ставиться на паузу     status <> "busy"  AND
+   else { timer.pause(); console.log('Timer paused cause no drivers match passengers');
+       var sql_else = ' SELECT DISTINCT id_user FROM route WHERE  time_end > NOW() ';
+       connection.query( sql_else , function(err, rows, fields) {
+       if (err) throw err;
+       var driver_act = JSON.parse(JSON.stringify(rows));
+       console.log('Vivel activnih', driver_act)
+          if(driver.length <= 30 && driver.length != 0){
+                 console.log('Vivel activnih', driver_act[0].id_user)
+                         for(var i = 0; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+          }
+          else if(driver.length > 30 && driver.length <= 60){
+          setTimeout(send_to_active_drivers1, 500, 'funky');
+               function send_to_active_drivers1 (msg){
+                         for(var i = 0; i < 30; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers2, 10000, 'funky');
+               function send_to_active_drivers2 (msg){
+                         for(var i = 30; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          }
+          else if(driver.length > 60 && driver.length <= 90){
+          setTimeout(send_to_active_drivers1, 500, 'funky');
+               function send_to_active_drivers1 (msg){
+                         for(var i = 0; i < 30; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers2, 5000, 'funky');
+               function send_to_active_drivers2 (msg){
+                         for(var i = 30; i < 60; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers3, 10000, 'funky');
+               function send_to_active_drivers3 (msg){
+                         for(var i = 60; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          }
+          else if(driver.length > 90 && driver.length <= 120){
+          setTimeout(send_to_active_drivers1, 500, 'funky');
+               function send_to_active_drivers1 (msg){
+                         for(var i = 0; i < 30; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers2, 5000, 'funky');
+               function send_to_active_drivers2 (msg){
+                         for(var i = 30; i < 60; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          setTimeout(send_to_active_drivers3, 10000, 'funky');
+               function send_to_active_drivers3 (msg){
+                                         for(var i = 60; i < driver_act.length; i++){
+                                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                         }
+                               }
+          setTimeout(send_to_active_drivers4, 15000, 'funky');
+               function send_to_active_drivers4 (msg){
+                         for(var i = 90; i < driver_act.length; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
+               }
+          }
+          else if(driver.length > 90 && driver.length <= 120){
+                    setTimeout(send_to_active_drivers1, 500, 'funky');
+                         function send_to_active_drivers1 (msg){
+                                   for(var i = 0; i < 30; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    setTimeout(send_to_active_drivers2, 5000, 'funky');
+                         function send_to_active_drivers2 (msg){
+                                   for(var i = 30; i < 60; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    setTimeout(send_to_active_drivers3, 10000, 'funky');
+                         function send_to_active_drivers3 (msg){
+                                                   for(var i = 60; i < driver_act.length; i++){
+                                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                                   }
+                                         }
+                    setTimeout(send_to_active_drivers4, 15000, 'funky');
+                         function send_to_active_drivers4 (msg){
+                                   for(var i = 90; i < 120; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    setTimeout(send_to_active_drivers5, 20000, 'funky');
+                         function send_to_active_drivers5 (msg){
+                                   for(var i = 120; i < driver_act.length; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
+                         }
+                    }
+       })
+   }
+})
+})
+
+}
+
+
+
 
 // В setInterval после функции нельзя ставить ()
 bot.onText(/\/insert_paral_inter_ord/, msg => {setInterval(database.insert_paral_inter_ord, 3000)})
@@ -5021,3 +6825,102 @@ pool.getConnection(function(err, connection) {
              })
              })
 }
+
+
+
+bot.onText(/\/skolko_reg/, msg => {skolko_reg(msg)})
+
+
+function skolko_reg(msg) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var zapros = msg.chat.text;
+var user_id = msg.chat.id;
+
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT COUNT(vibor) AS driver FROM users WHERE vibor = "driver" ',  function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('колво водителей', driver);
+       var driv_text = '🚕 Сейчас ' + driver[0].driver + ' водителей';
+
+               bot.sendMessage(user_id, driv_text)
+       })
+
+       connection.query(' SELECT COUNT(vibor) AS passenger FROM users WHERE vibor = "passenger" ',  function(err, rows, fields) {
+       if (err) throw err;
+       var pass = JSON.parse(JSON.stringify(rows));
+       console.log('колво пассажиров', pass);
+       var pass_text = '🙎‍♂️ Сейчас ' + pass[0].passenger + ' пассажиров';
+               bot.sendMessage(user_id, pass_text)
+       })
+})
+}
+
+
+
+bot.onText(/\/skolko_active_porayonam/, msg => {skolko_active_porayonam(msg)})
+
+
+function skolko_active_porayonam(msg) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var zapros = msg.chat.text;
+var user_id = msg.chat.id;
+
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT all_districts, COUNT(*) AS count FROM route WHERE time_end > NOW() GROUP BY all_districts ',  function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('колво водителей', driver);
+
+            var test = [];
+            for(var i = 0; i < rows.length; i++){
+            test.push(driver[i].all_districts + '  ' + driver[i].count);
+            }
+
+            var all = test.join('\n');
+           console.log('ALL', all);
+           var all1 = 'Водители по районам\n' + all;
+           bot.sendMessage(user_id, all1)
+       })
+
+       connection.query(' SELECT all_districts, COUNT(*) AS count FROM route_p WHERE time_end > NOW() GROUP BY all_districts ',  function(err, rows, fields) {
+       if (err) throw err;
+       var pass = JSON.parse(JSON.stringify(rows));
+       console.log('колво водителей', pass);
+
+            var test = [];
+            for(var i = 0; i < rows.length; i++){
+            test.push(pass[i].all_districts + '  ' + pass[i].count);
+            }
+
+            var all = test.join('\n');
+
+           console.log('ALL', all);
+           var all1 = 'Пассажиры по районам\n' + all;
+
+           bot.sendMessage(user_id, all1)
+       })
+})
+}
+
+
