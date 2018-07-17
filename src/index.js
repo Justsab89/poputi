@@ -4051,19 +4051,16 @@ bot.on('callback_query', query => {
 bot.on('message', msg => {
 
          var mysql  = require('mysql');
-         var connection = mysql.createConnection({
+         var pool = mysql.createPool({
          host     : 'localhost',
          user     : 'mybd_user',
          password : 'admin123',
          database : 'sitebot'
       })
 
-
-
-      connection.connect()
-
       var user_id = msg.chat.id
 
+pool.getConnection(function(err, connection) {
 
       connection.query('SELECT * FROM users WHERE id_user = ? ',[user_id], function(err, rows, fields) {
         if (err) throw err;
@@ -4153,7 +4150,7 @@ console.log(gender[1]);
 
 })
 
-      connection.end()
+})
 
 })
 
