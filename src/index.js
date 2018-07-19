@@ -906,6 +906,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
     connection.query(' UPDATE ?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM ??) AS route2 )',
     [ n_route, district, n_route ], function(err, rows, fields) {
     if (err) throw err;
+    choose_street(query);
     })
 
 })
@@ -930,7 +931,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 //                     }
 //                   })
 
-choose_street(query);
+
 }
 
 
