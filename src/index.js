@@ -910,25 +910,25 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 
 })
 
-bot.sendMessage(user_id, 'a', {
-                     reply_markup: {
-                       keyboard: [
-                         [{
-                           text: 'Назад на прежний перекресток'
-                         }],
-
-                         [{
-                           text: 'Завершить маршрут'
-                         }],
-
-                         [{
-                           text: '⬅️ Назад на главное меню'
-                         }]
-
-                       ],
-                       resize_keyboard: true
-                     }
-                   })
+//bot.sendMessage(user_id, 'a', {
+//                     reply_markup: {
+//                       keyboard: [
+//                         [{
+//                           text: 'Назад на прежний перекресток'
+//                         }],
+//
+//                         [{
+//                           text: 'Завершить маршрут'
+//                         }],
+//
+//                         [{
+//                           text: '⬅️ Назад на главное меню'
+//                         }]
+//
+//                       ],
+//                       resize_keyboard: true
+//                     }
+//                   })
 
 choose_street(query);
 }
