@@ -883,7 +883,8 @@ var route_driver = 'route'+user_id;
 var n_route = 'n_route'+user_id;
   var str = query.data;
   var res = str.split(" ");
-console.log(res[0]);
+console.log('choose_to_district_driver res[0]', res[0]);
+console.log('choose_to_district_driver user_id', user_id);
 
 if (res[0] == 'mkdk2'){ var district = 'mkdk';}
 else if (res[0] == 'grd2'){ var district = 'grd';}
@@ -902,12 +903,12 @@ else if (res[0] == 'zhbi2'){ var district = 'zhbi';}
 else if (res[0] == 'novouzenka2'){ var district = 'novouzenka';}
 else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 
-connection.query(' UPDATE ?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM ??) AS route2 )',
-[ n_route, district, n_route ], function(err, rows, fields) {
-if (err) throw err;})
+    connection.query(' UPDATE ?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM ??) AS route2 )',
+    [ n_route, district, n_route ], function(err, rows, fields) {
+    if (err) throw err;
+    })
 
 })
-choose_street(query);
 
 bot.sendMessage(user_id, 'a', {
                      reply_markup: {
@@ -929,6 +930,7 @@ bot.sendMessage(user_id, 'a', {
                      }
                    })
 
+choose_street(query);
 }
 
 
@@ -1272,7 +1274,46 @@ pool.getConnection(function(err, connection) {
 
                                // Ввод последнего перекрестка в БД
                                connection.query('INSERT INTO ?? (n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5) VALUES ?', [ route_driver, test0 ], function(err, rows, fields) {
-                               if (err) throw err;})
+                               if (err) throw err;
+
+                               // Выдача списка улиц пользователю
+
+                                   connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
+                                   if (err) throw err;
+                                   var user = JSON.stringify(rows);
+                                   var goods = [];
+
+                                   for(var i = 0; i < rows.length; i++){
+                                   goods[goods.length] = rows[i].interception;
+                                   }
+
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+
+                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+                                       if (err) throw err;
+                                       var route = JSON.parse(JSON.stringify(rows));
+                                       if (route.length !== 0) {
+                                       console.log('route-sql ',route);
+                                           console.log('route-sql street ',route[0].street);
+                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+                                         for(var i = 1; i < route.length/2; i++){
+                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                         }
+                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
+                                       console.log('route-sql-текст ',text);
+                                       }
+
+                                       text += '\nпо ' + res[1] + ' до ...'
+                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                       inline_keyboard: goods.map((x, xi) => ([{
+                                                                                           text: x,
+                                                                                           callback_data: 'kbd#' + x,
+                                                                                       }])),
+
+                                                                          }),})
+                                       })
+                                   })
+                               })
                         })
                   })
              }
@@ -1297,7 +1338,47 @@ pool.getConnection(function(err, connection) {
 
                                // Ввод последнего перекрестка в БД
                                connection.query('INSERT INTO ?? (n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5) VALUES ?', [ route_driver, test0 ], function(err, rows, fields) {
-                               if (err) throw err;})
+                               if (err) throw err;
+
+                               // Выдача списка улиц пользователю
+
+                                   connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
+                                   if (err) throw err;
+                                   var user = JSON.stringify(rows);
+                                   var goods = [];
+
+                                   for(var i = 0; i < rows.length; i++){
+                                   goods[goods.length] = rows[i].interception;
+                                   }
+
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+
+                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+                                       if (err) throw err;
+                                       var route = JSON.parse(JSON.stringify(rows));
+                                       if (route.length !== 0) {
+                                       console.log('route-sql ',route);
+                                           console.log('route-sql street ',route[0].street);
+                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+                                         for(var i = 1; i < route.length/2; i++){
+                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                         }
+                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
+                                       console.log('route-sql-текст ',text);
+                                       }
+
+                                       text += '\nпо ' + res[1] + ' до ...'
+                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                       inline_keyboard: goods.map((x, xi) => ([{
+                                                                                           text: x,
+                                                                                           callback_data: 'kbd#' + x,
+                                                                                       }])),
+
+                                                                          }),})
+                                       })
+                                   })
+
+                               })
                         })
              }
             })
@@ -1348,7 +1429,46 @@ console.log('di_route',di_route);
 
                                // Ввод последнего перекрестка в БД
                                connection.query(' INSERT INTO ?? (n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5) VALUES ? ', [ route_driver, test0 ], function(err, rows, fields) {
-                               if (err) throw err;})
+                               if (err) throw err;
+
+                               // Выдача списка улиц пользователю
+
+                                   connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
+                                   if (err) throw err;
+                                   var user = JSON.stringify(rows);
+                                   var goods = [];
+
+                                   for(var i = 0; i < rows.length; i++){
+                                   goods[goods.length] = rows[i].interception;
+                                   }
+
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+
+                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+                                       if (err) throw err;
+                                       var route = JSON.parse(JSON.stringify(rows));
+                                       if (route.length !== 0) {
+                                       console.log('route-sql ',route);
+                                           console.log('route-sql street ',route[0].street);
+                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+                                         for(var i = 1; i < route.length/2; i++){
+                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                         }
+                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
+                                       console.log('route-sql-текст ',text);
+                                       }
+
+                                       text += '\nпо ' + res[1] + ' до ...'
+                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                       inline_keyboard: goods.map((x, xi) => ([{
+                                                                                           text: x,
+                                                                                           callback_data: 'kbd#' + x,
+                                                                                       }])),
+
+                                                                          }),})
+                                       })
+                                   })
+                               })
                         })
              })
           }
@@ -1373,7 +1493,46 @@ console.log('di_route',di_route);
 
                                // Ввод последнего перекрестка в БД
                                connection.query(' INSERT INTO ?? (n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5) VALUES ? ', [ route_driver, test0 ], function(err, rows, fields) {
-                               if (err) throw err;})
+                               if (err) throw err;
+
+                               // Выдача списка улиц пользователю
+
+                                   connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
+                                   if (err) throw err;
+                                   var user = JSON.stringify(rows);
+                                   var goods = [];
+
+                                   for(var i = 0; i < rows.length; i++){
+                                   goods[goods.length] = rows[i].interception;
+                                   }
+
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+
+                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+                                       if (err) throw err;
+                                       var route = JSON.parse(JSON.stringify(rows));
+                                       if (route.length !== 0) {
+                                       console.log('route-sql ',route);
+                                           console.log('route-sql street ',route[0].street);
+                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+                                         for(var i = 1; i < route.length/2; i++){
+                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                         }
+                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
+                                       console.log('route-sql-текст ',text);
+                                       }
+
+                                       text += '\nпо ' + res[1] + ' до ...'
+                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                       inline_keyboard: goods.map((x, xi) => ([{
+                                                                                           text: x,
+                                                                                           callback_data: 'kbd#' + x,
+                                                                                       }])),
+
+                                                                          }),})
+                                       })
+                                   })
+                               })
                         })
           }
          })
@@ -1383,43 +1542,43 @@ console.log('di_route',di_route);
    })
 
 
-// Выдача списка улиц пользователю
-
-    connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
-    if (err) throw err;
-    var user = JSON.stringify(rows);
-    var goods = [];
-
-    for(var i = 0; i < rows.length; i++){
-    goods[goods.length] = rows[i].interception;
-    }
-
-        var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
-
-        connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
-        if (err) throw err;
-        var route = JSON.parse(JSON.stringify(rows));
-        if (route.length !== 0) {
-        console.log('route-sql ',route);
-            console.log('route-sql street ',route[0].street);
-        var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-          for(var i = 1; i < route.length/2; i++){
-          text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
-          }
-        text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
-        console.log('route-sql-текст ',text);
-        }
-
-        text += '\nпо ' + res[1] + ' до ...'
-        bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
-                                                        inline_keyboard: goods.map((x, xi) => ([{
-                                                            text: x,
-                                                            callback_data: 'kbd#' + x,
-                                                        }])),
-
-                                           }),})
-        })
-    })
+//// Выдача списка улиц пользователю
+//
+//    connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
+//    if (err) throw err;
+//    var user = JSON.stringify(rows);
+//    var goods = [];
+//
+//    for(var i = 0; i < rows.length; i++){
+//    goods[goods.length] = rows[i].interception;
+//    }
+//
+//        var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+//
+//        connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
+//        if (err) throw err;
+//        var route = JSON.parse(JSON.stringify(rows));
+//        if (route.length !== 0) {
+//        console.log('route-sql ',route);
+//            console.log('route-sql street ',route[0].street);
+//        var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+//          for(var i = 1; i < route.length/2; i++){
+//          text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+//          }
+//        text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
+//        console.log('route-sql-текст ',text);
+//        }
+//
+//        text += '\nпо ' + res[1] + ' до ...'
+//        bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+//                                                        inline_keyboard: goods.map((x, xi) => ([{
+//                                                            text: x,
+//                                                            callback_data: 'kbd#' + x,
+//                                                        }])),
+//
+//                                           }),})
+//        })
+//    })
 })
 }
 
