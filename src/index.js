@@ -99,7 +99,7 @@ bot.onText(/\/marka (.+)/, (msg, [source, match]) => {
 
         var mysql  = require('mysql');
         var pool  = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
@@ -1048,6 +1048,49 @@ function create_user(query){
 
 
 
+function choose_street_again(msg) {
+
+        var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'route_driver'
+        })
+
+var user_id = msg.chat.id;
+var route_driver = 'route'+user_id;
+var n_route_driver = 'n_route'+user_id;
+
+pool.getConnection(function(err, connection) {
+
+
+    connection.query('SELECT * FROM kowe WHERE district1 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) OR district2 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) ',
+    [ n_route_driver, n_route_driver, n_route_driver, n_route_driver ], function(err, rows, fields) {
+    if (err) throw err;
+    var interception = JSON.parse(JSON.stringify(rows));
+    console.log('int chosen', interception);
+
+    var keyboard = [];
+    for(var i = 0; i < rows.length; i++){
+    keyboard.push([{'text': ( interception[i].streetname ) , 'callback_data': ('beg_inter1#' + interception[i].district1 + '#' + interception[i].id_str)}]);
+    }
+
+     bot.sendMessage( msg.chat.id, 'Выберите пересекающую улицу стартового пересечения',
+     {
+     'reply_markup': JSON.stringify({
+     inline_keyboard: keyboard
+                                    })
+     }
+     )
+
+    })
+
+})
+}
+
+
+
 function choose_street(query) {
 
         var mysql  = require('mysql');
@@ -1071,7 +1114,7 @@ pool.getConnection(function(err, connection) {
 
 
     connection.query('SELECT * FROM kowe WHERE district1 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) OR district2 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) ',
-     [ n_route_driver, n_route_driver, n_route_driver, n_route_driver ], function(err, rows, fields) {
+    [ n_route_driver, n_route_driver, n_route_driver, n_route_driver ], function(err, rows, fields) {
     if (err) throw err;
     var interception = JSON.parse(JSON.stringify(rows));
     console.log('int chosen', interception);
@@ -1095,6 +1138,7 @@ pool.getConnection(function(err, connection) {
 }
 
 
+
 function choose_beg_inter(query) {
 
  var mysql  = require('mysql');
@@ -1105,8 +1149,8 @@ function choose_beg_inter(query) {
         database : 'route_driver'
     })
 
-var zapros = query.data
-var user_id = query.message.chat.id
+var zapros = query.data;
+var user_id = query.message.chat.id;
 var route_driver = 'route'+user_id;
 var n_route_driver = 'n_route'+user_id;
   var str = query.data;
@@ -1115,7 +1159,7 @@ var n_route_driver = 'n_route'+user_id;
 
 pool.getConnection(function(err, connection) {
 
-connection.query('UPDATE ?? SET id_interception = ?, interception = (SELECT streetname FROM kowe WHERE id_str = ?) WHERE begend = "beg" ORDER BY id DESC LIMIT 1 ',
+connection.query('UPDATE ?? SET id_interception = ?, interception = (SELECT streetname FROM kowe WHERE id_str = ?) WHERE begend = "beg"  ',
  [ route_driver, res[2], res[2] ], function(err, rows, fields) {
 })
     connection.query('SELECT * FROM points WHERE id_street = ? AND point_type = ? ', [ res[2], 1 ], function(err, rows, fields) {
@@ -1140,6 +1184,7 @@ connection.query('UPDATE ?? SET id_interception = ?, interception = (SELECT stre
 }
 
 
+
 function choose_beg_inter2(query) {
 
  var mysql  = require('mysql');
@@ -1151,8 +1196,8 @@ function choose_beg_inter2(query) {
     })
 
 
-var zapros = query.data
-var user_id = query.message.chat.id
+var zapros = query.data;
+var user_id = query.message.chat.id;
 var route_driver = 'route'+user_id;
 var n_route_driver = 'n_route'+user_id;
   var str = query.data;
@@ -1167,7 +1212,7 @@ if (err) throw err;
 var beg_inter = JSON.parse(JSON.stringify(rows));
 console.log('Данные стрита для первого интерсепшна ', beg_inter);
 
-connection.query(' UPDATE ?? SET street = ?, district = ?, point_type = ?, id_street = ?, id_point = ?, ordinal = ?, nearby_interception = ?, point_parinter_min5 = ?, point_parinter_plu5 = ? WHERE street IS NULL AND interception IS NOT NULL ORDER BY id DESC LIMIT 1',
+connection.query(' UPDATE ?? SET street = ?, district = ?, point_type = ?, id_street = ?, id_point = ?, ordinal = ?, nearby_interception = ?, point_parinter_min5 = ?, point_parinter_plu5 = ? WHERE begend = "beg" ',
 [ route_driver, beg_inter[0].street, beg_inter[0].district, beg_inter[0].point_type, beg_inter[0].id_street, beg_inter[0].id_point, beg_inter[0].ordinal, beg_inter[0].nearby_interception, beg_inter[0].point_parinter_min5, beg_inter[0].point_parinter_plu5 ], function(err, rows, fields) {
 })
 
@@ -1190,7 +1235,30 @@ connection.query(' UPDATE ?? SET street = ?, district = ?, point_type = ?, id_st
     })
 })
 })
+
+bot.sendMessage(user_id, 'a', {
+                     reply_markup: {
+                       keyboard: [
+                         [{
+                           text: 'Назад на прежний перекресток'
+                         }],
+
+                         [{
+                           text: 'Завершить маршрут'
+                         }],
+
+                         [{
+                           text: '⬅️ Назад на главное меню'
+                         }]
+
+                       ],
+                       resize_keyboard: true
+                     }
+                   })
+
 }
+
+
 
 
 function kbd (query){
@@ -1288,31 +1356,56 @@ pool.getConnection(function(err, connection) {
                                    goods[goods.length] = rows[i].interception;
                                    }
 
-                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1)  ';
 
-                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
-                                       if (err) throw err;
-                                       var route = JSON.parse(JSON.stringify(rows));
-                                       if (route.length !== 0) {
-                                       console.log('route-sql ',route);
-                                           console.log('route-sql street ',route[0].street);
-                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-                                         for(var i = 1; i < route.length/2; i++){
-                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                       connection.query( route_sql , [ route_driver, route_driver  ], function(err, rows, fields) {
+                                         if (err) throw err;
+                                         var route = JSON.parse(JSON.stringify(rows));
+                                         if (route.length !== 0 && route.length !== 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
+
+                                             if (route.length%2 == 0){
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < route.length/2; i++){
+                                             text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+                                             }
+                                             else{
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < (route.length-1)/2; i++){
+                                             text += '\nпо ' + route[2*i+1].street + ' до ' + route[2*i+2].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+
+                                             }
                                          }
-                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
-                                       console.log('route-sql-текст ',text);
-                                       }
+                                         else if (route.length == 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
 
-                                       text += '\nпо ' + res[1] + ' до ...'
-                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
-                                                                                       inline_keyboard: goods.map((x, xi) => ([{
-                                                                                           text: x,
-                                                                                           callback_data: 'kbd#' + x,
-                                                                                       }])),
+                                             var text = 'Вы едите по ' + route[0].street + ' до ...';
+                                         }
 
-                                                                          }),})
-                                       })
+                                             bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                             inline_keyboard: goods.map((x, xi) => ([{
+                                                                                                 text: x,
+                                                                                                 callback_data: 'kbd#' + x,
+                                                                                             }])),
+
+                                                                                }),})
+
+                                         })
+
                                    })
                                })
                         })
@@ -1352,31 +1445,55 @@ pool.getConnection(function(err, connection) {
                                    goods[goods.length] = rows[i].interception;
                                    }
 
-                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1)  ';
 
-                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
-                                       if (err) throw err;
-                                       var route = JSON.parse(JSON.stringify(rows));
-                                       if (route.length !== 0) {
-                                       console.log('route-sql ',route);
-                                           console.log('route-sql street ',route[0].street);
-                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-                                         for(var i = 1; i < route.length/2; i++){
-                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                       connection.query( route_sql , [ route_driver, route_driver  ], function(err, rows, fields) {
+                                         if (err) throw err;
+                                         var route = JSON.parse(JSON.stringify(rows));
+                                         if (route.length !== 0 && route.length !== 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
+
+                                             if (route.length%2 == 0){
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < route.length/2; i++){
+                                             text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+                                             }
+                                             else{
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < (route.length-1)/2; i++){
+                                             text += '\nпо ' + route[2*i+1].street + ' до ' + route[2*i+2].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+
+                                             }
                                          }
-                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
-                                       console.log('route-sql-текст ',text);
-                                       }
+                                         else if (route.length == 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
 
-                                       text += '\nпо ' + res[1] + ' до ...'
-                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
-                                                                                       inline_keyboard: goods.map((x, xi) => ([{
-                                                                                           text: x,
-                                                                                           callback_data: 'kbd#' + x,
-                                                                                       }])),
+                                             var text = 'Вы едите по ' + route[0].street + ' до ...';
+                                         }
 
-                                                                          }),})
-                                       })
+                                             bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                             inline_keyboard: goods.map((x, xi) => ([{
+                                                                                                 text: x,
+                                                                                                 callback_data: 'kbd#' + x,
+                                                                                             }])),
+
+                                                                                }),})
+
+                                         })
                                    })
 
                                })
@@ -1443,31 +1560,57 @@ console.log('di_route',di_route);
                                    goods[goods.length] = rows[i].interception;
                                    }
 
-                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
 
-                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
-                                       if (err) throw err;
-                                       var route = JSON.parse(JSON.stringify(rows));
-                                       if (route.length !== 0) {
-                                       console.log('route-sql ',route);
-                                           console.log('route-sql street ',route[0].street);
-                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-                                         for(var i = 1; i < route.length/2; i++){
-                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1)  ';
+
+                                       connection.query( route_sql , [ route_driver, route_driver  ], function(err, rows, fields) {
+                                         if (err) throw err;
+                                         var route = JSON.parse(JSON.stringify(rows));
+                                         if (route.length !== 0 && route.length !== 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
+
+                                             if (route.length%2 == 0){
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < route.length/2; i++){
+                                             text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+                                             }
+                                             else{
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < (route.length-1)/2; i++){
+                                             text += '\nпо ' + route[2*i+1].street + ' до ' + route[2*i+2].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+
+                                             }
                                          }
-                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
-                                       console.log('route-sql-текст ',text);
-                                       }
+                                         else if (route.length == 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
 
-                                       text += '\nпо ' + res[1] + ' до ...'
-                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
-                                                                                       inline_keyboard: goods.map((x, xi) => ([{
-                                                                                           text: x,
-                                                                                           callback_data: 'kbd#' + x,
-                                                                                       }])),
+                                             var text = 'Вы едите по ' + route[0].street + ' до ...';
+                                         }
 
-                                                                          }),})
-                                       })
+                                             bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                             inline_keyboard: goods.map((x, xi) => ([{
+                                                                                                 text: x,
+                                                                                                 callback_data: 'kbd#' + x,
+                                                                                             }])),
+
+                                                                                }),})
+
+                                         })
+
                                    })
                                })
                         })
@@ -1507,31 +1650,56 @@ console.log('di_route',di_route);
                                    goods[goods.length] = rows[i].interception;
                                    }
 
-                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
 
-                                       connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
-                                       if (err) throw err;
-                                       var route = JSON.parse(JSON.stringify(rows));
-                                       if (route.length !== 0) {
-                                       console.log('route-sql ',route);
-                                           console.log('route-sql street ',route[0].street);
-                                       var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-                                         for(var i = 1; i < route.length/2; i++){
-                                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                       var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1)  ';
+
+                                       connection.query( route_sql , [ route_driver, route_driver  ], function(err, rows, fields) {
+                                         if (err) throw err;
+                                         var route = JSON.parse(JSON.stringify(rows));
+                                         if (route.length !== 0 && route.length !== 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
+
+                                             if (route.length%2 == 0){
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < route.length/2; i++){
+                                             text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+                                             }
+                                             else{
+
+                                             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                                             for(var i = 1; i < (route.length-1)/2; i++){
+                                             text += '\nпо ' + route[2*i+1].street + ' до ' + route[2*i+2].street
+                                             }
+
+                                             text += '\nпо ' + route[route.length-1].street + ' до ...'
+                                             console.log('route-sql-текст ',text);
+
+                                             }
                                          }
-                                       text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
-                                       console.log('route-sql-текст ',text);
-                                       }
+                                         else if (route.length == 1) {
+                                             console.log('route-sql ',route);
+                                             console.log('route-sql street ',route[0].street);
 
-                                       text += '\nпо ' + res[1] + ' до ...'
-                                       bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
-                                                                                       inline_keyboard: goods.map((x, xi) => ([{
-                                                                                           text: x,
-                                                                                           callback_data: 'kbd#' + x,
-                                                                                       }])),
+                                             var text = 'Вы едите по ' + route[0].street + ' до ...';
+                                         }
 
-                                                                          }),})
-                                       })
+                                             bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
+                                                                                             inline_keyboard: goods.map((x, xi) => ([{
+                                                                                                 text: x,
+                                                                                                 callback_data: 'kbd#' + x,
+                                                                                             }])),
+
+                                                                                }),})
+
+                                         })
                                    })
                                })
                         })
@@ -1541,45 +1709,6 @@ console.log('di_route',di_route);
          })
 
    })
-
-
-//// Выдача списка улиц пользователю
-//
-//    connection.query('SELECT * FROM points WHERE street = ? AND point_type = ? ',[res[1], point_type], function(err, rows, fields) {
-//    if (err) throw err;
-//    var user = JSON.stringify(rows);
-//    var goods = [];
-//
-//    for(var i = 0; i < rows.length; i++){
-//    goods[goods.length] = rows[i].interception;
-//    }
-//
-//        var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
-//
-//        connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
-//        if (err) throw err;
-//        var route = JSON.parse(JSON.stringify(rows));
-//        if (route.length !== 0) {
-//        console.log('route-sql ',route);
-//            console.log('route-sql street ',route[0].street);
-//        var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-//          for(var i = 1; i < route.length/2; i++){
-//          text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
-//          }
-//        text += '\nпо ' + route[route.length-1].street + ' до ' + res[1]
-//        console.log('route-sql-текст ',text);
-//        }
-//
-//        text += '\nпо ' + res[1] + ' до ...'
-//        bot.sendMessage(query.message.chat.id, text, { reply_markup: JSON.stringify({
-//                                                        inline_keyboard: goods.map((x, xi) => ([{
-//                                                            text: x,
-//                                                            callback_data: 'kbd#' + x,
-//                                                        }])),
-//
-//                                           }),})
-//        })
-//    })
 })
 }
 
@@ -1809,7 +1938,7 @@ else{}
 
 function back_to_prev(msg){
 
-    var mysql      = require('mysql');
+    var mysql = require('mysql');
     var pool  = mysql.createPool({
     host     : 'localhost',
     user     : 'mybd_user',
@@ -1819,7 +1948,7 @@ function back_to_prev(msg){
 
 var user_id = msg.chat.id;
 var route_driver = 'route'+user_id;
-var point_type = 1
+var point_type = 1;
 
 pool.getConnection(function(err, connection) {
 
@@ -1828,11 +1957,15 @@ if (err) throw err;
 var str_parse = JSON.parse(JSON.stringify(rows));
 var last_n_zapros = str_parse[0].n_zapros;
 
+    if(last_n_zapros == 1 ) {
+    choose_street_again(msg)
+    }
+    else {
        connection.query('DELETE FROM ?? WHERE n_zapros = ? ',[ route_driver, last_n_zapros ], function (err, rows, fields) {
        if (err) throw err;
        console.log('DELETED LAST ZAPROS');
 
-                 connection.query('SELECT * FROM points WHERE street = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) AND point_type = ? ',[route_driver, point_type], function(err, rows, fields) {
+                 connection.query(' SELECT * FROM points WHERE street = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) AND point_type = ? ',[route_driver, point_type], function(err, rows, fields) {
                  if (err) throw err;
                  var str_parse2 = JSON.parse(JSON.stringify(rows));
                  var by_street = str_parse2[0].street;
@@ -1844,33 +1977,61 @@ var last_n_zapros = str_parse[0].n_zapros;
                  goods[goods.length] = rows[i].interception;
                  }
 
-                     var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+                     var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1)  ';
 
                      connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
                      if (err) throw err;
                      var route = JSON.parse(JSON.stringify(rows));
-                     if (route.length !== 0) {
-                     console.log('route-sql ',route);
+                     if (route.length !== 0 && route.length !== 1) {
+                         console.log('route-sql ',route);
                          console.log('route-sql street ',route[0].street);
-                     var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-                       for(var i = 1; i < route.length/2; i++){
-                       text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
-                       }
-                     text += '\nпо ' + route[route.length-1].street + ' до ...'
-                     console.log('route-sql-текст ',text);
+
+                         if (route.length%2 == 0){
+
+                         var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                         for(var i = 1; i < route.length/2; i++){
+                         text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+                         }
+
+                         text += '\nпо ' + route[route.length-1].street + ' до ...'
+                         console.log('route-sql-текст ',text);
+                         }
+                         else{
+
+                         var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+                         for(var i = 1; i < (route.length-1)/2; i++){
+                         text += '\nпо ' + route[2*i+1].street + ' до ' + route[2*i+2].street
+                         }
+
+                         text += '\nпо ' + route[route.length-1].street + ' до ...'
+                         console.log('route-sql-текст ',text);
+
+                         }
+                     }
+                     else if (route.length == 1) {
+                         console.log('route-sql ',route);
+                         console.log('route-sql street ',route[0].street);
+
+                         var text = 'Вы едите по ' + route[0].street + ' до ...';
                      }
 
-                     bot.sendMessage(msg.chat.id, text, { reply_markup: JSON.stringify({
-                                                                     inline_keyboard: goods.map((x, xi) => ([{
-                                                                         text: x,
-                                                                         callback_data: 'kbd#' + x,
-                                                                     }])),
+                         bot.sendMessage(msg.chat.id, text, { reply_markup: JSON.stringify({
+                                                                         inline_keyboard: goods.map((x, xi) => ([{
+                                                                             text: x,
+                                                                             callback_data: 'kbd#' + x,
+                                                                         }])),
 
-                                                        }),})
+                                                            }),})
+
                      })
+
                  })
        })
+    }
 })
+
 })
 }
 
@@ -7101,4 +7262,126 @@ pool.getConnection(function(err, connection) {
 })
 }
 
+
+
+bot.onText(/\/active_inter (.+)/, (msg, [source, match]) => {
+
+const { id } = msg.chat
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT COUNT(id_point) AS count, id_point, street, interception, time_end FROM route WHERE all_districts = ? AND time_end > CURDATE()-1 GROUP BY id_point ORDER BY count DESC LIMIT 10 ',
+       [match],
+       function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('колво водителей', driver);
+
+            var test = [];
+            for(var i = 0; i < rows.length; i++){
+            test.push(driver[i].count + '  ' + driver[i].street + '  ' + driver[i].interception);
+            }
+
+            var all = test.join('\n');
+           console.log('ALL', all);
+           var all1 = '❌ 10 самых проезжаемых перекрестков\n' + all;
+           bot.sendMessage(user_id, all1)
+       })
+})
+})
+
+
+bot.onText(/\/sms (.+)/, (msg, [source, match]) => {
+
+const { id } = msg.chat
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT * FROM users WHERE vibor = "driver"  ',
+
+       function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('колво водителей', driver);
+
+//            var test = [];
+//            for(var i = 6; i < match.length; i++){
+//            test.push( match[i]);
+//            }
+////
+//            var all = test.join('');
+////           console.log('ALL', all);
+////           var all1 = '❌ 10 самых проезжаемых перекрестков\n' + all;
+
+            for(var i = 0; i < rows.length; i++){
+            bot.sendMessage(driver[i].id_user, match)
+            }
+
+       })
+})
+})
+
+
+bot.onText(/\/sms_pass (.+)/, (msg, [source, match]) => {
+
+const { id } = msg.chat
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT * FROM users WHERE vibor = "passenger"  ',
+
+       function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('колво пассажиров', driver);
+
+//            var test = [];
+//            for(var i = 6; i < match.length; i++){
+//            test.push( match[i]);
+//            }
+////
+//            var all = test.join('');
+////           console.log('ALL', all);
+////           var all1 = '❌ 10 самых проезжаемых перекрестков\n' + all;
+
+            for(var i = 0; i < rows.length; i++){
+            bot.sendMessage(driver[i].id_user, match)
+            }
+
+       })
+})
+})
 
