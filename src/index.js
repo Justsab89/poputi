@@ -8,9 +8,20 @@ const fs = require('fs')
 const TaskTimer = require('tasktimer')
 const database = require('./database')
 
+//const bot = new TelegramBot(config.TOKEN, {
+//  polling: true
+//})
+
 const bot = new TelegramBot(config.TOKEN, {
-  polling: true
+  webHook:
+  {
+    port: 80,
+    autoOpen: false
+  }
 })
+
+bot.setWebHook(`https:/\/tbot.kz/bot/${config.TOKEN}`)
+
 
 helper.logStart()
 
