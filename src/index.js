@@ -4426,7 +4426,7 @@ var user_id = msg.chat.id;
 
 pool.getConnection(function(err, connection) {
 
-      connection.query('SELECT * FROM users WHERE id_user = ? ',[user_id], function(err, rows, fields) {
+      connection.query('SELECT DISTINCT * FROM users WHERE id_user = ? ',[user_id], function(err, rows, fields) {
       if (err) throw err;
       var user = JSON.parse(JSON.stringify(rows));
 
@@ -4444,13 +4444,30 @@ pool.getConnection(function(err, connection) {
                   }
               }
 
-              else if (user[0].marka === null && user[0].vibor === 'driver' && user.length == 1 ) { marka(msg)}
-              else if (user[1].marka === null && user[1].vibor === 'driver' && user.length == 2) { marka(msg)}
-              else if (user[0].marka !== null && user[0].nomer === null && user.length == 1 && user[0].vibor === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234') }
-              else if (user[1].marka !== null && user[1].nomer === null && user.length == 2 && user[1].vibor === 'driver') { nomer(msg); create_route_driver(msg); driv(msg)}
+// Начало нововведения
+              else if (user.length == 1 || user.length == 2) {
+                   if (user.length == 1) {
+                       if (user[0].marka === null && user[0].vibor === 'driver') { marka(msg) }
+                       else if (user[0].marka !== null && user[0].nomer === null && user[0].vibor === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234') }
+                   }
+                   else if (user.length == 2) {
+                       if (user[1].marka === null && user[1].vibor === 'driver') { marka(msg) }
+                       else if (user[1].marka !== null && user[1].nomer === null && user[1].vibor === 'driver') { nomer(msg); create_route_driver(msg); driv(msg) }
+                       else if (user[1].pol !== null && user[1].pol !== undefined && user[1].tel === null) { telpas(msg) }
+                   }
+              }
               else if (user[0].nomer !== null && user[0].tel === null) { tel(msg) }
               else if (user[0].pol !== null && user[0].tel === null) { telpas(msg) }
-              else if (user[1].pol !== null && user[1].pol !== undefined && user[1].tel === null) { telpas(msg) }
+// Конец нововведения
+
+//              else if (user[0].marka === null && user[0].vibor === 'driver' && user.length == 1 ) { marka(msg)}
+//              else if (user[1].marka === null && user[1].vibor === 'driver' && user.length == 2) { marka(msg)}
+//              else if (user[0].marka !== null && user[0].nomer === null && user.length == 1 && user[0].vibor === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234') }
+//              else if (user[1].marka !== null && user[1].nomer === null && user.length == 2 && user[1].vibor === 'driver') { nomer(msg); create_route_driver(msg); driv(msg)}
+//              else if (user[0].nomer !== null && user[0].tel === null) { tel(msg) }
+//              else if (user[0].pol !== null && user[0].tel === null) { telpas(msg) }
+//              else if (user[1].pol !== null && user[1].pol !== undefined && user[1].tel === null) { telpas(msg) }
+
 // Кнопки водителя
               else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
               else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
