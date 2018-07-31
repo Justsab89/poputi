@@ -30,7 +30,7 @@ function debug(obj = {}) {
 }
 
 bot.on('message', msg => {
-  console.log('Working', msg.from.first_name)
+  console.log('Working', msg.from.first_name, msg.chat.id)
 })
 
 bot.onText(/\/hey/, msg => {
@@ -50,7 +50,7 @@ function edit_profile_driver(msg) {
         database : 'sitebot'
     })
 
-var user_id = msg.chat.id
+var user_id = msg.chat.id;
 
 pool.getConnection(function(err, connection) {
 
@@ -142,7 +142,7 @@ bot.onText(/\/nomer (.+)/, (msg, [source, match]) => {
         database : 'sitebot'
     })
 
-var user_id = msg.chat.id
+var user_id = msg.chat.id;
 
 pool.getConnection(function(err, connection) {
 
@@ -4429,6 +4429,7 @@ pool.getConnection(function(err, connection) {
       connection.query('SELECT DISTINCT * FROM users WHERE id_user = ? ',[user_id], function(err, rows, fields) {
       if (err) throw err;
       var user = JSON.parse(JSON.stringify(rows));
+      console.log('users chosen', user);
 
               if (msg.text === '/start') {
                   if (user[0] !== undefined) {
@@ -4446,18 +4447,78 @@ pool.getConnection(function(err, connection) {
 
 // Начало нововведения
               else if (user.length == 1 || user.length == 2) {
+              console.log('user length is 1 or 2: ', user.length);
+              console.log('message text ', msg.text);
                    if (user.length == 1) {
                        if (user[0].marka === null && user[0].vibor === 'driver') { marka(msg) }
                        else if (user[0].marka !== null && user[0].nomer === null && user[0].vibor === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234') }
+                       else if (user[0].nomer !== null && user[0].tel === null) { tel(msg) }
+                       else if (user[0].pol !== null && user[0].tel === null) { telpas(msg) }
+        // Кнопки водителя
+                      else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
+                      else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
+                      else if (msg.text === '▶️ Создать новый маршрут'){choose_direction(msg)}
+                      else if (msg.text === '⏯ Активизировать сохраненные маршруты'){choose_route_toactivate(msg)}
+                      else if (msg.text === 'Завершить маршрут'){ indicate_number_of_places(msg);   bot.deleteMessage(msg.chat.id, msg.message_id); }
+                      else if (msg.text === '⬅️ Назад на главное меню'){driv(msg)}
+                      else if (msg.text === '⚫️ На главное меню'){driv(msg)}
+                      else if (msg.text === 'Назад на прежний перекресток'){back_to_prev(msg)}
+                      else if (msg.text === '💽 Мои данные') {edit_profile_driver(msg)}
+        // Кнопки пассажира
+                      else if (msg.text === 'Стать водителем'){pass_to_driv(msg)}
+                      else if (msg.text === '🚗 Найти авто'){choose_direction_passenger(msg)}
+                      else if (msg.text === 'Назад в меню'){ const chatId = msg.chat.id; const text_keyboard = 'Вы на главном меню'; bot.sendMessage(chatId, text_keyboard, main_menu_passenger) }
+                      else if (msg.text === 'Исправить начало пути'){edit_beg_busstop(msg)}
+                      else if (msg.text === 'Исправить начало пути.'){ edit_beg_interception(msg) }
+                      else if (msg.text === 'Исправить конец пути'){ edit_end_busstop(msg) }
+                      else if (msg.text === 'Исправить конец пути.'){ edit_end_interception(msg) }
+                      else if (msg.text === 'Указать пересечение улиц'){show_interception_topass(msg); bot.deleteMessage(msg.chat.id, msg.message_id)}
+                      else if (msg.text === 'Указать пересечение улиц.'){show_interception_topass_21(msg); after_choosing_beg_interception_msg(msg)}
+                      else if (msg.text === 'Указать автобусную остановку'){choose_end_busstop(msg)}
+                      else if (msg.text === '🔴 Показать попутчиков по району'){send_rayon_poputi(msg)}
+                      else if (msg.text === '🔵 Отменить поиск попутчиков'){are_u_sure(msg)}
+                      else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
+                      else if (msg.text === 'Нет') {search_regime(msg)}
+                      else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
+                      else if (msg.text === 'йцукен'){create_route_driver(msg)}
+                      else {console.log('Hmm')}
                    }
                    else if (user.length == 2) {
-                       if (user[1].marka === null && user[1].vibor === 'driver') { marka(msg) }
-                       else if (user[1].marka !== null && user[1].nomer === null && user[1].vibor === 'driver') { nomer(msg); create_route_driver(msg); driv(msg) }
-                       else if (user[1].pol !== null && user[1].pol !== undefined && user[1].tel === null) { telpas(msg) }
+                      if (user[1].marka === null && user[1].vibor === 'driver') { marka(msg) }
+                      else if (user[1].marka !== null && user[1].nomer === null && user[1].vibor === 'driver') { nomer(msg); create_route_driver(msg); driv(msg) }
+                      else if (user[1].pol !== null && user[1].pol !== undefined && user[1].tel === null) { telpas(msg) }
+// Кнопки водителя
+                      else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
+                      else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
+                      else if (msg.text === '▶️ Создать новый маршрут'){choose_direction(msg)}
+                      else if (msg.text === '⏯ Активизировать сохраненные маршруты'){choose_route_toactivate(msg)}
+                      else if (msg.text === 'Завершить маршрут'){ indicate_number_of_places(msg);   bot.deleteMessage(msg.chat.id, msg.message_id); }
+                      else if (msg.text === '⬅️ Назад на главное меню'){driv(msg)}
+                      else if (msg.text === '⚫️ На главное меню'){driv(msg)}
+                      else if (msg.text === 'Назад на прежний перекресток'){back_to_prev(msg)}
+                      else if (msg.text === '💽 Мои данные') {edit_profile_driver(msg)}
+// Кнопки пассажира
+                      else if (msg.text === 'Стать водителем'){pass_to_driv(msg)}
+                      else if (msg.text === '🚗 Найти авто'){choose_direction_passenger(msg)}
+                      else if (msg.text === 'Назад в меню'){ const chatId = msg.chat.id; const text_keyboard = 'Вы на главном меню'; bot.sendMessage(chatId, text_keyboard, main_menu_passenger) }
+                      else if (msg.text === 'Исправить начало пути'){edit_beg_busstop(msg)}
+                      else if (msg.text === 'Исправить начало пути.'){ edit_beg_interception(msg) }
+                      else if (msg.text === 'Исправить конец пути'){ edit_end_busstop(msg) }
+                      else if (msg.text === 'Исправить конец пути.'){ edit_end_interception(msg) }
+                      else if (msg.text === 'Указать пересечение улиц'){show_interception_topass(msg); bot.deleteMessage(msg.chat.id, msg.message_id)}
+                      else if (msg.text === 'Указать пересечение улиц.'){show_interception_topass_21(msg); after_choosing_beg_interception_msg(msg)}
+                      else if (msg.text === 'Указать автобусную остановку'){choose_end_busstop(msg)}
+                      else if (msg.text === '🔴 Показать попутчиков по району'){send_rayon_poputi(msg)}
+                      else if (msg.text === '🔵 Отменить поиск попутчиков'){are_u_sure(msg)}
+                      else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
+                      else if (msg.text === 'Нет') {search_regime(msg)}
+                      else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
+                      else if (msg.text === 'йцукен'){create_route_driver(msg)}
+                      else {console.log('Hmm')}
                    }
-              }
-              else if (user[0].nomer !== null && user[0].tel === null) { tel(msg) }
-              else if (user[0].pol !== null && user[0].tel === null) { telpas(msg) }
+               }
+//              }
+
 // Конец нововведения
 
 //              else if (user[0].marka === null && user[0].vibor === 'driver' && user.length == 1 ) { marka(msg)}
@@ -4468,38 +4529,36 @@ pool.getConnection(function(err, connection) {
 //              else if (user[0].pol !== null && user[0].tel === null) { telpas(msg) }
 //              else if (user[1].pol !== null && user[1].pol !== undefined && user[1].tel === null) { telpas(msg) }
 
-// Кнопки водителя
-              else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
-              else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
-              else if (msg.text === '▶️ Создать новый маршрут'){choose_direction(msg)}
-              else if (msg.text === '⏯ Активизировать сохраненные маршруты'){choose_route_toactivate(msg)}
-              else if (msg.text === 'Завершить маршрут'){ indicate_number_of_places(msg);   bot.deleteMessage(msg.chat.id, msg.message_id); }
-              else if (msg.text === '⬅️ Назад на главное меню'){driv(msg)}
-              else if (msg.text === '⚫️ На главное меню'){driv(msg)}
-              else if (msg.text === 'Назад на прежний перекресток'){back_to_prev(msg)}
-              else if (msg.text === '💽 Мои данные') {edit_profile_driver(msg)}
-// Кнопки пассажира
-              else if (msg.text === 'Стать водителем'){pass_to_driv(msg)}
-              else if (msg.text === '🚗 Найти авто'){choose_direction_passenger(msg)}
-              else if (msg.text === 'Назад в меню'){ const chatId = msg.chat.id; const text_keyboard = 'Вы на главном меню'; bot.sendMessage(chatId, text_keyboard, main_menu_passenger) }
-              else if (msg.text === 'Исправить начало пути'){edit_beg_busstop(msg)}
-              else if (msg.text === 'Исправить начало пути.'){ edit_beg_interception(msg) }
-              else if (msg.text === 'Исправить конец пути'){ edit_end_busstop(msg) }
-              else if (msg.text === 'Исправить конец пути.'){ edit_end_interception(msg) }
-              else if (msg.text === 'Указать пересечение улиц'){show_interception_topass(msg); bot.deleteMessage(msg.chat.id, msg.message_id)}
-              else if (msg.text === 'Указать пересечение улиц.'){show_interception_topass_21(msg); after_choosing_beg_interception_msg(msg)}
-              else if (msg.text === 'Указать автобусную остановку'){choose_end_busstop(msg)}
-              else if (msg.text === '🔴 Показать попутчиков по району'){send_rayon_poputi(msg)}
-              else if (msg.text === '🔵 Отменить поиск попутчиков'){are_u_sure(msg)}
-              else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
-              else if (msg.text === 'Нет') {search_regime(msg)}
-              else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
-              else if (msg.text === 'йцукен'){create_route_driver(msg)}
-        else {console.log('Hmm')
-
-        }
-
-})
+//// Кнопки водителя
+//              else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
+//              else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
+//              else if (msg.text === '▶️ Создать новый маршрут'){choose_direction(msg)}
+//              else if (msg.text === '⏯ Активизировать сохраненные маршруты'){choose_route_toactivate(msg)}
+//              else if (msg.text === 'Завершить маршрут'){ indicate_number_of_places(msg);   bot.deleteMessage(msg.chat.id, msg.message_id); }
+//              else if (msg.text === '⬅️ Назад на главное меню'){driv(msg)}
+//              else if (msg.text === '⚫️ На главное меню'){driv(msg)}
+//              else if (msg.text === 'Назад на прежний перекресток'){back_to_prev(msg)}
+//              else if (msg.text === '💽 Мои данные') {edit_profile_driver(msg)}
+//// Кнопки пассажира
+//              else if (msg.text === 'Стать водителем'){pass_to_driv(msg)}
+//              else if (msg.text === '🚗 Найти авто'){choose_direction_passenger(msg)}
+//              else if (msg.text === 'Назад в меню'){ const chatId = msg.chat.id; const text_keyboard = 'Вы на главном меню'; bot.sendMessage(chatId, text_keyboard, main_menu_passenger) }
+//              else if (msg.text === 'Исправить начало пути'){edit_beg_busstop(msg)}
+//              else if (msg.text === 'Исправить начало пути.'){ edit_beg_interception(msg) }
+//              else if (msg.text === 'Исправить конец пути'){ edit_end_busstop(msg) }
+//              else if (msg.text === 'Исправить конец пути.'){ edit_end_interception(msg) }
+//              else if (msg.text === 'Указать пересечение улиц'){show_interception_topass(msg); bot.deleteMessage(msg.chat.id, msg.message_id)}
+//              else if (msg.text === 'Указать пересечение улиц.'){show_interception_topass_21(msg); after_choosing_beg_interception_msg(msg)}
+//              else if (msg.text === 'Указать автобусную остановку'){choose_end_busstop(msg)}
+//              else if (msg.text === '🔴 Показать попутчиков по району'){send_rayon_poputi(msg)}
+//              else if (msg.text === '🔵 Отменить поиск попутчиков'){are_u_sure(msg)}
+//              else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
+//              else if (msg.text === 'Нет') {search_regime(msg)}
+//              else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
+//              else if (msg.text === 'йцукен'){create_route_driver(msg)}
+//        else {console.log('Hmm')}
+//        }
+     })
 
 })
 
