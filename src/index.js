@@ -347,29 +347,6 @@ pool.getConnection(function(err, connection) {
 
 
 
-function vibor() {
-    var mysql      = require('mysql');
-    var connection = mysql.createConnection({
-            host     : 'localhost',
-    user     : 'mybd_user',
-    password : 'admin123',
-    database : 'sitebot'
-})
-
-connection.connect()
-
-connection.query('SELECT * FROM interception WHERE street = "Шахтеров" ', function(err, rows, fields) {
-  if (err) throw err;
-for(var i = 0; i < rows.length; i++){
-console.log('The solution is: ', rows[i].interception)
-}
-console.log('here ', rows[0].interception)
-})
-
-  connection.end()
-}
-
-
 function telpas(msg){
         var mysql  = require('mysql');
         var pool  = mysql.createPool({
@@ -398,7 +375,7 @@ var zapros = msg.chat.id
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_passenger'
-    })
+        })
 
 var user_id = msg.chat.id
 var point_type = 1
@@ -422,40 +399,41 @@ pool.getConnection(function(err, connection) {
 
 function pol(query){
         var mysql  = require('mysql');
-        var connection = mysql.createConnection({
+        var pool  = mysql.createPool({
         host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
-    })
+        })
 
-    connection.connect()
+pool.getConnection(function(err, connection) {
 
   var str = query.data;
   var res = str.split(" ");
   console.log('res is:', res[0]);
-var zapros = query.message.chat.id
+  var zapros = query.message.chat.id;
 
     connection.query('UPDATE users SET pol = ? WHERE id_user = ? AND vibor = "passenger" AND pol IS NULL',[res[0], zapros], function(err, rows, fields) {
       if (err) throw err;
+    })
+
 })
-      connection.end()
 }
 
 
 function tel(msg){
         var mysql  = require('mysql');
-        var connection = mysql.createConnection({
+        var pool = mysql.createPool({
         host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
-    })
+        })
 
-    connection.connect()
+var phone = msg.text;
+var zapros = msg.chat.id;
 
-var phone = msg.text
-var zapros = msg.chat.id
+pool.getConnection(function(err, connection) {
 
     connection.query('UPDATE users SET tel = ?, date =  NOW() WHERE id_user = ? AND nomer IS NOT NULL AND tel IS NULL',[phone, zapros], function(err, rows, fields) {
       if (err) throw err;
@@ -463,9 +441,8 @@ var zapros = msg.chat.id
       create_route_driver(msg);
       bot.sendMessage( zapros, '‼️ Обязательно подпишитесь на канал t.me/popooti\nПройдите по ссылке t.me/popooti и нажмите "Подписаться"')
       bot.sendMessage( 336243307, '🚘 Еще один водитель зарегался')
-
+    })
 })
-      connection.end()
 }
 
 
@@ -473,45 +450,46 @@ var zapros = msg.chat.id
 
 
 function nomer(msg){
+
         var mysql  = require('mysql');
-        var connection = mysql.createConnection({
+        var pool = mysql.createPool({
         host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
-    })
+        })
 
-    connection.connect()
+var nomer = msg.text;
+var zapros = msg.chat.id;
 
-var nomer = msg.text
-var zapros = msg.chat.id
+pool.getConnection(function(err, connection) {
 
-    connection.query('UPDATE users SET nomer = ? WHERE id_user = ? AND nomer IS NULL AND marka IS NOT NULL',[nomer, zapros], function(err, rows, fields) {
+    connection.query(' UPDATE users SET nomer = ? WHERE id_user = ? AND nomer IS NULL AND marka IS NOT NULL ', [nomer, zapros], function(err, rows, fields) {
       if (err) throw err;
+    })
 })
-      connection.end()
 }
 
 
 function marka(msg){
         var mysql  = require('mysql');
-        var connection = mysql.createConnection({
+        var pool = mysql.createPool({
         host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
-    })
+        })
 
-    connection.connect()
+var marka = msg.text;
+var zapros = msg.chat.id;
 
-var marka = msg.text
-var zapros = msg.chat.id
+pool.getConnection(function(err, connection) {
 
-    connection.query('UPDATE users SET marka = ? WHERE id_user = ? AND marka IS NULL',[marka, zapros], function(err, rows, fields) {
+      connection.query(' UPDATE users SET marka = ? WHERE id_user = ? AND marka IS NULL',[marka, zapros], function(err, rows, fields) {
       if (err) throw err; bot.sendMessage(msg.chat.id, 'Номер вашего автомобиля\nНапишите в таком формате:\nM 456 BNM');
-      console.log(rows);
+      })
+
 })
-      connection.end()
 }
 
 
@@ -523,7 +501,7 @@ function register_pass_asdriv(query) {
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
-    })
+        })
 
 var user_id = query.message.chat.id;
 
@@ -1032,29 +1010,27 @@ function driv_again(query){
 
 
 
-function create_user(query){
+function create_user(query) {
+
         var mysql  = require('mysql');
-        var connection = mysql.createConnection({
-                host     : 'localhost',
+        var pool = mysql.createPool({
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
-    })
+        })
 
-    connection.connect()
-    var vibor = query.data
-    var user_id = query.message.chat.id
-    var fname = query.message.chat.first_name
-    var lname = query.message.from.last_name
+    var vibor = query.data;
+    var user_id = query.message.chat.id;
+    var fname = query.message.chat.first_name;
+
+pool.getConnection(function(err, connection) {
 
     connection.query('INSERT INTO users (vibor, id_user, fname) VALUES(?,?,?) ',[vibor, user_id, fname], function(err, rows, fields) {
-      if (err) throw err;
-
+    if (err) throw err;
     console.log('inserted');
-
     })
-
-      connection.end()
+})
 }
 
 
