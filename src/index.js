@@ -5105,9 +5105,8 @@ var active_passenger = JSON.parse(JSON.stringify(rows));
    bot.sendMessage(res[1], driveru_text)
    console.log('sent to driver ');
 
-   })
 
-   connection.query(' SELECT * FROM users WHERE id_user = ? AND vibor = "driver" ', [res[1]], function(err, rows, fields) {
+         connection.query(' SELECT * FROM users WHERE id_user = ? AND vibor = "driver" ', [res[1]], function(err, rows, fields) {
    if (err) throw err;
    var driver = JSON.parse(JSON.stringify(rows));
    var passu_text = '🔴 Машина марки ' + driver[0].marka + ' с гос.номером ' + driver[0].nomer + ' едет за вами. Номер тел. ' + driver[0].tel + ' Ждите!';
@@ -5126,6 +5125,9 @@ var active_passenger = JSON.parse(JSON.stringify(rows));
           bot.sendMessage(336243307, text)
           })
    })
+
+   })
+
 })
 })
 
