@@ -7460,8 +7460,6 @@ pool.getConnection(function(err, connection) {
 
 bot.onText(/\/sms_pass (.+)/, (msg, [source, match]) => {
 
-const { id } = msg.chat
-
 var mysql  = require('mysql');
         var pool = mysql.createPool({
         host     : 'localhost',
@@ -7483,68 +7481,68 @@ pool.getConnection(function(err, connection) {
        console.log('колво пассажиров', driver);
 
         if (driver.length <= 30){
-            setTimeout(sms_30, 500, 'funky');
-                function sms_30 (msg){
+            setTimeout(p_sms_30, 500, 'funky');
+                function p_sms_30 (msg){
                       for(var i = 0; i < 30; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
         }
         else if(driver.length > 30 && driver.length <= 60){
-           setTimeout(sms_30, 500, 'funky');
-                function sms_30 (msg){
+           setTimeout(p_sms_30, 500, 'funky');
+                function p_sms_30 (msg){
                       for(var i = 0; i < 30; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
-           setTimeout(sms_30_60, 10000, 'funky');
-                function sms_30_60 (msg){
+           setTimeout(p_sms_30_60, 10000, 'funky');
+                function p_sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
         }
         else if(driver.length > 60 && driver.length <= 90){
-           setTimeout(sms_30, 500, 'funky');
-                function sms_30 (msg){
+           setTimeout(p_sms_30, 500, 'funky');
+                function p_sms_30 (msg){
                       for(var i = 0; i < 30; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
-           setTimeout(sms_30_60, 10000, 'funky');
-                function sms_30_60 (msg){
+           setTimeout(p_sms_30_60, 10000, 'funky');
+                function p_sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
-           setTimeout(sms_60_90, 20000, 'funky');
-                function sms_60_90 (msg){
+           setTimeout(p_sms_60_90, 20000, 'funky');
+                function p_sms_60_90 (msg){
                       for(var i = 60; i < 90; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
         }
         else if(driver.length > 90 && driver.length <= 120){
-           setTimeout(sms_30, 500, 'funky');
-                function sms_30 (msg){
+           setTimeout(p_sms_30, 500, 'funky');
+                function p_sms_30 (msg){
                       for(var i = 0; i < 30; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
-           setTimeout(sms_30_60, 10000, 'funky');
-                function sms_30_60 (msg){
+           setTimeout(p_sms_30_60, 10000, 'funky');
+                function p_sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
-           setTimeout(sms_60_90, 20000, 'funky');
-                function sms_60_90 (msg){
+           setTimeout(p_sms_60_90, 20000, 'funky');
+                function p_sms_60_90 (msg){
                       for(var i = 60; i < 90; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
                 }
-           setTimeout(sms_90_120, 30000, 'funky');
-                function sms_90_120 (msg){
+           setTimeout(p_sms_90_120, 30000, 'funky');
+                function p_sms_90_120 (msg){
                       for(var i = 90; i < 120; i++){
                       bot.sendMessage(driver[i].id_user, match)
                       }
