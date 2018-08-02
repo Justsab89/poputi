@@ -224,20 +224,58 @@ var route_driver = 'route'+user_id;
 var n_route_driver = 'n_route'+user_id;
 
 pool.getConnection(function(err, connection) {
-
-        var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) ';
+//' SELECT DISTINCT n_zapros, street FROM ?? WHERE n_zapros > 1 AND id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1) '
+        var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1)  ';
 
         connection.query( route_sql , [ route_driver, route_driver ], function(err, rows, fields) {
         if (err) throw err;
         var route = JSON.parse(JSON.stringify(rows));
-        if (route.length !== 0) {
-        console.log('route-sql ',route);
-        console.log('route-sql street ',route[0].street);
-        var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
-          for(var i = 1; i < route.length/2; i++){
-          text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
-          }
-        console.log('route text ', text);
+//        if (route.length !== 0) {
+//        console.log('route-sql ',route);
+//        console.log('route-sql street ',route[0].street);
+//        var text = 'Вы едите по ' + route[0].street + ' до ' + route[1].street;
+//          for(var i = 1; i < route.length/2; i++){
+//          text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+//          }
+//        console.log('route text ', text);
+
+
+//
+        if (route.length !== 0 && route.length !== 1) {
+             console.log('!! kbd !! route-sql ',route);
+             console.log('!! kbd !! route-sql street ',route[0].street);
+
+             if (route.length%2 == 0){
+
+             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+             for(var i = 1; i < route.length/2; i++){
+             text += '\nпо ' + route[2*i].street + ' до ' + route[2*i+1].street
+             }
+
+             text += '\nпо ' + route[route.length-1].street + ' до ...'
+             console.log('!! kbd !! route-sql-текст ',text);
+             }
+             else{
+
+             var text = 'Вы едите по ' + route[0].street + ' до ' + route[2].street;
+
+             for(var i = 1; i < (route.length-1)/2; i++){
+             text += '\nпо ' + route[2*i+1].street + ' до ' + route[2*i+2].street
+             }
+
+             text += '\nпо ' + route[route.length-1].street + ' до ...'
+             console.log('!! kbd !! route-sql-текст ',text);
+
+             }
+         }
+         else if (route.length == 1) {
+             console.log('!! kbd !! route-sql ',route);
+             console.log('!! kbd !! route-sql street ',route[0].street);
+
+             var text = 'Вы едите по ' + route[0].street + ' до ...';
+         }
+//
             connection.query(' INSERT INTO saved_routes (id_user, id_route, route_name, route_text) VALUES (?,(SELECT id_route FROM ?? ORDER BY id_route DESC LIMIT 1),?,?) ',
             [ user_id, route_driver, match, text ] ,function(err, rows, fields) {
             if (err) throw err;
