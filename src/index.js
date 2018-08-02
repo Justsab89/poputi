@@ -354,46 +354,46 @@ function telpas(msg){
         user     : 'mybd_user',
         password : 'admin123',
         database : 'sitebot'
-    })
+        })
 
 pool.getConnection(function(err, connection) {
 
-var phone = msg.text
-var zapros = msg.chat.id
+var phone = msg.text;
+var zapros = msg.chat.id;
 
     connection.query('UPDATE users SET tel = ?, date =  NOW()  WHERE id_user = ? AND pol IS NOT NULL AND tel IS NULL',[phone, zapros], function(err, rows, fields) {
       if (err) throw err;
       pass(msg);
       bot.sendMessage( zapros, '‼️ Обязательно подпишитесь на канал t.me/popooti\nПройдите по ссылке t.me/popooti и нажмите "Подписаться"')
       bot.sendMessage( 336243307, '👤 Еще один пассажир зарегался')
+
+      var mysql  = require('mysql');
+      var pool  = mysql.createPool({
+      host     : 'localhost',
+      user     : 'mybd_user',
+      password : 'admin123',
+      database : 'route_passenger'
+      })
+
+      var user_id = msg.chat.id;
+      var point_type = 1;
+      var route_passenger = 'route_p'+user_id;
+      var n_route = 'n_route_p'+user_id;
+
+      pool.getConnection(function(err, connection) {
+
+            connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) , id_user INT(11) , id_route INT(11) , district VARCHAR (20) , point_type INT(11), id_street INT(11), street VARCHAR (100), id_interception INT(11), interception VARCHAR (100), id_point VARCHAR (20) , busstop VARCHAR (100), ordinal INT(11), nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30),  time_beg DATETIME, time_end DATETIME, status VARCHAR (30), n_pass INT(11) , all_districts VARCHAR (60), PRIMARY KEY(id)) ',[route_passenger] ,function(err, rows, fields) {
+              if (err) throw err;
+              })
+
+            connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, id_user INT(11), route_name VARCHAR (100), start VARCHAR (20) , finish VARCHAR (20) , n_inter INT(11), PRIMARY KEY(id)) ',[n_route] ,function(err, rows, fields) {
+              if (err) throw err;
+              })
+
+      })
+
+    })
 })
-})
-
-        var mysql  = require('mysql');
-        var pool  = mysql.createPool({
-        host     : 'localhost',
-        user     : 'mybd_user',
-        password : 'admin123',
-        database : 'route_passenger'
-        })
-
-var user_id = msg.chat.id
-var point_type = 1
-var route_passenger = 'route_p'+user_id;
-var n_route = 'n_route_p'+user_id;
-
-pool.getConnection(function(err, connection) {
-
-      connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) , id_user INT(11) , id_route INT(11) , district VARCHAR (20) , point_type INT(11), id_street INT(11), street VARCHAR (100), id_interception INT(11), interception VARCHAR (100), id_point VARCHAR (20) , busstop VARCHAR (100), ordinal INT(11), nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30),  time_beg DATETIME, time_end DATETIME, status VARCHAR (30), n_pass INT(11) , all_districts VARCHAR (60), PRIMARY KEY(id)) ',[route_passenger] ,function(err, rows, fields) {
-        if (err) throw err;
-        })
-
-      connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, id_user INT(11), route_name VARCHAR (100), start VARCHAR (20) , finish VARCHAR (20) , n_inter INT(11), PRIMARY KEY(id)) ',[n_route] ,function(err, rows, fields) {
-        if (err) throw err;
-        })
-
-})
-
 }
 
 
