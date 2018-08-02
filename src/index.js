@@ -4981,7 +4981,7 @@ var mysql  = require('mysql');
 
 pool.getConnection(function(err, connection) {
 
-connection.query(' SELECT * FROM route_p WHERE id_user = ? AND begend = "end" ORDER BY id DESC LIMIT 1 ', [user_id], function(err, rows, fields) {
+connection.query(' SELECT * FROM route_p WHERE id_user = ? AND begend = "beg" ORDER BY id DESC LIMIT 1 ', [user_id], function(err, rows, fields) {
 if (err) throw err;
 var pass = JSON.parse(JSON.stringify(rows));
 
@@ -4999,7 +4999,7 @@ var user_driver = JSON.parse(JSON.stringify(rows));
        console.log('sent to passenger ');
     }
     else{
-    var driveru_text = '🔴 Пассажир подтвердил ваш запрос!\nЗаберите его/ее с ост. ' + pass[0].busstop + ' по улице ' + pass[0].street + '\nИмя: ' + user[0].fname + '. Номер тел.: ' + user[0].tel;
+    var driveru_text = '🔴 Пассажир подтвердил ваш запрос!\nЗаберите его/ее с ост. "' + pass[0].busstop + '" по улице ' + pass[0].street + '\nИмя: ' + user[0].fname + '. Номер тел.: ' + user[0].tel;
        bot.sendMessage(res[2], driveru_text)
        console.log('sent to passenger ');
     }
@@ -5096,7 +5096,7 @@ var active_passenger = JSON.parse(JSON.stringify(rows));
    var user = JSON.parse(JSON.stringify(rows));
 
    if(active_passenger[0].interception === null){
-   var driveru_text = '🔴' + active_passenger[0].n_pass + ' попутчик/а по имени ' + user[0].fname + ' ждет вас на остановке ' + active_passenger[0].busstop + ' по улице ' + active_passenger[0].street +' Номер тел. ' + user[0].tel;
+   var driveru_text = '🔴' + active_passenger[0].n_pass + ' попутчик/а по имени ' + user[0].fname + ' ждет вас на остановке "' + active_passenger[0].busstop + '" по улице ' + active_passenger[0].street +' Номер тел. ' + user[0].tel;
    }
    else {
    var driveru_text = '🔴' + active_passenger[0].n_pass + ' попутчик/а по имени ' + user[0].fname + ' ждет вас на перекрестке ' + active_passenger[0].street + ' - ' + active_passenger[0].interception +' Номер тел. ' + user[0].tel;
