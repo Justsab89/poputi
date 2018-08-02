@@ -21,8 +21,8 @@
       <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-12049">
-              <caret line="444" column="2" lean-forward="true" selection-start-line="444" selection-start-column="2" selection-end-line="444" selection-end-column="2" />
+            <state relative-caret-position="207">
+              <caret line="5089" column="118" lean-forward="false" selection-start-line="5089" selection-start-column="118" selection-end-line="5089" selection-end-column="118" />
               <folding>
                 <element signature="e#0#369274#0" expanded="false" />
               </folding>
@@ -180,8 +180,8 @@
         <option value="$PROJECT_DIR$/src/musor.js" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/token.txt" />
-        <option value="$PROJECT_DIR$/src/index.js" />
         <option value="$PROJECT_DIR$/src/config.js" />
+        <option value="$PROJECT_DIR$/src/index.js" />
       </list>
     </option>
   </component>
@@ -535,7 +535,14 @@
       <option name="project" value="LOCAL" />
       <updated>1533124313099</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="мпп">
+      <created>1533137035892</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1533137035892</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TodoView">
@@ -939,16 +946,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/database.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1836">
-          <caret line="108" column="0" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="49" />
-          <folding>
-            <element signature="e#0#13747#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/poi.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1479">
@@ -991,21 +988,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-12049">
-          <caret line="444" column="2" lean-forward="true" selection-start-line="444" selection-start-column="2" selection-end-line="444" selection-end-column="2" />
-          <folding>
-            <element signature="e#0#369274#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/token.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="45" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/database.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1836">
+          <caret line="108" column="0" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#13747#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="5089" column="118" lean-forward="false" selection-start-line="5089" selection-start-column="118" selection-end-line="5089" selection-end-column="118" />
+          <folding>
+            <element signature="e#0#369274#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

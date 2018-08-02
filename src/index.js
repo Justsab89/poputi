@@ -5087,7 +5087,7 @@ var mysql  = require('mysql');
 pool.getConnection(function(err, connection) {
 
 // Сначала находим всех активных пассажиров
-connection.query(' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" and id_user = ? AND begend = "end"  ', [user_id], function(err, rows, fields) {
+connection.query(' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" and id_user = ? AND begend = "beg"  ', [user_id], function(err, rows, fields) {
 if (err) throw err;
 var active_passenger = JSON.parse(JSON.stringify(rows));
 
