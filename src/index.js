@@ -618,7 +618,7 @@ function pass_query(query){
 
 }
 
-
+//
 var main_menu_passenger = {
       reply_markup: {
         keyboard: [
@@ -5333,7 +5333,7 @@ console.log('pass_offer_topass ', driver);
        else if(driver.length > 30 && driver.length <= 60){
        setTimeout(driver_poputi1,500, 'funky');
             function driver_poputi1 (msg){
-                   for(var i = 0; i <= 30; i++){
+                   for(var i = 0; i < 30; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5352,7 +5352,7 @@ console.log('pass_offer_topass ', driver);
                    }
        setTimeout(driver_poputi2, 10000, 'funky');
             function driver_poputi2 (msg){
-                   for(var i = 30; i <= driver.length; i++){
+                   for(var i = 30; i < driver.length; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5373,7 +5373,7 @@ console.log('pass_offer_topass ', driver);
        else if(driver.length > 60 && driver.length <= 90){
        setTimeout(driver_poputi1,500, 'funky');
             function driver_poputi1 (msg){
-                   for(var i = 0; i <= 30; i++){
+                   for(var i = 0; i < 30; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5392,7 +5392,7 @@ console.log('pass_offer_topass ', driver);
                    }
        setTimeout(driver_poputi2, 5000, 'funky');
             function driver_poputi2 (msg){
-                   for(var i = 30; i <= 60; i++){
+                   for(var i = 30; i < 60; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5411,7 +5411,7 @@ console.log('pass_offer_topass ', driver);
             }
        setTimeout(driver_poputi3, 15000, 'funky');
             function driver_poputi3 (msg){
-                   for(var i = 60; i <= driver.length; i++){
+                   for(var i = 60; i < driver.length; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5432,7 +5432,7 @@ console.log('pass_offer_topass ', driver);
        else if(driver.length > 90 && driver.length <= 120){
        setTimeout(driver_poputi1,500, 'funky');
             function driver_poputi1 (msg){
-                   for(var i = 0; i <= 30; i++){
+                   for(var i = 0; i < 30; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5451,7 +5451,7 @@ console.log('pass_offer_topass ', driver);
                    }
        setTimeout(driver_poputi2, 5000, 'funky');
             function driver_poputi2 (msg){
-                   for(var i = 30; i <= 60; i++){
+                   for(var i = 30; i < 60; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5470,7 +5470,7 @@ console.log('pass_offer_topass ', driver);
             }
        setTimeout(driver_poputi3, 15000, 'funky');
             function driver_poputi3 (msg){
-                   for(var i = 60; i <= 90; i++){
+                   for(var i = 60; i < 90; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5489,7 +5489,7 @@ console.log('pass_offer_topass ', driver);
             }
        setTimeout(driver_poputi4, 20000, 'funky');
             function driver_poputi4 (msg){
-                   for(var i = 90; i <= driver.length; i++){
+                   for(var i = 90; i < driver.length; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -5510,7 +5510,7 @@ console.log('pass_offer_topass ', driver);
        else if(driver.length > 120 && driver.length <= 150){
               setTimeout(driver_poputi1,500, 'funky');
                    function driver_poputi1 (msg){
-                          for(var i = 0; i <= 30; i++){
+                          for(var i = 0; i < 30; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -5529,7 +5529,7 @@ console.log('pass_offer_topass ', driver);
                           }
               setTimeout(driver_poputi2, 5000, 'funky');
                    function driver_poputi2 (msg){
-                          for(var i = 30; i <= 60; i++){
+                          for(var i = 30; i < 60; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -5548,7 +5548,7 @@ console.log('pass_offer_topass ', driver);
                    }
               setTimeout(driver_poputi3, 15000, 'funky');
                    function driver_poputi3 (msg){
-                          for(var i = 60; i <= 90; i++){
+                          for(var i = 60; i < 90; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -5567,7 +5567,7 @@ console.log('pass_offer_topass ', driver);
                    }
               setTimeout(driver_poputi4, 20000, 'funky');
                    function driver_poputi4 (msg){
-                          for(var i = 90; i <= 120; i++){
+                          for(var i = 90; i < 120; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -5586,7 +5586,7 @@ console.log('pass_offer_topass ', driver);
                    }
               setTimeout(driver_poputi5, 25000, 'funky');
                    function driver_poputi5 (msg){
-                          for(var i = 120; i <= 150; i++){
+                          for(var i = 120; i < driver.length; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -5750,7 +5750,7 @@ console.log('pass_offer_todriv ', driver);
        else if(driver.length > 60 && driver.length <= 90){
        setTimeout(tabu_pass_onpar1, 500, 'funky');
             function tabu_pass_onpar1 (msg){
-                  for(var i = 0; i < 25; i++){
+                  for(var i = 0; i < 30; i++){
 
                    if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
                    var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
@@ -5845,7 +5845,7 @@ console.log('pass_offer_todriv ', driver);
        else if(driver.length > 90 && driver.length <= 120){
        setTimeout(tabu_pass_onpar1, 500, 'funky');
             function tabu_pass_onpar1 (msg){
-                  for(var i = 0; i < 25; i++){
+                  for(var i = 0; i < 30; i++){
 
                    if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
                    var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
@@ -5971,7 +5971,7 @@ console.log('pass_offer_todriv ', driver);
        else if(driver.length > 120 && driver.length <= 150){
        setTimeout(tabu_pass_onpar1, 500, 'funky');
             function tabu_pass_onpar1 (msg){
-                  for(var i = 0; i < 25; i++){
+                  for(var i = 0; i < 30; i++){
 
                    if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
                    var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
@@ -6310,7 +6310,7 @@ console.log('driv offer topass ', driver);
        else if(driver.length > 30 && driver.length <= 60){
        setTimeout(driver_poputi1,500, 'funky');
             function driver_poputi1 (msg){
-                   for(var i = 0; i <= 30; i++){
+                   for(var i = 0; i < 30; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6350,7 +6350,7 @@ console.log('driv offer topass ', driver);
        else if(driver.length > 60 && driver.length <= 90){
        setTimeout(driver_poputi1,500, 'funky');
             function driver_poputi1 (msg){
-                   for(var i = 0; i <= 30; i++){
+                   for(var i = 0; i < 30; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6369,7 +6369,7 @@ console.log('driv offer topass ', driver);
                    }
        setTimeout(driver_poputi2, 5000, 'funky');
             function driver_poputi2 (msg){
-                   for(var i = 30; i <= 60; i++){
+                   for(var i = 30; i < 60; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6388,7 +6388,7 @@ console.log('driv offer topass ', driver);
             }
        setTimeout(driver_poputi3, 15000, 'funky');
             function driver_poputi3 (msg){
-                   for(var i = 60; i <= driver.length; i++){
+                   for(var i = 60; i < driver.length; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6409,7 +6409,7 @@ console.log('driv offer topass ', driver);
        else if(driver.length > 90 && driver.length <= 120){
        setTimeout(driver_poputi1,500, 'funky');
             function driver_poputi1 (msg){
-                   for(var i = 0; i <= 30; i++){
+                   for(var i = 0; i < 30; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6428,7 +6428,7 @@ console.log('driv offer topass ', driver);
                    }
        setTimeout(driver_poputi2, 5000, 'funky');
             function driver_poputi2 (msg){
-                   for(var i = 30; i <= 60; i++){
+                   for(var i = 30; i < 60; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6447,7 +6447,7 @@ console.log('driv offer topass ', driver);
             }
        setTimeout(driver_poputi3, 15000, 'funky');
             function driver_poputi3 (msg){
-                   for(var i = 60; i <= 90; i++){
+                   for(var i = 60; i < 90; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6466,7 +6466,7 @@ console.log('driv offer topass ', driver);
             }
        setTimeout(driver_poputi4, 20000, 'funky');
             function driver_poputi4 (msg){
-                   for(var i = 90; i <= driver.length; i++){
+                   for(var i = 90; i < driver.length; i++){
                     var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                     console.log('PASU  ', pasu_text);
@@ -6487,7 +6487,7 @@ console.log('driv offer topass ', driver);
        else if(driver.length > 120 && driver.length <= 150){
               setTimeout(driver_poputi1,500, 'funky');
                    function driver_poputi1 (msg){
-                          for(var i = 0; i <= 30; i++){
+                          for(var i = 0; i < 30; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -6506,7 +6506,7 @@ console.log('driv offer topass ', driver);
                           }
               setTimeout(driver_poputi2, 5000, 'funky');
                    function driver_poputi2 (msg){
-                          for(var i = 30; i <= 60; i++){
+                          for(var i = 30; i < 60; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -6525,7 +6525,7 @@ console.log('driv offer topass ', driver);
                    }
               setTimeout(driver_poputi3, 15000, 'funky');
                    function driver_poputi3 (msg){
-                          for(var i = 60; i <= 90; i++){
+                          for(var i = 60; i < 90; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -6544,7 +6544,7 @@ console.log('driv offer topass ', driver);
                    }
               setTimeout(driver_poputi4, 20000, 'funky');
                    function driver_poputi4 (msg){
-                          for(var i = 90; i <= 120; i++){
+                          for(var i = 90; i < 120; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -6563,7 +6563,7 @@ console.log('driv offer topass ', driver);
                    }
               setTimeout(driver_poputi5, 25000, 'funky');
                    function driver_poputi5 (msg){
-                          for(var i = 120; i <= 150; i++){
+                          for(var i = 120; i < driver.length; i++){
                            var pasu_text = 'Этот водитель выезжает с пересечения ' + driver[i].street + '-' + driver[i].interception + ' в ' + driver[i].DD_time_beg;
 
                            console.log('PASU  ', pasu_text);
@@ -6728,7 +6728,7 @@ console.log('driv_offer_todriv ', driver);
        else if(driver.length > 60 && driver.length <= 90){
        setTimeout(tabu_pass_onpar1, 500, 'funky');
             function tabu_pass_onpar1 (msg){
-                  for(var i = 0; i < 25; i++){
+                  for(var i = 0; i < 30; i++){
 
                    if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
                    var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
@@ -6823,7 +6823,7 @@ console.log('driv_offer_todriv ', driver);
        else if(driver.length > 90 && driver.length <= 120){
        setTimeout(tabu_pass_onpar1, 500, 'funky');
             function tabu_pass_onpar1 (msg){
-                  for(var i = 0; i < 25; i++){
+                  for(var i = 0; i < 30; i++){
 
                    if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
                    var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
@@ -6949,7 +6949,7 @@ console.log('driv_offer_todriv ', driver);
        else if(driver.length > 120 && driver.length <= 150){
        setTimeout(tabu_pass_onpar1, 500, 'funky');
             function tabu_pass_onpar1 (msg){
-                  for(var i = 0; i < 25; i++){
+                  for(var i = 0; i < 30; i++){
 
                    if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
                    var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
@@ -7073,7 +7073,7 @@ console.log('driv_offer_todriv ', driver);
                         }
        setTimeout(tabu_pass_onpar5, 20000, 'funky');
             function tabu_pass_onpar5 (msg){
-                              for(var i = 120; i < 150; i++){
+                              for(var i = 120; i < driver.length; i++){
 
                                if (driver[i].PP_interception === null && driver[i].PP_interception_end === null) {
                                var pasu_text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + driver[i].PP_busstop + '"  по улице ' + driver[i].PP_street + ' и едет до ост. "' + driver[i].PP_busstop_end + '" по улице ' + driver[i].PP_street_end ;
@@ -7107,7 +7107,7 @@ console.log('driv_offer_todriv ', driver);
    }
 
 // Если нет попутных водителей т.е. driver.length == 0, то таймер ставиться на паузу     status <> "busy"  AND
-   else { timer.pause(); console.log('Timer paused cause no drivers match passengers');
+   else {
        var sql_else = ' SELECT DISTINCT id_user FROM route WHERE  time_end > NOW() ';
        connection.query( sql_else , function(err, rows, fields) {
        if (err) throw err;
@@ -7168,9 +7168,9 @@ console.log('driv_offer_todriv ', driver);
                }
           setTimeout(send_to_active_drivers3, 10000, 'funky');
                function send_to_active_drivers3 (msg){
-                                         for(var i = 60; i < driver_act.length; i++){
-                                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
-                                         }
+                         for(var i = 60; i < 90; i++){
+                         bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                         }
                                }
           setTimeout(send_to_active_drivers4, 15000, 'funky');
                function send_to_active_drivers4 (msg){
@@ -7194,9 +7194,9 @@ console.log('driv_offer_todriv ', driver);
                          }
                     setTimeout(send_to_active_drivers3, 10000, 'funky');
                          function send_to_active_drivers3 (msg){
-                                                   for(var i = 60; i < driver_act.length; i++){
-                                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
-                                                   }
+                                   for(var i = 60; i < 90; i++){
+                                   bot.sendMessage(driver_act[i].id_user, 'В данный момент нет пассажиров' )
+                                   }
                                          }
                     setTimeout(send_to_active_drivers4, 15000, 'funky');
                          function send_to_active_drivers4 (msg){
@@ -7414,7 +7414,6 @@ pool.getConnection(function(err, connection) {
 
 bot.onText(/\/sms (.+)/, (msg, [source, match]) => {
 
-const { id } = msg.chat
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
@@ -7426,6 +7425,9 @@ var mysql  = require('mysql');
 
 var user_id = msg.chat.id;
 
+var msg_text = msg.text;
+
+var text = msg_text.replace("/sms", "");
 
 pool.getConnection(function(err, connection) {
 
@@ -7435,11 +7437,14 @@ pool.getConnection(function(err, connection) {
        if (err) throw err;
        var driver = JSON.parse(JSON.stringify(rows));
        console.log('колво водителей', driver);
+
+
+
         if (driver.length <= 30){
             setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
-                      for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 0; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7447,13 +7452,13 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
-                      for(var i = 30; i < 60; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 30; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7461,19 +7466,19 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(sms_60_90, 20000, 'funky');
                 function sms_60_90 (msg){
-                      for(var i = 60; i < 90; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 60; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7481,25 +7486,25 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(sms_60_90, 20000, 'funky');
                 function sms_60_90 (msg){
                       for(var i = 60; i < 90; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(sms_90_120, 30000, 'funky');
                 function sms_90_120 (msg){
-                      for(var i = 90; i < 120; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 90; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7521,6 +7526,9 @@ var mysql  = require('mysql');
 
 var user_id = msg.chat.id;
 
+var msg_text = msg.text;
+
+var text = msg_text.replace("/sms_pass", "");
 
 pool.getConnection(function(err, connection) {
 
@@ -7534,8 +7542,8 @@ pool.getConnection(function(err, connection) {
         if (driver.length <= 30){
             setTimeout(p_sms_30, 500, 'funky');
                 function p_sms_30 (msg){
-                      for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 0; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7543,13 +7551,13 @@ pool.getConnection(function(err, connection) {
            setTimeout(p_sms_30, 500, 'funky');
                 function p_sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(p_sms_30_60, 10000, 'funky');
                 function p_sms_30_60 (msg){
-                      for(var i = 30; i < 60; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 30; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7557,19 +7565,19 @@ pool.getConnection(function(err, connection) {
            setTimeout(p_sms_30, 500, 'funky');
                 function p_sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(p_sms_30_60, 10000, 'funky');
                 function p_sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(p_sms_60_90, 20000, 'funky');
                 function p_sms_60_90 (msg){
-                      for(var i = 60; i < 90; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 60; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7577,25 +7585,25 @@ pool.getConnection(function(err, connection) {
            setTimeout(p_sms_30, 500, 'funky');
                 function p_sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(p_sms_30_60, 10000, 'funky');
                 function p_sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(p_sms_60_90, 20000, 'funky');
                 function p_sms_60_90 (msg){
                       for(var i = 60; i < 90; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
            setTimeout(p_sms_90_120, 30000, 'funky');
                 function p_sms_90_120 (msg){
-                      for(var i = 90; i < 120; i++){
-                      bot.sendMessage(driver[i].id_user, match)
+                      for(var i = 90; i < driver.length; i++){
+                      bot.sendMessage(driver[i].id_user, text)
                       }
                 }
         }
@@ -7670,4 +7678,46 @@ pool.getConnection(function(err, connection) {
 
 }
 
-//ldkjbkjkjлоилоиdasv
+
+
+bot.onText(/\/vv (.+)/, (msg, [source, match]) => {
+
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+console.log('match', match);
+
+console.log('!!message text', msg.text);
+
+var msg_text = msg.text;
+
+var text = msg_text.replace("/vv", "");
+
+console.log('!!text', text);
+
+bot.sendMessage(336243307, text)
+
+//pool.getConnection(function(err, connection) {
+//
+//       connection.query(' SELECT * FROM users WHERE vibor = "passenger"  ',
+//
+//       function(err, rows, fields) {
+//       if (err) throw err;
+//       var driver = JSON.parse(JSON.stringify(rows));
+//       console.log('колво пассажиров', driver);
+//       })
+//})
+
+})
+
+
+
+
