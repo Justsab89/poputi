@@ -255,6 +255,14 @@ pool.getConnection(function(err, connection) {
 
              text += '\nпо ' + route[route.length-1].street + ' до ...'
              console.log('!! kbd !! route-sql-текст ',text);
+
+                         connection.query(' INSERT INTO saved_routes (id_user, id_route, route_name, route_text) VALUES (?,(SELECT id_route FROM ?? ORDER BY id_route DESC LIMIT 1),?,?) ',
+                         [ user_id, route_driver, match, text ] ,function(err, rows, fields) {
+                         if (err) throw err;
+
+                         var text2 = 'Маршрут сохранен как: "' + match + '"\nТеперь укажите кол-во пассажиров';
+                         bot.sendMessage(msg.chat.id, text2)
+                         })
              }
              else{
 
@@ -267,6 +275,13 @@ pool.getConnection(function(err, connection) {
              text += '\nпо ' + route[route.length-1].street + ' до ...'
              console.log('!! kbd !! route-sql-текст ',text);
 
+                         connection.query(' INSERT INTO saved_routes (id_user, id_route, route_name, route_text) VALUES (?,(SELECT id_route FROM ?? ORDER BY id_route DESC LIMIT 1),?,?) ',
+                         [ user_id, route_driver, match, text ] ,function(err, rows, fields) {
+                         if (err) throw err;
+
+                         var text2 = 'Маршрут сохранен как: "' + match + '"\nТеперь укажите кол-во пассажиров';
+                         bot.sendMessage(msg.chat.id, text2)
+                         })
              }
          }
          else if (route.length == 1) {
@@ -274,17 +289,15 @@ pool.getConnection(function(err, connection) {
              console.log('!! kbd !! route-sql street ',route[0].street);
 
              var text = 'Вы едите по ' + route[0].street + ' до ...';
-         }
-//
-            connection.query(' INSERT INTO saved_routes (id_user, id_route, route_name, route_text) VALUES (?,(SELECT id_route FROM ?? ORDER BY id_route DESC LIMIT 1),?,?) ',
-            [ user_id, route_driver, match, text ] ,function(err, rows, fields) {
-            if (err) throw err;
+                         connection.query(' INSERT INTO saved_routes (id_user, id_route, route_name, route_text) VALUES (?,(SELECT id_route FROM ?? ORDER BY id_route DESC LIMIT 1),?,?) ',
+                         [ user_id, route_driver, match, text ] ,function(err, rows, fields) {
+                         if (err) throw err;
 
-            var text2 = 'Маршрут сохранен как: "' + match + '"\nТеперь укажите кол-во пассажиров';
-            bot.sendMessage(msg.chat.id, text2)
-            })
-        }
-      })
+                         var text2 = 'Маршрут сохранен как: "' + match + '"\nТеперь укажите кол-во пассажиров';
+                         bot.sendMessage(msg.chat.id, text2)
+                         })
+         }
+        })
 })
 })
 
