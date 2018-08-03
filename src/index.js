@@ -1545,7 +1545,7 @@ pool.getConnection(function(err, connection) {
             })
          }
 
-// Если же str_parse_ordinal2[0].ordinal < str_parse_ordinal1[0].ordinal, то выполняется следующий код.
+// Если же str_parse_ordinal2[0].ordinal < str_parse_ordinal1[0].ordinal, то выполняется следующий код..
          else {
 
          // Выбор точек пересечения между текущим и последним перекрестком
