@@ -605,7 +605,7 @@ function pass(msg){
 
     else {
     const chatId = msg.chat.id
-    const text_keyboard = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\n\n❗️ В данный момент пока только 39 водителей из Майкудука, поэтому сейчас маловероятно что вы найдете попутное авто. Как их будет 60. Мы вас обязательно уведомим.\n\nЧтобы изменить номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим водителя нажмите "Стать водителем"'
+    const text_keyboard = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\n\n❗️ В данный момент пока только 48 водителей из Майкудука, поэтому сейчас маловероятно что вы найдете попутное авто. Как их будет 80. Мы вас обязательно уведомим.\n\nЧтобы изменить номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим водителя нажмите "Стать водителем"'
     bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
     }
 }
@@ -1017,6 +1017,9 @@ function driv(msg){
                        resize_keyboard: true
                      }
                    })
+            bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
 }
 
 
@@ -7719,5 +7722,122 @@ bot.sendMessage(336243307, text)
 })
 
 
+bot.onText(/\/sms_driv_video/, msg => {sms_driv_video(msg)})
 
+
+function sms_driv_video (msg) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT * FROM users WHERE vibor = "driver"  ',
+
+       function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('колво водителей', driver);
+
+
+
+        if (driver.length <= 30){
+            setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+        }
+        else if(driver.length > 30 && driver.length <= 60){
+           setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < 30; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+           setTimeout(sms_30_60, 10000, 'funky');
+                function sms_30_60 (msg){
+                      for(var i = 30; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+        }
+        else if(driver.length > 60 && driver.length <= 90){
+           setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < 30; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+           setTimeout(sms_30_60, 10000, 'funky');
+                function sms_30_60 (msg){
+                      for(var i = 30; i < 60; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+           setTimeout(sms_60_90, 20000, 'funky');
+                function sms_60_90 (msg){
+                      for(var i = 60; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+        }
+        else if(driver.length > 90 && driver.length <= 120){
+           setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < 30; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+           setTimeout(sms_30_60, 10000, 'funky');
+                function sms_30_60 (msg){
+                      for(var i = 30; i < 60; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+           setTimeout(sms_60_90, 20000, 'funky');
+                function sms_60_90 (msg){
+                      for(var i = 60; i < 90; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+           setTimeout(sms_90_120, 30000, 'funky');
+                function sms_90_120 (msg){
+                      for(var i = 90; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          caption: 'Инструкция для водителей'
+                          })
+                      }
+                }
+        }
+
+       })
+})
+}
 
