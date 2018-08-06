@@ -2017,17 +2017,24 @@ var last_n_zapros = str_parse[0].n_zapros;
        if (err) throw err;
        console.log('DELETED LAST ZAPROS');
 
-                 connection.query(' SELECT * FROM points WHERE street = (SELECT street FROM ?? ORDER BY id DESC LIMIT 1) AND point_type = ? ',[route_driver, point_type], function(err, rows, fields) {
+                 connection.query(' SELECT * FROM points WHERE id_street = (SELECT id_street FROM ?? ORDER BY id DESC LIMIT 1) AND point_type = ? ',[route_driver, point_type], function(err, rows, fields) {
                  if (err) throw err;
                  var str_parse2 = JSON.parse(JSON.stringify(rows));
                  var by_street = str_parse2[0].street;
                  console.log('By street', by_street);
                  console.log(str_parse2);
-                 var goods = [];
+//                 var goods = [];
+//
+//                 for(var i = 0; i < rows.length; i++){
+//                 goods[goods.length] = rows[i].interception;
+//                 }
 
-                 for(var i = 0; i < rows.length; i++){
-                 goods[goods.length] = rows[i].interception;
-                 }
+                var keyboard = [];
+
+                for(var i = 0; i < rows.length; i++){
+                keyboard.push([{'text': ( str_parse2[i].interception ) , 'callback_data': ('kbd#' + str_parse2[i].id_interception)}]);
+                }
+                console.log('!! back_to_prev !! keyboard', keyboard);
 
                      var route_sql = ' SELECT DISTINCT n_zapros, street FROM ?? WHERE id_route = (SELECT id_route FROM ??  ORDER BY id_route DESC LIMIT 1)  ';
 
@@ -2069,13 +2076,21 @@ var last_n_zapros = str_parse[0].n_zapros;
                          var text = 'Вы едите по ' + route[0].street + ' до ...';
                      }
 
-                         bot.sendMessage(msg.chat.id, text, { reply_markup: JSON.stringify({
-                                                                         inline_keyboard: goods.map((x, xi) => ([{
-                                                                             text: x,
-                                                                             callback_data: 'kbd#' + x,
-                                                                         }])),
+//                         bot.sendMessage(msg.chat.id, text, { reply_markup: JSON.stringify({
+//                                                                         inline_keyboard: goods.map((x, xi) => ([{
+//                                                                             text: x,
+//                                                                             callback_data: 'kbd#' + x,
+//                                                                         }])),
+//
+//                                                            }),})
 
-                                                            }),})
+                            bot.sendMessage( msg.chat.id, text,
+                            {
+                            'reply_markup': JSON.stringify({
+                            inline_keyboard: keyboard
+                                                           })
+                            }
+                            )
 
                      })
 
