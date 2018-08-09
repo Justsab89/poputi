@@ -417,6 +417,9 @@ var zapros = msg.chat.id;
       pass(msg);
       bot.sendMessage( zapros, '‼️ Обязательно подпишитесь на канал t.me/popooti\nПройдите по ссылке t.me/popooti и нажмите "Подписаться"')
       bot.sendMessage( 336243307, '👤 Еще один пассажир зарегался')
+      bot.sendVideo(zapros, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                  caption: 'Инструкция для пассажиров'
+                  })
 
       var mysql  = require('mysql');
       var pool  = mysql.createPool({
@@ -563,6 +566,29 @@ pool.getConnection(function(err, connection) {
    var passenger = JSON.parse(JSON.stringify(rows));
    bot.sendMessage(user_id, 'Марка вашего автомобиля\nНапишите в таком формате:\nБелая Toyota Camry 30')
    console.log('reg as driv first')
+
+         var mysql  = require('mysql');
+         var pool  = mysql.createPool({
+         host     : 'localhost',
+         user     : 'mybd_user',
+         password : 'admin123',
+         database : 'route_driver'
+         })
+
+         var route = 'route'+user_id;
+         var n_route = 'n_route'+user_id;
+
+         pool.getConnection(function(err, connection) {
+
+               connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) , id_user INT(11) , id_route INT(11) , district VARCHAR (20) , point_type INT(11), id_street INT(11), street VARCHAR (100), id_interception INT(11), interception VARCHAR (100), id_point VARCHAR (20) , busstop VARCHAR (100), ordinal INT(11), nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30),  time_beg DATETIME, time_end DATETIME, status VARCHAR (30), n_pass INT(11) , all_districts VARCHAR (60), PRIMARY KEY(id)) ', [ route ] ,function(err, rows, fields) {
+                 if (err) throw err;
+                 })
+
+               connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, id_user INT(11), route_name VARCHAR (100), start VARCHAR (20) , finish VARCHAR (20) , n_inter INT(11), PRIMARY KEY(id)) ', [ n_route ] ,function(err, rows, fields) {
+                 if (err) throw err;
+                 })
+
+         })
    })
 })
 }
@@ -588,6 +614,29 @@ pool.getConnection(function(err, connection) {
        [ user_id, user_id, user_id ],
        function(err, rows, fields) {
        if (err) throw err;
+
+         var mysql  = require('mysql');
+         var pool  = mysql.createPool({
+         host     : 'localhost',
+         user     : 'mybd_user',
+         password : 'admin123',
+         database : 'route_passenger'
+         })
+
+         var route_p = 'route_p'+user_id;
+         var n_route_p = 'n_route_p'+user_id;
+
+         pool.getConnection(function(err, connection) {
+
+               connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) , id_user INT(11) , id_route INT(11) , district VARCHAR (20) , point_type INT(11), id_street INT(11), street VARCHAR (100), id_interception INT(11), interception VARCHAR (100), id_point VARCHAR (20) , busstop VARCHAR (100), ordinal INT(11), nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30),  time_beg DATETIME, time_end DATETIME, status VARCHAR (30), n_pass INT(11) , all_districts VARCHAR (60), PRIMARY KEY(id)) ', [ route_p ] ,function(err, rows, fields) {
+                 if (err) throw err;
+                 })
+
+               connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, id_user INT(11), route_name VARCHAR (100), start VARCHAR (20) , finish VARCHAR (20) , n_inter INT(11), PRIMARY KEY(id)) ', [ n_route_p ] ,function(err, rows, fields) {
+                 if (err) throw err;
+                 })
+
+         })
 
        // Затем предлагаем указать пол
        mujorjen(query);
@@ -678,7 +727,10 @@ function choose_direction(msg) {
 
 const chatId = msg.chat.id
 
-const text = 'Указав направление (ОТКУДА >> КУДА),\nПостройте свой маршрут, выбрав по порядку улицы, по которым проедите. Затем, как укажете последнюю улицу вашего маршрута, нажмите "Завершить маршрут".\n\nP.S. Когда указываете начало маршрута (стартовое пересечение), сначала выберите пересекающую улицу, а затем ту по которой поедите'
+//const text = 'Указав направление (ОТКУДА >> КУДА),\nПостройте свой маршрут, выбрав по порядку улицы, по которым проедите. Затем, как укажете последнюю улицу вашего маршрута, нажмите "Завершить маршрут".\n\nP.S. Когда указываете начало маршрута (стартовое пересечение), сначала выберите пересекающую улицу, а затем ту по которой поедите'
+
+const text = 'c'
+
 bot.sendMessage(chatId, text, {
                      reply_markup: {
                        keyboard: [
@@ -906,6 +958,8 @@ choose_direction_to(query);
 
 
 
+
+
 function choose_to_district_driver(query) {
 
 var mysql  = require('mysql');
@@ -913,7 +967,7 @@ var mysql  = require('mysql');
         host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
-        database : 'route_driver'
+//        database : 'route_driver'
     })
 
 pool.getConnection(function(err, connection) {
@@ -943,34 +997,137 @@ else if (res[0] == 'zhbi2'){ var district = 'zhbi';}
 else if (res[0] == 'novouzenka2'){ var district = 'novouzenka';}
 else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 
-    connection.query(' UPDATE ?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM ??) AS route2 )',
+    connection.query(' UPDATE route_driver.?? SET finish = ? WHERE id = (SELECT MAX(id) FROM (SELECT MAX(id) FROM route_driver.??) AS route2 )',
     [ n_route, district, n_route ], function(err, rows, fields) {
     if (err) throw err;
-    choose_street(query);
+
+            connection.query(' SELECT * FROM route_driver.?? WHERE id = (SELECT id FROM route_driver.?? ORDER BY id DESC LIMIT 1) ',
+            [ n_route, n_route ], function(err, rows, fields) {
+            if (err) throw err;
+            var district = JSON.parse(JSON.stringify(rows));
+
+            if (district[0].start === 'yug' && district[0].finish === 'grd') {
+
+            var all_districts = district[0].start + '00' + 'bazar' + '00' + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'bazar', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        })
+                                            })
+                                })
+                    })
+            }
+            else if (district[0].start === 'grd' && district[0].finish === 'yug') {
+
+            var all_districts = district[0].start + '00' + 'bazar' + '00' + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'bazar', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+            else {
+
+            var all_districts = district[0].start + '00' + district[0].finish;
+
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        })
+                                            })
+                                })
+                    })
+            }
+
+
+            })
+
     })
 
 })
 
-//bot.sendMessage(user_id, 'a', {
-//                     reply_markup: {
-//                       keyboard: [
-//                         [{
-//                           text: 'Назад на прежний перекресток'
-//                         }],
-//
-//                         [{
-//                           text: 'Завершить маршрут'
-//                         }],
-//
-//                         [{
-//                           text: '⬅️ Назад на главное меню'
-//                         }]
-//
-//                       ],
-//                       resize_keyboard: true
-//                     }
-//                   })
+   const chatId = query.message.chat.id
+   const omenu = '📌 Чтобы найти попутного пассажира именно по маршруту, укажите свой маршрут.\n📌 Если вы прежде сохранили этот маршрут можете просто активизировать'
+            bot.sendMessage(chatId, omenu, {
+                     reply_markup: {
+                       keyboard: [
+                         [{
+                           text: '▶️ Создать новый маршрут'
+                         }],
 
+                         [{
+                           text: '⏯ Активизировать сохраненные маршруты'
+                         }],
+
+                         [{
+                           text: '⬅️ Назад на главное меню'
+                         }]
+                       ],
+                       resize_keyboard: true
+                     }
+                   })
 
 }
 
@@ -1002,7 +1159,7 @@ const chatId = msg.chat.id
 
 function driv(msg){
     const chatId = msg.chat.id
-    const omenu = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\nЧтобы изменить марку авто или номер авто или номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим пассажира нажмите "Стать пассажиром"'
+    const omenu = '📌 Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\n📌 Чтобы изменить марку авто или номер авто или номер телефона зайдите в раздел "Мои данные"\n📌 Чтобы перейти в режим пассажира нажмите "Стать пассажиром"'
             bot.sendMessage(chatId, omenu, {
                      reply_markup: {
                        keyboard: [
@@ -1017,9 +1174,9 @@ function driv(msg){
                        resize_keyboard: true
                      }
                    })
-            bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
-                          caption: 'Инструкция для водителей'
-                          })
+//            bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+//                          caption: 'Инструкция для водителей'
+//                          })
 }
 
 
@@ -1127,6 +1284,58 @@ pool.getConnection(function(err, connection) {
 
     })
 
+})
+}
+
+
+
+function choose_street_msg(msg) {
+
+        var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'route_driver'
+        })
+
+
+var user_id = msg.chat.id;
+var route_driver = 'route'+user_id;
+var n_route_driver = 'n_route'+user_id;
+
+bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+              caption: 'Инструкция для водителей'
+              })
+
+pool.getConnection(function(err, connection) {
+
+    connection.query('INSERT INTO ?? (begend, n_zapros, id_user, id_route) VALUES(?,?,?,(SELECT id FROM ?? WHERE id_user = ? AND id = (SELECT MAX(id) FROM ??) )) ',
+    [ route_driver, 'beg', 1, user_id, n_route_driver, user_id, n_route_driver ], function(err, rows, fields) {
+    if (err) throw err;
+
+
+    connection.query('SELECT * FROM kowe WHERE district1 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) OR district2 = (SELECT start FROM ?? WHERE id = (SELECT MAX(id) FROM ??)) ORDER BY streetname',
+    [ n_route_driver, n_route_driver, n_route_driver, n_route_driver ], function(err, rows, fields) {
+    if (err) throw err;
+    var interception = JSON.parse(JSON.stringify(rows));
+    console.log('int chosen', interception);
+
+    var keyboard = [];
+    for(var i = 0; i < rows.length; i++){
+    keyboard.push([{'text': ( interception[i].streetname ) , 'callback_data': ('beg_inter1#' + interception[i].district1 + '#' + interception[i].id_str)}]);
+    }
+
+     bot.sendMessage( msg.chat.id, 'Выберите пересекающую улицу стартового пересечения',
+     {
+     'reply_markup': JSON.stringify({
+     inline_keyboard: keyboard
+                                    })
+     }
+     )
+
+    })
+    })
 })
 }
 
@@ -1915,19 +2124,22 @@ console.log('Добавили колво мест и установили вре
                   console.log('TEST', test);
 
 // Вводим маршрут водителя в общую таблицу route в БД sitebot
-                      var mysql      = require('mysql');
-                      var pool  = mysql.createPool({
-                      host     : 'localhost',
-                      user     : 'mybd_user',
-                      password : 'admin123',
-                      database : 'sitebot'
-                      })
+                  var mysql      = require('mysql');
+                  var pool  = mysql.createPool({
+                  host     : 'localhost',
+                  user     : 'mybd_user',
+                  password : 'admin123',
+                  database : 'sitebot'
+                  })
 
-                      pool.getConnection(function(err, connection) {
+                  pool.getConnection(function(err, connection) {
+
+                      connection.query(' DELETE FROM route WHERE id_user = ? AND id_route = (SELECT id_route FROM (SELECT * FROM route) AS route2 WHERE id_user = ? ORDER BY id_route DESC LIMIT 1) ', [ user_id, user_id ], function (err, rows, fields) {
+                      if (err) throw err;
 
                           connection.query('INSERT INTO route ( begend, id_user, district, id_route, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, limit_place, uje_seli, all_districts ) VALUES ? ',[ test ], function (err, rows, fields) {
                           if (err) throw err;
-// Затем находим попутчиков водителю
+// Затем находим попутчиков водителю   DELETE FROM ?? WHERE n_zapros = ?
 
 
                              const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
@@ -1937,6 +2149,7 @@ console.log('Добавили колво мест и установили вре
                           driv_offer_todriv (query)
                           notify_admin_driv_start (query)
                           })
+                      })
 
                  })
              })
@@ -2837,7 +3050,7 @@ function passenger_update_time(query){
 
 var mysql  = require('mysql');
         var pool = mysql.createPool({
-                host     : 'localhost',
+        host     : 'localhost',
         user     : 'mybd_user',
         password : 'admin123',
         database : 'route_passenger'
@@ -2912,6 +3125,8 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 
                  pass_offer_topass (query);
                  pass_offer_todriv (query);
+                 send_rayon_poputi_pass_query (query);
+
                  })
             })
             })
@@ -3098,25 +3313,14 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 
                  var mysql  = require('mysql');
                          var pool = mysql.createPool({
-                                 host     : 'localhost',
+                         host     : 'localhost',
                          user     : 'mybd_user',
                          password : 'admin123',
                          database : 'sitebot'
-                     })
+                         })
 
-                pool.getConnection(function(err, connection) {
+                 pool.getConnection(function(err, connection) {
 
-//                connection.query(' SELECT DISTINCT id_user FROM route_p WHERE time_end > NOW() ', function (err, rows, fields) {
-//                if (err) throw err;
-//                var active_passenger = JSON.parse(JSON.stringify(rows));
-//                console.log(active_passenger);
-//                console.log('Сейчас столько активных водителей: ',active_passenger.length);
-//
-//                if(active_passenger.length == 0){
-//                timer.resume();
-//                console.log('Новый пассажир восстановил таймер');
-
-//begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, time_beg, time_end
                  connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
                                  [ test ], function(err, rows, fields) {
                                  if (err) throw err;
@@ -3132,25 +3336,9 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 
                  pass_offer_topass (query);
                  pass_offer_todriv (query);
+                 send_rayon_poputi_pass_query (query);
 
                  })
-
-//                 }
-//                 else
-//                 {
-//                 connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
-//                                 [ test ], function(err, rows, fields) {
-//                                 if (err) throw err;
-//                                 console.log('Время вставили в общее!', rows);
-//// Теперь отправляем карту
-//                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'), {
-//                 caption: 'В этих местах можно останавливаться водителю'
-//                 })
-//
-//                 })
-//
-//                 }
-//            })
             })
             })
             })
@@ -4446,11 +4634,6 @@ bot.on('callback_query', query => {
    else if (res[0] == 'mkdk_pass2' || res[0] == 'grd_pass2' || res[0] =='saran_pass2' || res[0] =='aktas_pass2' || res[0] =='dubovka_pass2' || res[0] =='fedorovka_pass2' || res[0] =='bazar_pass2' || res[0] =='yug_pass2' || res[0] =='srt_pass2' || res[0] =='doskey_pass2' || res[0] =='trud_pass2' || res[0] =='uwtobe_pass2' || res[0] =='prihon_pass2' || res[0] =='zhbi_pass2' || res[0] =='novouzenka_pass2' || res[0] =='malsaran_pass2' )
    { console.log('КУДА Район выбран!'); choose_to_district(query);  bot.deleteMessage(query.message.chat.id, query.message.message_id) }
 
-//   else if (res[0] == 'mkdk_dir1' || res[0] == 'grd_dir1' || res[0] =='saran_dir1' || res[0] =='aktas_dir1' || res[0] =='dubovka_dir1' || res[0] =='fedorovka_dir1' || res[0] =='bazar_dir1' || res[0] =='yug_dir1' || res[0] =='srt_dir1' || res[0] =='doskey_dir1' || res[0] =='trud_dir1' || res[0] =='uwtobe_dir1' || res[0] =='prihon_dir1' || res[0] =='zhbi_dir1' || res[0] =='novouzenka_dir1' || res[0] =='malsaran_dir1' )
-//   { update_direct1(query); vibor_direct2(query) }
-//   else if (res[0] == 'mkdk_dir2' || res[0] == 'grd_dir2' || res[0] =='saran_dir2' || res[0] =='aktas_dir2' || res[0] =='dubovka_dir2' || res[0] =='fedorovka_dir2' || res[0] =='bazar_dir2' || res[0] =='yug_dir2' || res[0] =='srt_dir2' || res[0] =='doskey_dir2' || res[0] =='trud_dir2' || res[0] =='uwtobe_dir2' || res[0] =='prihon_dir2' || res[0] =='zhbi_dir2' || res[0] =='novouzenka_dir2' || res[0] =='malsaran_dir2' )
-//   { update_direct2(query)}
-
    else {kbd(query)}
    }
 })
@@ -4501,8 +4684,8 @@ pool.getConnection(function(err, connection) {
                        else if (user[0].pol !== null && user[0].tel === null) { telpas(msg) }
         // Кнопки водителя
                       else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
-                      else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
-                      else if (msg.text === '▶️ Создать новый маршрут'){choose_direction(msg)}
+                      else if (msg.text === '🙋‍♂️ Найти попутчиков'){choose_direction(msg)}
+                      else if (msg.text === '▶️ Создать новый маршрут'){ choose_street_msg(msg) }
                       else if (msg.text === '⏯ Активизировать сохраненные маршруты'){choose_route_toactivate(msg)}
                       else if (msg.text === 'Завершить маршрут'){ indicate_number_of_places(msg);   bot.deleteMessage(msg.chat.id, msg.message_id); }
                       else if (msg.text === '⬅️ Назад на главное меню'){driv(msg)}
@@ -4534,8 +4717,8 @@ pool.getConnection(function(err, connection) {
                       else if (user[1].pol !== null && user[1].pol !== undefined && user[1].tel === null) { telpas(msg) }
 // Кнопки водителя
                       else if (msg.text === 'Стать пассажиром'){driv_to_pass(msg)}
-                      else if (msg.text === '🙋‍♂️ Найти попутчиков'){findpas(msg)}
-                      else if (msg.text === '▶️ Создать новый маршрут'){choose_direction(msg)}
+                      else if (msg.text === '🙋‍♂️ Найти попутчиков'){choose_direction(msg)}
+                      else if (msg.text === '▶️ Создать новый маршрут'){ choose_street_msg(msg) }
                       else if (msg.text === '⏯ Активизировать сохраненные маршруты'){choose_route_toactivate(msg)}
                       else if (msg.text === 'Завершить маршрут'){ indicate_number_of_places(msg);   bot.deleteMessage(msg.chat.id, msg.message_id); }
                       else if (msg.text === '⬅️ Назад на главное меню'){driv(msg)}
@@ -4697,6 +4880,195 @@ pool.getConnection(function(err, connection) {
 }
 
 
+
+
+function send_rayon_poputi_query (query){
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+var n_route_driver = 'n_route'+user_id;
+var route_driver = 'route'+user_id;
+
+pool.getConnection(function(err, connection) {
+
+
+   connection.query(' SELECT all_districts FROM route WHERE time_end > NOW() AND id_user = ? ', [ user_id ],  function(err, rows, fields) {
+   if (err) throw err;
+   var active_drivers = JSON.parse(JSON.stringify(rows));
+   console.log('Нашли водителей', active_drivers);
+   if (active_drivers.length == 0) { console.log('Сейчас нет водителей не плохо было бы остановить таймер', active_drivers) }
+   else{
+      console.log('есть еще активные водители', active_drivers)
+
+// Затем преобразовываем all_districts в массив с районами
+             var splited = active_drivers[0].all_districts.split("00");
+             if (splited.length == 2){
+             var like = 'LIKE "%' + active_drivers[0].all_districts + '%" ) ';
+             }
+             else if (splited.length == 3) {
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" ) ';
+             }
+             else if (splited.length == 4) {
+             var like = 'LIKE "%' + splited[0] + '00' + splited[1] + '%" ' + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[2] + '%" ' + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[2] + '%" '+ 'OR all_districts LIKE "%' + splited[2] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[0] + '00' + splited[3] + '%" '  + 'OR all_districts LIKE "%' + splited[1] + '00' + splited[3] + '%" ) ';
+             }
+             else{}
+             console.log('лайки', like)
+             var select = ' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" AND (all_districts ' + like;
+// active_drivers[i].id_user
+             connection.query( select, function(err, rows, fields) {
+             if (err) throw err;
+             var passenger_poputi_district = JSON.parse(JSON.stringify(rows));
+             console.log('passenger_poputi_district', passenger_poputi_district)
+                if (passenger_poputi_district.length == 0){
+                var text = 'В данный момент в вашем направлений нет пассажиров';
+                console.log(' нет пассажиров', user_id)
+                bot.sendMessage(user_id, text)
+                }
+                else {
+                console.log(' есть пассажиры')
+
+//                var keyboard = [];
+                var variant = [];
+
+                for (var i = 0; i < passenger_poputi_district.length/2; i++) {
+
+                  if( passenger_poputi_district[2*i].interception === null && passenger_poputi_district[2*i+1].interception === null ) {
+                  var number_pass = i+1;
+                  var keyboard = [];
+                  keyboard.push([{'text': ( number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
+                  var variant2 =  number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop ;
+//                  variant.push( number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop ) ;
+                  }
+
+                  else if ( passenger_poputi_district[2*i].interception === null && passenger_poputi_district[2*i+1].interception !== null ){
+                  var number_pass = i+1;
+                  var keyboard = [];
+                  keyboard.push([{'text': ( number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
+                  var variant2 = number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception ;
+//                  variant.push([number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception]);
+                  }
+
+                  else if ( passenger_poputi_district[2*i].interception !== null && passenger_poputi_district[2*i+1].interception === null ){
+                  var number_pass = i+1;
+                  var keyboard = [];
+                  keyboard.push([{'text': ( number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].street ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
+                  var variant2 = number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].street + '-' + passenger_poputi_district[2*i].interception + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop ;
+//                  variant.push([ number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].street + '-' + passenger_poputi_district[2*i].interception + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop ]);
+                  }
+
+                  else {
+                  var number_pass = i+1;
+                  var keyboard = [];
+                  keyboard.push([{'text': ( number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' c ' + passenger_poputi_district[2*i].interception + '-' + passenger_poputi_district[2*i].street ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
+                  var variant2 = number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].interception + '-' + passenger_poputi_district[2*i].street + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception ;
+//                  variant.push( number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].interception + '-' + passenger_poputi_district[2*i].street + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception );
+                  }
+
+                bot.sendMessage( user_id, variant2,
+                 {
+                  'reply_markup': JSON.stringify({
+                    inline_keyboard: keyboard
+                  })
+                 }
+                )
+                }
+                }
+             })
+      }
+//   }
+   })
+})
+}
+
+
+
+function send_rayon_poputi_pass_query (query){
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+var n_route_driver = 'n_route'+user_id;
+var route_driver = 'route'+user_id;
+
+var sql = ' SELECT * FROM (SELECT P_interception, P_street, P_busstop, P_n_pass, P_id_user, P_id_route, District, P_begend, D_id_route, D_id_user, D_begend FROM ' +
+          ' ( SELECT route_p.interception AS P_interception, route_p.street AS P_street, route_p.busstop AS P_busstop, route_p.n_pass AS P_n_pass, route_p.id_user AS P_id_user, route_p.id_route AS P_id_route, route.district AS District, route_p.begend AS P_begend, route.id_route AS D_id_route, route.id_user AS D_id_user, route.begend AS D_begend FROM route_p JOIN route ' +
+          ' WHERE route_p.district = route.district  AND ( route.begend = "beg" OR route.begend IS NULL ) AND route_p.begend = "beg" AND route.time_end > NOW() AND route_p.time_end > NOW() AND route_p.id_user = ? ) AS table1 ' +
+          ' WHERE EXISTS  ( SELECT * FROM ' +
+          ' ( SELECT route_p.interception AS P_interception, route_p.street AS P_street, route_p.busstop AS P_busstop, route_p.n_pass AS P_n_pass, route_p.id_user AS P_id_user, route_p.id_route AS P_id_route, route.district AS District, route_p.begend AS P_begend, route.id_route AS D_id_route, route.id_user AS D_id_user, route.begend AS D_begend FROM route_p JOIN route ' +
+          ' WHERE route_p.district = route.district  AND ( route.begend = "end" OR route.begend IS NULL ) AND route_p.begend = "end" AND route.time_end > NOW() AND route_p.time_end > NOW() AND route_p.id_user = ? ) AS table2 ' +
+          ' WHERE table1.P_id_user = table2.P_id_user AND table1.D_id_route = table2.D_id_route )) AS table3 ';
+
+pool.getConnection(function(err, connection) {
+
+connection.query( 'SELECT * FROM route_p WHERE id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id DESC LIMIT 1)' , [ user_id, user_id ],  function(err, rows, fields) {
+if (err) throw err;
+var passenger_poputi_district = JSON.parse(JSON.stringify(rows));
+console.log('!!send_rayon_poputi_pass_query!! Данные пассажира' , passenger_poputi_district)
+
+   connection.query( sql , [ user_id, user_id ],  function(err, rows, fields) {
+   if (err) throw err;
+   var driver = JSON.parse(JSON.stringify(rows));
+
+   if (passenger_poputi_district.length == 0) { console.log('Сейчас нет водителей не плохо было бы остановить таймер', passenger_poputi_district) }
+   else{
+      console.log('!!send_rayon_poputi_pass_query!! есть еще активные водители', passenger_poputi_district)
+
+        if( passenger_poputi_district[0].interception === null && passenger_poputi_district[1].interception === null ) {
+          var keyboard = [];
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+          var variant2 =  passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street;
+          }
+
+          else if ( passenger_poputi_district[0].interception === null && passenger_poputi_district[1].interception !== null ){
+          var keyboard = [];
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+          var variant2 = passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception ;
+          }
+
+          else if ( passenger_poputi_district[0].interception !== null && passenger_poputi_district[1].interception === null ){
+          var keyboard = [];
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].street ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+          var variant2 = passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].street + '-' + passenger_poputi_district[0].interception + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street;
+          }
+
+          else {
+          var keyboard = [];
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' c ' + passenger_poputi_district[0].interception + '-' + passenger_poputi_district[0].street ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+          var variant2 = passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].interception + '-' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception ;
+          }
+
+          for (var i = 0; i < driver.length; i++) {
+                bot.sendMessage( driver[i].D_id_user , variant2,
+                 {
+                  'reply_markup': JSON.stringify({
+                    inline_keyboard: keyboard
+                  })
+                 }
+                )
+          }
+
+      }
+   })
+   })
+})
+
+}
+
+
+
 function send_rayon_poputi (msg){
 
 var mysql  = require('mysql');
@@ -4803,6 +5175,7 @@ pool.getConnection(function(err, connection) {
    })
 })
 }
+
 
 
 function timer_driver (){
@@ -7853,6 +8226,187 @@ pool.getConnection(function(err, connection) {
         }
 
        })
+})
+}
+
+
+
+bot.onText(/\/sms_pass_video/, msg => {sms_pass_video(msg)})
+
+
+function sms_pass_video (msg) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT * FROM users WHERE vibor = "passenger"  ',
+
+       function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('колво водителей', driver);
+
+
+
+        if (driver.length <= 30){
+            setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+        }
+        else if(driver.length > 30 && driver.length <= 60){
+           setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < 30; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+           setTimeout(sms_30_60, 10000, 'funky');
+                function sms_30_60 (msg){
+                      for(var i = 30; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+        }
+        else if(driver.length > 60 && driver.length <= 90){
+           setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < 30; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+           setTimeout(sms_30_60, 10000, 'funky');
+                function sms_30_60 (msg){
+                      for(var i = 30; i < 60; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+           setTimeout(sms_60_90, 20000, 'funky');
+                function sms_60_90 (msg){
+                      for(var i = 60; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+        }
+        else if(driver.length > 90 && driver.length <= 120){
+           setTimeout(sms_30, 500, 'funky');
+                function sms_30 (msg){
+                      for(var i = 0; i < 30; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+           setTimeout(sms_30_60, 10000, 'funky');
+                function sms_30_60 (msg){
+                      for(var i = 30; i < 60; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+           setTimeout(sms_60_90, 20000, 'funky');
+                function sms_60_90 (msg){
+                      for(var i = 60; i < 90; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+           setTimeout(sms_90_120, 30000, 'funky');
+                function sms_90_120 (msg){
+                      for(var i = 90; i < driver.length; i++){
+                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          caption: 'Инструкция для пассажиров'
+                          })
+                      }
+                }
+        }
+
+       })
+})
+}
+
+
+bot.onText(/\/aaa/, msg => {aaa(msg)})
+
+function aaa (msg){
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var zapros = msg.chat.text;
+var user_id = msg.chat.id;
+var point_type = 1;
+var n_route_passenger = 'n_route_p'+user_id;
+var route_passenger = 'route_p'+user_id;
+
+//// Так как у пассажира и водителя, у которых совпался маршрут по нескольким столбцам, могут быть выбраны несколько строк, в конце выбираются уникальные столбцы из таблицы table3
+//var sql = ' SELECT DISTINCT PP_id_user, PP_begend, PP_id_route, PP_street, PP_interception, PP_busstop, ' +
+//               ' (SELECT street FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_street_end, ' +
+//               ' (SELECT interception FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_interception_end, ' +
+//               ' (SELECT busstop FROM route_p WHERE begend = "end" AND id_route = PP_id_route AND id_user = PP_id_user ) AS PP_busstop_end, ' +
+//               '  DD_id_user  AS DDD_id_user, DD_id_route  AS DDD_id_route, ' +
+//// Выбирает начальные данные street и interception водителя по "begend"-у выбирая "beg". Откуда этот водитель выезжает.
+//               ' ( SELECT street FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS street, ' +
+//               ' ( SELECT interception FROM route WHERE begend = "beg" AND id_user = DDD_id_user AND id_route = DDD_id_route ) AS interception, DD_time_beg ' +
+//               ' FROM (SELECT PP_id_user, PP_id_route, PP_id_point, PP_street, PP_interception, PP_busstop, PP_begend, PP_time_beg, PP_time_end, PP_near1, PP_near2, DD_id_user,  DD_id_route, DD_street, DD_interception, DD_id_point, DD_time_beg, DD_time_end ' +
+//// Вытаскивает время из БД в формате TIME (без даты, только время)
+//               ' FROM (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_street AS PP_street, route_p1.P_interception AS PP_interception, route_p1.P_busstop AS PP_busstop, route_p1.P_begend AS PP_begend, route_p1.P_time_beg AS PP_time_beg, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.street AS DD_street,  route.interception AS DD_interception,  route.id_point AS DD_id_point,  TIME(route.time_beg) AS  DD_time_beg,  route.time_end AS  DD_time_end  ' +
+//// Формирует новую таблицу route_p1, где создает два отдельных столбца near1 и near2 из одного столбца nearby_interception таблицы route_p
+//                     ' FROM (SELECT id_user AS P_id_user, begend AS P_begend, id_route AS P_id_route, id_point AS P_id_point, street AS P_street, interception AS P_interception, busstop AS P_busstop, time_beg AS P_time_beg, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p  WHERE time_end > NOW() AND status <> "busy" AND id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id DESC LIMIT 1) ) AS route_p1 ' +
+//// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table1. И затем из строк таблицы table1 выбирает строки у которых столбец begend = "beg"
+//                         ' JOIN route  WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route) AS table1 WHERE PP_begend = "beg" ' +
+//// Возвращает TRUE если запрос, указанный ниже подтверждается
+//                             ' AND  EXISTS  (SELECT * FROM  (SELECT  route_p1.P_id_user AS PP_id_user,  route_p1.P_id_route AS PP_id_route,  route_p1.P_id_point AS PP_id_point, route_p1.P_begend AS PP_begend, route_p1.P_time_end AS PP_time_end, route_p1.near1 AS PP_near1, route_p1.near2 AS PP_near2, route.id_user AS DD_id_user,  route.id_route AS DD_id_route,  route.id_point AS DD_id_point,  route.time_end AS DD_time_end   FROM (SELECT id_user AS P_id_user, id_route AS P_id_route, id_point AS P_id_point, begend AS P_begend, time_end AS P_time_end, SUBSTRING (nearby_interception, 1,15) AS near1, SUBSTRING (nearby_interception, 19,15) AS near2 FROM route_p WHERE time_end > NOW() AND status <> "busy" AND id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id DESC LIMIT 1) ) AS route_p1 JOIN route ' +
+//// Выбирает строки у которых совпадают id_point-ы, id_point с nearby_interception, с point_parinter_min5, с point_parinter_plu5 и формирует новую таблицу table2. И затем из строк таблицы table2 выбирает строки у которых столбец begend = "end" и id_user строки из таблицы table1 равен id_user-у строки таблицы table2  и все это сохраняет как таблицу table3
+//                                   ' WHERE  (route_p1.P_id_point = route.id_point  OR  route_p1.near1 = route.id_point OR  route_p1.near2 = route.id_point)  AND route.time_end > NOW()  ORDER BY PP_id_user, PP_id_route)  AS table2 WHERE PP_begend = "end" AND table1.PP_id_user = table2.PP_id_user AND table1.DD_id_user = table2.DD_id_user) ) AS table3 ';
+
+
+var sql = ' SELECT * FROM (SELECT P_interception, P_street, P_busstop, P_n_pass, P_id_user, P_id_route, District, P_begend, D_id_route, D_id_user, D_begend FROM ' +
+          ' ( SELECT route_p.interception AS P_interception, route_p.street AS P_street, route_p.busstop AS P_busstop, route_p.n_pass AS P_n_pass, route_p.id_user AS P_id_user, route_p.id_route AS P_id_route, route.district AS District, route_p.begend AS P_begend, route.id_route AS D_id_route, route.id_user AS D_id_user, route.begend AS D_begend FROM route_p JOIN route ' +
+          ' WHERE route_p.district = route.district  AND ( route.begend = "beg" OR route.begend IS NULL ) AND route_p.begend = "beg" AND route.time_end > NOW() AND route_p.time_end > NOW() ) AS table1 ' +
+          ' WHERE EXISTS  ( SELECT * FROM ' +
+          ' ( SELECT route_p.interception AS P_interception, route_p.street AS P_street, route_p.busstop AS P_busstop, route_p.n_pass AS P_n_pass, route_p.id_user AS P_id_user, route_p.id_route AS P_id_route, route.district AS District, route_p.begend AS P_begend, route.id_route AS D_id_route, route.id_user AS D_id_user, route.begend AS D_begend FROM route_p JOIN route ' +
+          ' WHERE route_p.district = route.district  AND ( route.begend = "end" OR route.begend IS NULL ) AND route_p.begend = "end" AND route.time_end > NOW() AND route_p.time_end > NOW() ) AS table2 ' +
+          ' WHERE table1.P_id_user = table2.P_id_user AND table1.D_id_route = table2.D_id_route )) AS table3  ' ;
+
+pool.getConnection(function(err, connection) {
+
+   connection.query(sql,  function(err, rows, fields) {
+   if (err) throw err;
+   var passenger = JSON.parse(JSON.stringify(rows));
+   console.log('like ', passenger);
+   })
+
 })
 }
 
