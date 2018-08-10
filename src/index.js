@@ -1032,6 +1032,8 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 
                                                         send_rayon_poputi_query (query)
 
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
                                                         })
                                             })
                                 })
@@ -1063,6 +1065,8 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 
                                                         send_rayon_poputi_query (query)
 
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
                                                         })
                                             })
                                 })
@@ -1095,6 +1099,8 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 
                                                         send_rayon_poputi_query (query)
 
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
                                                         })
                                             })
                                 })
