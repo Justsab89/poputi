@@ -18,13 +18,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-231">
-              <caret line="1102" column="88" lean-forward="false" selection-start-line="1102" selection-start-column="88" selection-end-line="1102" selection-end-column="88" />
+            <state relative-caret-position="143">
+              <caret line="8148" column="39" lean-forward="false" selection-start-line="8148" selection-start-column="26" selection-end-line="8148" selection-end-column="39" />
               <folding>
-                <element signature="e#0#413089#0" expanded="false" />
+                <element signature="e#0#413310#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -106,7 +106,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="config.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/config.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="17">
@@ -137,8 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pass_query</find>
-      <find>register_driv_aspass</find>
       <find>reg</find>
       <find>register_</find>
       <find>tel(</find>
@@ -167,6 +165,8 @@
       <find>чтобы найти</find>
       <find>driv_query</find>
       <find>choose_to</find>
+      <find>choose_street_msg</find>
+      <find>bot.sendVideo</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -646,7 +646,14 @@
       <option name="project" value="LOCAL" />
       <updated>1533858620621</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="мпп">
+      <created>1533859711112</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1533859711112</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="TodoView">
@@ -751,7 +758,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#413089#0" expanded="false" />
+            <element signature="e#0#413310#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -853,7 +860,7 @@
         <state relative-caret-position="986">
           <caret line="58" column="1" lean-forward="true" selection-start-line="58" selection-start-column="1" selection-end-line="58" selection-end-column="1" />
           <folding>
-            <element signature="e#0#413089#0" expanded="false" />
+            <element signature="e#0#413310#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -902,7 +909,7 @@
         <state relative-caret-position="357">
           <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding>
-            <element signature="e#0#413089#0" expanded="false" />
+            <element signature="e#0#413310#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -951,7 +958,7 @@
         <state relative-caret-position="357">
           <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding>
-            <element signature="e#0#413089#0" expanded="false" />
+            <element signature="e#0#413310#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -993,7 +1000,7 @@
         <state relative-caret-position="442">
           <caret line="26" column="19" lean-forward="false" selection-start-line="26" selection-start-column="19" selection-end-line="26" selection-end-column="19" />
           <folding>
-            <element signature="e#0#413089#0" expanded="false" />
+            <element signature="e#0#413310#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1112,21 +1119,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-231">
-          <caret line="1102" column="88" lean-forward="false" selection-start-line="1102" selection-start-column="88" selection-end-line="1102" selection-end-column="88" />
-          <folding>
-            <element signature="e#0#413089#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/config.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="1" column="54" lean-forward="false" selection-start-line="1" selection-start-column="54" selection-end-line="1" selection-end-column="54" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="143">
+          <caret line="8148" column="39" lean-forward="false" selection-start-line="8148" selection-start-column="26" selection-end-line="8148" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#413310#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

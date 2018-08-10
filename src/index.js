@@ -1310,7 +1310,7 @@ var user_id = msg.chat.id;
 var route_driver = 'route'+user_id;
 var n_route_driver = 'n_route'+user_id;
 
-bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+bot.sendVideo(user_id, fs.readFileSync(__dirname + '/video-driver.mp4'), {
               caption: 'Инструкция для водителей'
               })
 
@@ -8146,7 +8146,7 @@ pool.getConnection(function(err, connection) {
             setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8156,7 +8156,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8164,7 +8164,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8174,7 +8174,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8182,7 +8182,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8190,7 +8190,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_60_90, 20000, 'funky');
                 function sms_60_90 (msg){
                       for(var i = 60; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8200,7 +8200,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8208,7 +8208,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8216,7 +8216,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_60_90, 20000, 'funky');
                 function sms_60_90 (msg){
                       for(var i = 60; i < 90; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8224,7 +8224,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_90_120, 30000, 'funky');
                 function sms_90_120 (msg){
                       for(var i = 90; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-driver.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-driver.mp4'), {
                           caption: 'Инструкция для водителей'
                           })
                       }
@@ -8267,7 +8267,7 @@ pool.getConnection(function(err, connection) {
             setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8277,7 +8277,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8285,7 +8285,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8295,7 +8295,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8303,7 +8303,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8311,8 +8311,8 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_60_90, 20000, 'funky');
                 function sms_60_90 (msg){
                       for(var i = 60; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           })
                       }
                 }
@@ -8321,7 +8321,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30, 500, 'funky');
                 function sms_30 (msg){
                       for(var i = 0; i < 30; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8329,7 +8329,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_30_60, 10000, 'funky');
                 function sms_30_60 (msg){
                       for(var i = 30; i < 60; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8337,7 +8337,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_60_90, 20000, 'funky');
                 function sms_60_90 (msg){
                       for(var i = 60; i < 90; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
@@ -8345,7 +8345,7 @@ pool.getConnection(function(err, connection) {
            setTimeout(sms_90_120, 30000, 'funky');
                 function sms_90_120 (msg){
                       for(var i = 90; i < driver.length; i++){
-                          bot.sendVideo(chatId, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
+                          bot.sendVideo(driver[i].id_user, fs.readFileSync(__dirname + '/video-passenger.mp4'), {
                           caption: 'Инструкция для пассажиров'
                           })
                       }
