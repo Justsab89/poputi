@@ -5034,37 +5034,85 @@ console.log('!!send_rayon_poputi_pass_query!! Данные пассажира' ,
 
         if( passenger_poputi_district[0].interception === null && passenger_poputi_district[1].interception === null ) {
           var keyboard = [];
-          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+           for (var i = 0; i < driver.length; i++) {
+
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
           var variant2 =  passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street;
+
+                  bot.sendMessage( driver[i].D_id_user , variant2,
+                   {
+                    'reply_markup': JSON.stringify({
+                      inline_keyboard: keyboard
+                    })
+                   }
+                  )
+
+          }
           }
 
           else if ( passenger_poputi_district[0].interception === null && passenger_poputi_district[1].interception !== null ){
           var keyboard = [];
-          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+          for (var i = 0; i < driver.length; i++) {
+
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
           var variant2 = passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception ;
+
+                  bot.sendMessage( driver[i].D_id_user , variant2,
+                   {
+                    'reply_markup': JSON.stringify({
+                      inline_keyboard: keyboard
+                    })
+                   }
+                  )
+
+          }
           }
 
           else if ( passenger_poputi_district[0].interception !== null && passenger_poputi_district[1].interception === null ){
           var keyboard = [];
-          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].street ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+          for (var i = 0; i < driver.length; i++) {
+
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].street ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
           var variant2 = passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].street + '-' + passenger_poputi_district[0].interception + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street;
+
+                 bot.sendMessage( driver[i].D_id_user , variant2,
+                   {
+                    'reply_markup': JSON.stringify({
+                      inline_keyboard: keyboard
+                    })
+                   }
+                  )
+
+          }
           }
 
           else {
           var keyboard = [];
-          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' c ' + passenger_poputi_district[0].interception + '-' + passenger_poputi_district[0].street ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[0].D_id_user )}]);
+          for (var i = 0; i < driver.length; i++) {
+
+          keyboard.push([{'text': ( passenger_poputi_district[1].n_pass +' чел.'+ ' c ' + passenger_poputi_district[0].interception + '-' + passenger_poputi_district[0].street ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
           var variant2 = passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].interception + '-' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception ;
+
+                bot.sendMessage( driver[i].D_id_user , variant2,
+                   {
+                    'reply_markup': JSON.stringify({
+                      inline_keyboard: keyboard
+                    })
+                   }
+                  )
+
+          }
           }
 
-          for (var i = 0; i < driver.length; i++) {
-                bot.sendMessage( driver[i].D_id_user , variant2,
-                 {
-                  'reply_markup': JSON.stringify({
-                    inline_keyboard: keyboard
-                  })
-                 }
-                )
-          }
+//          for (var i = 0; i < driver.length; i++) {
+//                bot.sendMessage( driver[i].D_id_user , variant2,
+//                 {
+//                  'reply_markup': JSON.stringify({
+//                    inline_keyboard: keyboard
+//                  })
+//                 }
+//                )
+//          }
 
       }
    })
