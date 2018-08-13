@@ -3132,7 +3132,7 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                  pass_offer_topass (query);
                  pass_offer_todriv (query);
                  send_rayon_poputi_pass_query (query);
-
+                 notify_driv_about_pass (query)
                  })
             })
             })
@@ -3343,7 +3343,7 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                  pass_offer_topass (query);
                  pass_offer_todriv (query);
                  send_rayon_poputi_pass_query (query);
-
+                 notify_driv_about_pass (query);
                  })
             })
             })
@@ -4545,6 +4545,8 @@ bot.on('callback_query', query => {
 
   if (query.data =='driver') {create_user(query);
   bot.sendMessage(query.message.chat.id, 'Марка вашего автомобиля\nНапишите в таком формате:\nБелая Toyota Camry 30')}
+  else if (query.data =='stop_not') { stop_notify_driv (query) }
+  else if (query.data =='stop_not_pass') { stop_notify_pass (query) }
   else if (query.data =='passenger'){create_user(query);  mujorjen (query)}
   else if (query.data =='man' || query.data =='woman' ){pol(query); bot.sendMessage(query.message.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234')}
   else if (query.data =='man msg' || query.data =='woman msg' ){pol(query); pass_again(query)}
@@ -8464,3 +8466,281 @@ pool.getConnection(function(err, connection) {
 })
 }
 
+
+
+function notify_driv_about_pass (query){
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+var n_route_passenger = 'n_route_p'+user_id;
+var route_passenger = 'route_p'+user_id;
+
+pool.getConnection(function(err, connection) {
+
+   connection.query( 'SELECT * FROM stop_notification WHERE vibor = "driver" ' ,  function(err, rows, fields) {
+   if (err) throw err;
+   var exception = JSON.parse(JSON.stringify(rows));
+
+   var test = [];
+   for(var i = 0; i < rows.length; i++){
+   test.push(exception[i].id_user);
+   }
+   console.log('тест ', test);
+
+          connection.query( ' SELECT * FROM route_p WHERE id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id DESC LIMIT 1)' , [ user_id, user_id ],  function(err, rows, fields) {
+          if (err) throw err;
+          var pass = JSON.parse(JSON.stringify(rows));
+
+           if (pass[0].interception === null && pass[1].interception === null) {
+           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' и едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
+                      '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
+           }
+           else if (pass[0].interception === null && pass[1].interception !== null) {
+           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
+                      '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
+           }
+           else if (pass[0].interception !== null && pass[1].interception === null) {
+           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
+                      '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
+           }
+           else if (pass[0].interception !== null && pass[1].interception !== null) {
+           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' и едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
+                      '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
+           }
+           console.log('text ', text);
+
+                var sql = ' SELECT DISTINCT id_user FROM users WHERE vibor = "driver" AND id_user NOT IN (?) ';
+                connection.query( sql, [ test ], function(err, rows, fields) {
+                if (err) throw err;
+                var driver = JSON.parse(JSON.stringify(rows));
+                console.log('like ', driver);
+
+                        if (driver.length <= 30){
+                            setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                        reply_markup: {
+                                                          inline_keyboard: [
+                                                            [{
+                                                              text: 'Не отправляйте мне такие уведомления',
+                                                              callback_data:  'stop_not'
+                                                            }]
+                                                          ]
+                                                        }
+
+                                       })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 30 && driver.length <= 60){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                                      })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                     reply_markup: {
+                                                       inline_keyboard: [
+                                                         [{
+                                                           text: 'Не отправляйте мне такие уведомления',
+                                                           callback_data:  'stop_not'
+                                                         }]
+                                                       ]
+                                                     }
+
+                                    })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 60 && driver.length <= 90){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 20000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                        reply_markup: {
+                                                        inline_keyboard: [
+                                                        [{
+                                                        text: 'Не отправляйте мне такие уведомления',
+                                                        callback_data:  'stop_not'
+                                                        }]
+                                                        ]
+                                                        }
+
+                                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 90 && driver.length <= 120){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 20000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 30000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                })
+          })
+
+  })
+})
+
+}
+
+
+
+
+function stop_notify_driv (query) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+   connection.query( ' INSERT INTO stop_notification (id_user, vibor) VALUES (?, "driver") ' , [user_id], function(err, rows, fields) {
+   if (err) throw err;
+   console.log('inserted stop notifying driver ', rows);
+   })
+})
+}
+
+
+
+function stop_notify_pass (query) {
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = query.message.chat.id;
+
+pool.getConnection(function(err, connection) {
+
+   connection.query( ' INSERT INTO stop_notification (id_user, vibor) VALUES (?, "passenger") ' , [user_id], function(err, rows, fields) {
+   if (err) throw err;
+   console.log('inserted stop notifying passenger ', rows);
+   })
+})
+}
