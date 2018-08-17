@@ -21,9 +21,11 @@
       <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="8514" column="25" lean-forward="false" selection-start-line="8514" selection-start-column="25" selection-end-line="8514" selection-end-column="25" />
-              <folding />
+            <state relative-caret-position="348">
+              <caret line="215" column="27" lean-forward="true" selection-start-line="215" selection-start-column="27" selection-end-line="215" selection-end-column="27" />
+              <folding>
+                <element signature="e#0#430847#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -135,26 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>woman</find>
-      <find>passenger_again</find>
-      <find>На карте указаны границы районов</find>
-      <find>sendvide</find>
-      <find>mkdk</find>
-      <find>ready now</find>
-      <find>passenger_update_time(query)</find>
-      <find>pass_offer_todriv (query)</find>
-      <find>pass_offer_todriv</find>
-      <find>send_rayon_poputi_</find>
-      <find>send_rayon_poputi_qu</find>
-      <find>send_rayon_poputi_query</find>
-      <find>send_rayon_poputi_pass_query</find>
-      <find>send_rayo</find>
-      <find>send_rayon_poputi(msg)</find>
-      <find>send_rayon_poputi_pass</find>
-      <find>есть еще активные водители</find>
-      <find>offer_to_pass</find>
-      <find>accept_offer</find>
-      <find>pass_confirmed</find>
       <find>telpas</find>
       <find>чтобы найти</find>
       <find>driv_query</find>
@@ -165,6 +147,26 @@
       <find>in (?</find>
       <find>id_point in (?</find>
       <find>Возможно этот пассажир вам попути</find>
+      <find>split</find>
+      <find>/sms_spec</find>
+      <find>/vv</find>
+      <find>пассажиро</find>
+      <find>в майкудук</find>
+      <find>майкудук</find>
+      <find>telpas(msg)</find>
+      <find>маловероя</find>
+      <find>pass(msg)</find>
+      <find>pass(query)</find>
+      <find>pass (query)</find>
+      <find>driv (query)</find>
+      <find>main_menu_passenger</find>
+      <find>pass_again(query)</find>
+      <find>/picture-map.png</find>
+      <find>tel(msg)</find>
+      <find>driv(msg</find>
+      <find>найти попут</find>
+      <find>create_route_driver</find>
+      <find>'Ваш номер</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -672,7 +674,14 @@
       <option name="project" value="LOCAL" />
       <updated>1533885764107</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="мпп">
+      <created>1534146853551</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1534146853551</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TodoView">
@@ -697,7 +706,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32952693" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33931485" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20065252" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31694403" sideWeight="0.4877651" order="0" side_tool="false" content_ui="combo" />
@@ -776,7 +785,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#430847#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -876,7 +887,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="986">
           <caret line="58" column="1" lean-forward="true" selection-start-line="58" selection-start-column="1" selection-end-line="58" selection-end-column="1" />
-          <folding />
+          <folding>
+            <element signature="e#0#430847#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -923,7 +936,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#430847#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -970,7 +985,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#430847#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1010,7 +1027,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="442">
           <caret line="26" column="19" lean-forward="false" selection-start-line="26" selection-start-column="19" selection-end-line="26" selection-end-column="19" />
-          <folding />
+          <folding>
+            <element signature="e#0#430847#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1104,14 +1123,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="5" lean-forward="false" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -1122,9 +1133,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="8514" column="25" lean-forward="false" selection-start-line="8514" selection-start-column="25" selection-end-line="8514" selection-end-column="25" />
-          <folding />
+        <state relative-caret-position="348">
+          <caret line="215" column="27" lean-forward="true" selection-start-line="215" selection-start-column="27" selection-end-line="215" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#430847#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1132,6 +1145,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="5" lean-forward="false" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
           <folding />
         </state>
       </provider>

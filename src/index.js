@@ -493,7 +493,7 @@ pool.getConnection(function(err, connection) {
       if (err) throw err;
       driv(msg);
       create_route_driver(msg);
-      bot.sendMessage( zapros, '‼️ Обязательно подпишитесь на канал t.me/popooti\nПройдите по ссылке t.me/popooti и нажмите "Подписаться"')
+      bot.sendMessage( zapros, '📌 Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\n📌 Чтобы найти попутчиков нажмите на "Найти попутчиков"\n📌 Чтобы изменить марку авто или гос.номер авто или номер телефона зайдите в раздел "Мои данные"\n📌 Чтобы перейти в режим пассажира нажмите "Стать пассажиром"\n\n‼️ Обязательно подпишитесь на канал t.me/popooti\nПройдите по ссылке t.me/popooti и нажмите "Подписаться"')
       bot.sendMessage( 336243307, '🚘 Еще один водитель зарегался')
     })
 })
@@ -654,7 +654,7 @@ function pass(msg){
 
     else {
     const chatId = msg.chat.id
-    const text_keyboard = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\n\n❗️ В данный момент пока только 48 водителей из Майкудука, поэтому сейчас маловероятно что вы найдете попутное авто. Как их будет 80. Мы вас обязательно уведомим.\n\nЧтобы изменить номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим водителя нажмите "Стать водителем"'
+    const text_keyboard = '🔹 Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\n\n❗️ В данный момент пока только 104 водителей в основном из Майкудука, поэтому сейчас маловероятно что вы найдете попутное авто. Как их будет 200. Мы вас обязательно уведомим.\n\n🔹 Чтобы изменить номер телефона зайдите в раздел "Мои данные"\n🔹 Чтобы перейти в режим водителя нажмите "Стать водителем"'
     bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
     }
 }
@@ -756,7 +756,7 @@ bot.sendPhoto(chatId, fs.readFileSync(__dirname + '/picture-map.png'), {
 caption: 'На карте указаны границы районов'
 })
 
-bot.sendMessage(chatId, 'Выберите направление. ОТКУДА', {
+bot.sendMessage(chatId, 'Выберите направление. ОТКУДА\n👇 Границы районов указаны на карте ниже списка', {
                      reply_markup: {
                       inline_keyboard: [
                          [{
@@ -1165,7 +1165,7 @@ const chatId = msg.chat.id
 
 function driv(msg){
     const chatId = msg.chat.id
-    const omenu = '📌 Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\n📌 Чтобы изменить марку авто или номер авто или номер телефона зайдите в раздел "Мои данные"\n📌 Чтобы перейти в режим пассажира нажмите "Стать пассажиром"'
+    const omenu = 'Вы на главном меню'
             bot.sendMessage(chatId, omenu, {
                      reply_markup: {
                        keyboard: [
@@ -2485,28 +2485,25 @@ function vodorpas_again (msg){
 function create_route_driver(msg){
 
   var mysql  = require('mysql');
-         var connection = mysql.createConnection({
+         var pool = mysql.createPool({
          host     : 'localhost',
          user     : 'mybd_user',
          password : 'admin123',
          database : 'route_driver'
       })
 
-      connection.connect()
-
       var user_id = msg.chat.id;
-      console.log(user_id);
       var route = 'route'+user_id;
       var n_route = 'n_route'+user_id;
 
+pool.getConnection(function(err, connection) {
       connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, begend VARCHAR (5), n_zapros INT (5) , id_user INT(11) , id_route INT(11) , district VARCHAR (20) , point_type INT(11) , id_street INT(11), street VARCHAR (100), id_interception INT(11), interception VARCHAR (100), id_point VARCHAR (20), busstop VARCHAR (100) , ordinal INT(11), nearby_interception VARCHAR (80), point_parinter_min5 VARCHAR (30), point_parinter_plu5 VARCHAR (30), time_beg DATETIME, time_end DATETIME, status VARCHAR (30), limit_place INT(11) , uje_seli INT(11) , all_districts VARCHAR (60), PRIMARY KEY(id)) ',[route] ,function(err, rows, fields) {
         if (err) throw err;
         })
       connection.query(' CREATE TABLE ?? (id INT(100) NOT NULL AUTO_INCREMENT, id_user INT(11), route_name VARCHAR (100), start VARCHAR (20), finish VARCHAR (20), n_inter INT(11), PRIMARY KEY(id)) ',[n_route] ,function(err, rows, fields) {
         if (err) throw err;
         })
-
-      connection.end()
+})
 }
 
 
@@ -3123,7 +3120,7 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                                  console.log('Время вставили в общее!', rows);
 
 // Теперь отправляем карту
-                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
+//                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
 
 
                 const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
@@ -3144,9 +3141,11 @@ console.log('Время вставили!');
 })
 //После окончания заказа на поиск авто возвращаемся в главное меню
 const chatId = query.message.chat.id;
-const text_keyboard = 'Сейчас бот ищет авто!\nТеперь бот будет высылать вам варианты попутного авто\nВам нужно будет выбрать, нажав на один из вариантов';
+const text_keyboard = '❗️ Сейчас бот ищет авто!\nТеперь бот будет высылать вам варианты попутного авто\nВам нужно будет выбрать, нажав на один из вариантов';
 bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
 }
+
+
 
 
 function passenger_plan_time(query){
@@ -3333,9 +3332,9 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                                  console.log('Время вставили в общее!', rows);
 
 // Теперь отправляем карту
-                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'), {
-                 caption: 'В этих местах можно останавливаться водителю'
-                 })
+//                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'), {
+//                 caption: 'В этих местах можно останавливаться водителю'
+//                 })
 
                  const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
                  bot.sendMessage(user_id, text)
@@ -3356,10 +3355,11 @@ console.log('Время вставили!');
 })
 //После окончания заказа на поиск авто возвращаемся в главное меню
 const chatId = query.message.chat.id;
-const text_keyboard = 'Вы на главном меню';
+const text_keyboard = '❗️ Сейчас бот ищет авто!\nТеперь бот будет высылать вам варианты попутного авто\nВам нужно будет выбрать, нажав на один из вариантов';
 bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
 
 }
+
 
 
 
@@ -4544,12 +4544,12 @@ bot.on('callback_query', query => {
 
 
   if (query.data =='driver') {create_user(query);
-  bot.sendMessage(query.message.chat.id, 'Марка вашего автомобиля\nНапишите в таком формате:\nБелая Toyota Camry 30')}
+  bot.sendMessage(query.message.chat.id, 'Марка вашего автомобиля\nНапишите в таком формате:\nБелая Toyota Camry 30'); bot.deleteMessage(query.message.chat.id, query.message.message_id ) }
   else if (query.data =='stop_not') { stop_notify_driv (query) }
   else if (query.data =='stop_not_pass') { stop_notify_pass (query) }
-  else if (query.data =='passenger'){create_user(query);  mujorjen (query)}
-  else if (query.data =='man' || query.data =='woman' ){pol(query); bot.sendMessage(query.message.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234')}
-  else if (query.data =='man msg' || query.data =='woman msg' ){pol(query); pass_again(query)}
+  else if (query.data =='passenger'){create_user(query);  mujorjen (query); bot.deleteMessage(query.message.chat.id, query.message.message_id ) }
+  else if (query.data =='man' || query.data =='woman' ){pol(query); bot.sendMessage(query.message.chat.id, 'Напишите ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234'); bot.deleteMessage(query.message.chat.id, query.message.message_id ) }
+  else if (query.data =='man msg' || query.data =='woman msg' ){pol(query); pass_again(query); bot.deleteMessage(query.message.chat.id, query.message.message_id )}
   else if (query.data =='mkdk' || query.data =='grd' || query.data =='saran' || query.data =='aktas' || query.data =='dubovka' || query.data =='fedorovka' || query.data =='bazar' || query.data =='yug' || query.data =='srt' || query.data =='doskey' || query.data =='trud' || query.data =='uwtobe' || query.data =='prihon' || query.data =='zhbi' || query.data =='novouzenka' || query.data =='malsaran' )
   { choose_from_district_driver(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (query.data =='mkdk2' || query.data =='grd2' || query.data =='saran2' || query.data =='aktas2' || query.data =='dubovka2' || query.data =='fedorovka2' || query.data =='bazar2' || query.data =='yug2' || query.data =='srt2' || query.data =='doskey2' || query.data =='trud2' || query.data =='uwtobe2' || query.data =='prihon2' || query.data =='zhbi2' || query.data =='novouzenka2' || query.data =='malsaran2' )
@@ -4564,8 +4564,7 @@ bot.on('callback_query', query => {
   else if (res[0] == '21') { insert_21_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == '22') { insert_22_interception(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
   else if (res[0] == 'n_pass') { insert_number_of_passengers(query); bot.deleteMessage(query.message.chat.id, query.message.message_id) }
-  else if (res[0] == 'n_place') { end_route(query); search_regime_query(query)  }
-  else if (res[0] == 'map') { console.log('callback mapa: ', query.data) }
+  else if (res[0] == 'n_place') { end_route(query); search_regime_query(query); bot.deleteMessage(query.message.chat.id, query.message.message_id ) }
   else if (res[0] == 'driver') { console.log('driver: ', query.data); accept_driver(query) }
   else if (res[0] == 'offer_to_pass') { console.log('offer to pass ', query.data); offer_to_pass(query) }
   else if (res[0] == 'accept_offer') { console.log('accepted offer ', query.data); pass_confirmed(query) }
@@ -4687,7 +4686,7 @@ pool.getConnection(function(err, connection) {
               console.log('message text ', msg.text);
                    if (user.length == 1) {
                        if (user[0].marka === null && user[0].vibor === 'driver') { marka(msg) }
-                       else if (user[0].marka !== null && user[0].nomer === null && user[0].vibor === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Ваш номер телефона\nНапишите слитно в таком формате:\n+77013331234') }
+                       else if (user[0].marka !== null && user[0].nomer === null && user[0].vibor === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Напишите ваш номер телефона\nНапишите слитно в таком формате:\n+77013330044') }
                        else if (user[0].nomer !== null && user[0].tel === null) { tel(msg) }
                        else if (user[0].pol !== null && user[0].tel === null) { telpas(msg) }
         // Кнопки водителя
@@ -4716,7 +4715,6 @@ pool.getConnection(function(err, connection) {
                       else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
                       else if (msg.text === 'Нет') {search_regime(msg)}
                       else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
-                      else if (msg.text === 'йцукен'){create_route_driver(msg)}
                       else {console.log('Hmm')}
                    }
                    else if (user.length == 2) {
@@ -4749,7 +4747,6 @@ pool.getConnection(function(err, connection) {
                       else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
                       else if (msg.text === 'Нет') {search_regime(msg)}
                       else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
-                      else if (msg.text === 'йцукен'){create_route_driver(msg)}
                       else {console.log('Hmm')}
                    }
                }
@@ -8744,3 +8741,51 @@ pool.getConnection(function(err, connection) {
    })
 })
 }
+
+
+
+bot.onText(/\/sms_spec (.+)/, (msg, [source, match]) => {
+
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+console.log('!!message text', msg.text);
+
+var msg_text = msg.text;
+
+var text = msg_text.replace("/sms_spec", "");
+var splited = text.split(" ");
+//var id_user = splited.shift();
+var id_user = splited.splice(1,1);
+var text_to = splited.join(" ");
+
+console.log('!!text', text);
+console.log('splited ', splited);
+console.log('id_user: ', id_user);
+console.log('!!text_to', text_to);
+
+
+
+bot.sendMessage(id_user[0], text_to)
+
+//pool.getConnection(function(err, connection) {
+//
+//       connection.query(' SELECT * FROM users WHERE vibor = "passenger"  ',
+//
+//       function(err, rows, fields) {
+//       if (err) throw err;
+//       var driver = JSON.parse(JSON.stringify(rows));
+//       console.log('колво пассажиров', driver);
+//       })
+//})
+
+})
+
