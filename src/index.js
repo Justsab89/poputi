@@ -654,7 +654,7 @@ function pass(msg){
 
     else {
     const chatId = msg.chat.id
-    const text_keyboard = '🔹 Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\n\n❗️ В данный момент пока только 104 водителей в основном из Майкудука, поэтому сейчас маловероятно что вы найдете попутное авто. Как их будет 200. Мы вас обязательно уведомим.\n\n🔹 Чтобы изменить номер телефона зайдите в раздел "Мои данные"\n🔹 Чтобы перейти в режим водителя нажмите "Стать водителем"'
+    const text_keyboard = '🔹 Вы успешно зарегистрировались\nТеперь можете находить себе попутное авто\n\n❗️ В данный момент пока только 170 водителей в основном из Майкудука, поэтому сейчас маловероятно что вы найдете попутное авто. Как их будет 200. Мы вас обязательно уведомим.\n\n🔹 Чтобы изменить номер телефона зайдите в раздел "Мои данные"\n🔹 Чтобы перейти в режим водителя нажмите "Стать водителем"'
     bot.sendMessage(chatId, text_keyboard, main_menu_passenger)
     }
 }
@@ -1429,6 +1429,290 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     })
 
             }
+// Если из актаса в юго-восток
+            else if (district[0].start === 'aktas' && district[0].finish === 'yug') {
+
+            var all_districts = district[0].start + '00' + 'grd' + '00'  + 'bazar' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([  null, user_id, district[0].id, 'bazar', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из юго-востока в актас
+            else if (district[0].start === 'yug' && district[0].finish === 'aktas') {
+
+            var all_districts = district[0].start + '00' + 'bazar' + '00' + 'grd' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'bazar', all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из актаса в район базара
+            else if (district[0].start === 'aktas' && district[0].finish === 'bazar') {
+
+            var all_districts = district[0].start + '00' + 'grd' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если с района базара в актас
+            else if (district[0].start === 'bazar' && district[0].finish === 'aktas') {
+
+            var all_districts = district[0].start + '00' + 'grd' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из актаса в юго-восток
+            else if (district[0].start === 'dubovka' && district[0].finish === 'yug') {
+
+            var all_districts = district[0].start + '00' + 'grd' + '00'  + 'bazar' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([  null, user_id, district[0].id, 'bazar', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из юго-востока в актас
+            else if (district[0].start === 'yug' && district[0].finish === 'dubovka') {
+
+            var all_districts = district[0].start + '00' + 'bazar' + '00' + 'grd' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'bazar', all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из актаса в район базара
+            else if (district[0].start === 'dubovka' && district[0].finish === 'bazar') {
+
+            var all_districts = district[0].start + '00' + 'grd' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если с района базара в актас
+            else if (district[0].start === 'bazar' && district[0].finish === 'dubovka') {
+
+            var all_districts = district[0].start + '00' + 'grd' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
 // Если из юго-востока в район ЖБИ
             else if (district[0].start === 'yug' && district[0].finish === 'zhbi') {
 
@@ -1686,7 +1970,7 @@ function driv(msg){
 
 function driv_query (query){
     const chatId = query.message.chat.id
-    const omenu = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\nЧтобы изменить марку авто или номер авто или номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим пассажира нажмите "Вы сейчс водитель"'
+    const omenu = 'Вы успешно зарегистрировались\nТеперь можете находить себе попутчиков\nЧтобы изменить марку авто или номер авто или номер телефона зайдите в раздел "Мои данные"\nЧтобы перейти в режим пассажира нажмите "Вы сейчас водитель"'
             bot.sendMessage(chatId, omenu, {
                      reply_markup: {
                        keyboard: [
@@ -8995,21 +9279,69 @@ pool.getConnection(function(err, connection) {
           connection.query( ' SELECT * FROM route_p WHERE id_user = ? AND id_route = (SELECT id_route FROM route_p WHERE id_user = ? ORDER BY id DESC LIMIT 1)' , [ user_id, user_id ],  function(err, rows, fields) {
           if (err) throw err;
           var pass = JSON.parse(JSON.stringify(rows));
+          var all_districts = pass[0].all_districts;
+          var splited = all_districts.split("00");
+          var first = splited.shift();
+          var last = splited.pop();
+
+            console.log(first, ' !! ', last );
+
+            if (first == 'mkdk'){ var district = 'Майкудук';}
+            else if (first == 'grd'){ var district = 'Центр';}
+            else if (first == 'saran'){ var district = 'Сарань';}
+            else if (first == 'aktas'){ var district = 'Актас';}
+            else if (first == 'dubovka'){ var district = 'Дубовка';}
+            else if (first == 'fedorovka'){ var district = 'Федоровка';}
+            else if (first == 'bazar'){ var district = 'Район базара';}
+            else if (first == 'yug'){ var district = 'Юго-восток';}
+            else if (first == 'srt'){ var district = 'Сортировка';}
+            else if (first == 'doskey'){ var district = 'Доскей';}
+            else if (first == 'trud'){ var district = 'пос. Трудовое';}
+            else if (first == 'uwtobe'){ var district = 'Уштобе';}
+            else if (first == 'prihon'){ var district = 'Пришахтинск';}
+            else if (first == 'zhbi'){ var district = 'район ЖБИ';}
+            else if (first == 'novouzenka'){ var district = 'Новоузенка';}
+            else if (first == 'malsaran'){ var district = 'Малая сарань';}
+
+            if (last == 'mkdk'){ var district2 = 'Майкудук';}
+            else if (last == 'grd'){ var district2 = 'Центр';}
+            else if (last == 'saran'){ var district2 = 'Сарань';}
+            else if (last == 'aktas'){ var district2 = 'Актас';}
+            else if (last == 'dubovka'){ var district2 = 'Дубовка';}
+            else if (last == 'fedorovka'){ var district2 = 'Федоровка';}
+            else if (last == 'bazar'){ var district2 = 'Район базара';}
+            else if (last == 'yug'){ var district2 = 'Юго-восток';}
+            else if (last == 'srt'){ var district2 = 'Сортировка';}
+            else if (last == 'doskey'){ var district2 = 'Доскей';}
+            else if (last == 'trud'){ var district2 = 'пос. Трудовое';}
+            else if (last == 'uwtobe'){ var district2 = 'Уштобе';}
+            else if (last == 'prihon'){ var district2 = 'Пришахтинск';}
+            else if (last == 'zhbi'){ var district2 = 'район ЖБИ';}
+            else if (last == 'novouzenka'){ var district2 = 'Новоузенка';}
+            else if (last == 'malsaran'){ var district2 = 'Малая сарань';}
 
            if (pass[0].interception === null && pass[1].interception === null) {
-           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' и едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
+           var text = 'Возможно этот пассажир вам попути.' +
+                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\nОн/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' и едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            else if (pass[0].interception === null && pass[1].interception !== null) {
-           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
+           var text = 'Возможно этот пассажир вам попути.' +
+                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\nОн/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            else if (pass[0].interception !== null && pass[1].interception === null) {
-           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
+           var text = 'Возможно этот пассажир вам попути.' +
+                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\n Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            else if (pass[0].interception !== null && pass[1].interception !== null) {
-           var text = 'Возможно этот пассажир вам попути. Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' и едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
+           var text = 'Возможно этот пассажир вам попути.' +
+                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\n Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' и едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            console.log('text ', text);
