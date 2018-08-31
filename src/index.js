@@ -9322,26 +9322,30 @@ pool.getConnection(function(err, connection) {
 
            if (pass[0].interception === null && pass[1].interception === null) {
            var text = 'Возможно этот пассажир вам попути.' +
-                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\n➡️ ' + district + ' >>> ' + district2 +
                       '\nОн/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' и едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
+                      '\n⏺ Если хотите забрать пассажира, укажите ваше направление, нажав на "Найти попутчиков"' +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            else if (pass[0].interception === null && pass[1].interception !== null) {
            var text = 'Возможно этот пассажир вам попути.' +
-                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\n➡️ ' + district + ' >>> ' + district2 +
                       '\nОн/она выезжает с ост. "' + pass[0].busstop + '"  по улице ' + pass[0].street + ' едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
+                      '\n⏺ Если хотите забрать пассажира, укажите ваше направление, нажав на "Найти попутчиков"' +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            else if (pass[0].interception !== null && pass[1].interception === null) {
            var text = 'Возможно этот пассажир вам попути.' +
-                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\n➡️ ' + district + ' >>> ' + district2 +
                       '\n Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' едет до ост. "' + pass[1].busstop + '" по улице ' + pass[1].street +
+                      '\n⏺ Если хотите забрать пассажира, укажите ваше направление, нажав на "Найти попутчиков"' +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            else if (pass[0].interception !== null && pass[1].interception !== null) {
            var text = 'Возможно этот пассажир вам попути.' +
-                      '\n❇️ ' + district + ' ➡️ ' + district2 +
+                      '\n➡️ ' + district + ' >>> ' + district2 +
                       '\n Он/она выезжает с пер. ' + pass[0].interception + ' - ' + pass[0].street + ' и едет до пер. ' + pass[1].interception + ' - ' + pass[1].street +
+                      '\n⏺ Если хотите забрать пассажира, укажите ваше направление, нажав на "Найти попутчиков"' +
                       '\n⬇️ Если хотите остановить уведомления от пассажиров по всему городу, нажмите на "Не отправляйте мне такие уведомления"';
            }
            console.log('text ', text);
@@ -9363,6 +9367,7 @@ pool.getConnection(function(err, connection) {
                                                               text: 'Не отправляйте мне такие уведомления',
                                                               callback_data:  'stop_not'
                                                             }]
+
                                                           ]
                                                         }
 
