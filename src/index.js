@@ -1897,7 +1897,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
 })
 
    const chatId = query.message.chat.id
-   const omenu = '📌 Чтобы найти попутного пассажира именно по маршруту, укажите свой маршрут.\n📌 Если вы прежде сохранили этот маршрут можете просто активизировать'
+   const omenu = '📌 Сейчас бот ищет вам пассажиров, которые едут с того же района, в тот район, которые вы указали.\n📌 Это не обязательно, но если вы хотите найти попутного пассажира именно по маршруту, укажите свой маршрут.\n📌 Если вы прежде сохранили этот маршрут можете просто активизировать'
             bot.sendMessage(chatId, omenu, {
                      reply_markup: {
                        keyboard: [
@@ -6326,11 +6326,35 @@ var mysql  = require('mysql');
 pool.getConnection(function(err, connection) {
 
 // Сначала находим всех активных пассажиров
-connection.query(' SELECT TIME(time_beg) AS time_beg, street, interception, id_user FROM route WHERE time_end > NOW() AND id_user = ? ', [user_id], function(err, rows, fields) {
+connection.query(' SELECT TIME(time_beg) AS time_beg, street, interception, id_user, district FROM route WHERE time_end > NOW() AND id_user = ? ', [user_id], function(err, rows, fields) {
 if (err) throw err;
 var driver = JSON.parse(JSON.stringify(rows));
 
-var passu_text = '🔵 Водитель предлагает Вас забрать. Он выезжает с пер. ' + driver[0].street + '-' + driver[0].interception + ' в ' + driver[0].time_beg;
+if (driver[0].street === null) {
+    var first = driver[0].district;
+
+    if (first == 'mkdk'){ var district = 'Майкудук';}
+    else if (first == 'grd'){ var district = 'Центр';}
+    else if (first == 'saran'){ var district = 'Сарань';}
+    else if (first == 'aktas'){ var district = 'Актас';}
+    else if (first == 'dubovka'){ var district = 'Дубовка';}
+    else if (first == 'fedorovka'){ var district = 'Федоровка';}
+    else if (first == 'bazar'){ var district = 'Район базара';}
+    else if (first == 'yug'){ var district = 'Юго-восток';}
+    else if (first == 'srt'){ var district = 'Сортировка';}
+    else if (first == 'doskey'){ var district = 'Доскей';}
+    else if (first == 'trud'){ var district = 'пос. Трудовое';}
+    else if (first == 'uwtobe'){ var district = 'Уштобе';}
+    else if (first == 'prihon'){ var district = 'Пришахтинск';}
+    else if (first == 'zhbi'){ var district = 'район ЖБИ';}
+    else if (first == 'novouzenka'){ var district = 'Новоузенка';}
+    else if (first == 'malsaran'){ var district = 'Малая сарань';}
+    var passu_text = '🔵 Водитель предлагает Вас забрать. Он выезжает с района ' + district  + ' в ' + driver[0].time_beg;
+}
+else {
+    var passu_text = '🔵 Водитель предлагает Вас забрать. Он выезжает с пер. ' + driver[0].street + '-' + driver[0].interception + ' в ' + driver[0].time_beg;
+}
+
    bot.sendMessage(res[1], passu_text, {
                     reply_markup: {
                     inline_keyboard: [
