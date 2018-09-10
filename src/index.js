@@ -1571,7 +1571,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     })
 
             }
-// Если из актаса в юго-восток
+// Если из дубовки в юго-восток
             else if (district[0].start === 'dubovka' && district[0].finish === 'yug') {
 
             var all_districts = district[0].start + '00' + 'grd' + '00'  + 'bazar' + '00'  + district[0].finish;
@@ -1607,7 +1607,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     })
 
             }
-// Если из юго-востока в актас
+// Если из юго-востока в дубовку
             else if (district[0].start === 'yug' && district[0].finish === 'dubovka') {
 
             var all_districts = district[0].start + '00' + 'bazar' + '00' + 'grd' + '00'  + district[0].finish;
@@ -1643,7 +1643,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     })
 
             }
-// Если из актаса в район базара
+// Если из дубовки в район базара
             else if (district[0].start === 'dubovka' && district[0].finish === 'bazar') {
 
             var all_districts = district[0].start + '00' + 'grd' + '00'  + district[0].finish;
@@ -1678,7 +1678,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     })
 
             }
-// Если с района базара в актас
+// Если с района базара в дубовку
             else if (district[0].start === 'bazar' && district[0].finish === 'dubovka') {
 
             var all_districts = district[0].start + '00' + 'grd' + '00'  + district[0].finish;
@@ -1827,6 +1827,426 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
             var test = [];
             test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
             test.push([  null, user_id, district[0].id, 'grd', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из сортировки в район базара
+            else if (district[0].start === 'srt' && district[0].finish === 'bazar') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из район базара в сортировку
+            else if (district[0].start === 'bazar' && district[0].finish === 'srt') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из сортировки в юго-восток
+            else if (district[0].start === 'srt' && district[0].finish === 'yug') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из юго-востока в сортировку
+            else if (district[0].start === 'yug' && district[0].finish === 'srt') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из сортировки в центр
+            else if (district[0].start === 'srt' && district[0].finish === 'grd') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из центра в сортировку
+            else if (district[0].start === 'grd' && district[0].finish === 'srt') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из доскея в район базара
+            else if (district[0].start === 'srt' && district[0].finish === 'doskey') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из район базара в доскей
+            else if (district[0].start === 'doskey' && district[0].finish === 'srt') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из доскея в юго-восток
+            else if (district[0].start === 'doskey' && district[0].finish === 'yug') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из юго-востока в доскей
+            else if (district[0].start === 'yug' && district[0].finish === 'doskey') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из доскея в центр
+            else if (district[0].start === 'doskey' && district[0].finish === 'grd') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
+            test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
+
+                    connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                    [ route_driver, test ], function(err, rows, fields) {
+                    if (err) throw err;
+
+                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                [ route_driver, route_driver, user_id ], function(err, rows, fields) {
+                                if (err) throw err;
+
+                                            connection.query(' INSERT INTO sitebot.route ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
+                                            [ test ], function(err, rows, fields) {
+                                            if (err) throw err;
+
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        [ route_driver , user_id, user_id ], function(err, rows, fields) {
+                                                        if (err) throw err;
+
+                                                        send_rayon_poputi_query (query)
+
+                                                        var text = all_districts + ' юзер ' + user_id;
+                                                        bot.sendMessage(336243307, text)
+                                                        })
+                                            })
+                                })
+                    })
+
+            }
+// Если из центра в доскей
+            else if (district[0].start === 'grd' && district[0].finish === 'doskey') {
+
+            var all_districts = district[0].start + '00' + 'mkdk' + '00'  + district[0].finish;
+            var test = [];
+            test.push([ 'beg', user_id, district[0].id, district[0].start, all_districts ]);
+            test.push([  null, user_id, district[0].id, 'mkdk', all_districts ]);
             test.push([ 'end', user_id, district[0].id, district[0].finish, all_districts ]);
 
                     connection.query(' INSERT INTO route_driver.?? ( begend, id_user, id_route, district, all_districts ) VALUES ? ',
@@ -6425,7 +6845,7 @@ var active_passenger = JSON.parse(JSON.stringify(rows));
           connection.query(' UPDATE route_p SET status = "busy", id_driver = ? WHERE id_user = ? ',[ res[1] ,user_id], function(err, rows, fields) {
           if (err) throw err;
           // Уведомляем админа о сделке
-          var text = '✔️Машина марки ' + driver[0].marka + ' с гос.номером ' + driver[0].nomer + ' Номер тел. ' + driver[0].tel + ' забирает ' + user[0].fname + 'с номером' + user[0].tel;
+          var text = '✔️Машина марки ' + driver[0].marka + ' с гос.номером ' + driver[0].nomer + ' Номер тел. ' + driver[0].tel + ' забирает ' + user[0].fname + ' с номером ' + user[0].tel;
           bot.sendMessage(336243307, text)
           })
    })
@@ -9535,6 +9955,3238 @@ pool.getConnection(function(err, connection) {
                            setTimeout(sms_90_120, 30000, 'funky');
                                 function sms_90_120 (msg){
                                       for(var i = 90; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 120 && driver.length <= 150){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 120; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 150 && driver.length <= 180){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 180 && driver.length <= 210){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 210 && driver.length <= 240){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 240 && driver.length <= 270){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 270 && driver.length <= 300){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 300 && driver.length <= 330){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 330 && driver.length <= 360){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 360 && driver.length <= 390){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 390 && driver.length <= 420){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < 390; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_390_420, 70000, 'funky');
+                                function sms_390_420 (msg){
+                                      for(var i = 390; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 420 && driver.length <= 450){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < 390; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_390_420, 70000, 'funky');
+                                function sms_390_420 (msg){
+                                      for(var i = 390; i < 420; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_420_450, 75000, 'funky');
+                                function sms_420_450 (msg){
+                                      for(var i = 420; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 450 && driver.length <= 480){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < 390; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_390_420, 70000, 'funky');
+                                function sms_390_420 (msg){
+                                      for(var i = 390; i < 420; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_420_450, 75000, 'funky');
+                                function sms_420_450 (msg){
+                                      for(var i = 420; i < 450; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_450_480, 80000, 'funky');
+                                function sms_450_480 (msg){
+                                      for(var i = 450; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 480 && driver.length <= 510){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < 390; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_390_420, 70000, 'funky');
+                                function sms_390_420 (msg){
+                                      for(var i = 390; i < 420; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_420_450, 75000, 'funky');
+                                function sms_420_450 (msg){
+                                      for(var i = 420; i < 450; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_450_480, 80000, 'funky');
+                                function sms_450_480 (msg){
+                                      for(var i = 450; i < 480; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_480_510, 85000, 'funky');
+                                function sms_480_510 (msg){
+                                      for(var i = 480; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 510 && driver.length <= 540){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < 390; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_390_420, 70000, 'funky');
+                                function sms_390_420 (msg){
+                                      for(var i = 390; i < 420; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_420_450, 75000, 'funky');
+                                function sms_420_450 (msg){
+                                      for(var i = 420; i < 450; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_450_480, 80000, 'funky');
+                                function sms_450_480 (msg){
+                                      for(var i = 450; i < 480; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_480_510, 85000, 'funky');
+                                function sms_480_510 (msg){
+                                      for(var i = 480; i < 510; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_510_540, 90000, 'funky');
+                                function sms_510_540 (msg){
+                                      for(var i = 510; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 540 && driver.length <= 570){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < 390; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_390_420, 70000, 'funky');
+                                function sms_390_420 (msg){
+                                      for(var i = 390; i < 420; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_420_450, 75000, 'funky');
+                                function sms_420_450 (msg){
+                                      for(var i = 420; i < 450; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_450_480, 80000, 'funky');
+                                function sms_450_480 (msg){
+                                      for(var i = 450; i < 480; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_480_510, 85000, 'funky');
+                                function sms_480_510 (msg){
+                                      for(var i = 480; i < 510; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_510_540, 90000, 'funky');
+                                function sms_510_540 (msg){
+                                      for(var i = 510; i < 540; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_540_570, 95000, 'funky');
+                                function sms_540_570 (msg){
+                                      for(var i = 540; i < driver.length; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                        }
+                        else if(driver.length > 570 && driver.length <= 600){
+                           setTimeout(sms_30, 500, 'funky');
+                                function sms_30 (msg){
+                                      for(var i = 0; i < 30; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_30_60, 10000, 'funky');
+                                function sms_30_60 (msg){
+                                      for(var i = 30; i < 60; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_60_90, 15000, 'funky');
+                                function sms_60_90 (msg){
+                                      for(var i = 60; i < 90; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_90_120, 20000, 'funky');
+                                function sms_90_120 (msg){
+                                      for(var i = 90; i < 120; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_120_150, 25000, 'funky');
+                                function sms_120_150 (msg){
+                                      for(var i = 120; i < 150; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_150_180, 30000, 'funky');
+                                function sms_150_180 (msg){
+                                      for(var i = 150; i < 180; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_180_210, 35000, 'funky');
+                                function sms_180_210 (msg){
+                                      for(var i = 180; i < 210; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_210_240, 40000, 'funky');
+                                function sms_210_240 (msg){
+                                      for(var i = 210; i < 240; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_240_270, 45000, 'funky');
+                                function sms_240_270 (msg){
+                                      for(var i = 240; i < 270; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_270_300, 50000, 'funky');
+                                function sms_270_300 (msg){
+                                      for(var i = 270; i < 300; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_300_330, 55000, 'funky');
+                                function sms_300_330 (msg){
+                                      for(var i = 300; i < 330; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_330_360, 60000, 'funky');
+                                function sms_330_360 (msg){
+                                      for(var i = 330; i < 360; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_360_390, 65000, 'funky');
+                                function sms_360_390 (msg){
+                                      for(var i = 360; i < 390; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_390_420, 70000, 'funky');
+                                function sms_390_420 (msg){
+                                      for(var i = 390; i < 420; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_420_450, 75000, 'funky');
+                                function sms_420_450 (msg){
+                                      for(var i = 420; i < 450; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_450_480, 80000, 'funky');
+                                function sms_450_480 (msg){
+                                      for(var i = 450; i < 480; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_480_510, 85000, 'funky');
+                                function sms_480_510 (msg){
+                                      for(var i = 480; i < 510; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_510_540, 90000, 'funky');
+                                function sms_510_540 (msg){
+                                      for(var i = 510; i < 540; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_540_570, 95000, 'funky');
+                                function sms_540_570 (msg){
+                                      for(var i = 540; i < 570; i++){
+                                      bot.sendMessage(driver[i].id_user, text,{
+                                                         reply_markup: {
+                                                           inline_keyboard: [
+                                                             [{
+                                                               text: 'Не отправляйте мне такие уведомления',
+                                                               callback_data:  'stop_not'
+                                                             }]
+                                                           ]
+                                                         }
+
+                                        })
+                                      }
+                                }
+                           setTimeout(sms_570_600, 100000, 'funky');
+                                function sms_570_600 (msg){
+                                      for(var i = 570; i < driver.length; i++){
                                       bot.sendMessage(driver[i].id_user, text,{
                                                          reply_markup: {
                                                            inline_keyboard: [
