@@ -4279,17 +4279,17 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                        if (err) throw err;
 
            connection.query(' SELECT * FROM ?? WHERE id_route = (SELECT MAX(id_route) FROM ??) ',
-                             [ route_p, route_p ], function(err, rows, fields) {
-                             if (err) throw err;
-                             var str_vse = JSON.parse(JSON.stringify(rows));
-                             console.log('ROWS', rows);
-                             console.log('STR_VSE', str_vse);
+                 [ route_p, route_p ], function(err, rows, fields) {
+                 if (err) throw err;
+                 var str_vse = JSON.parse(JSON.stringify(rows));
+                 console.log('ROWS', rows);
+                 console.log('STR_VSE', str_vse);
+                if(str_vse !== undefined){
+                 var all_districts = str_vse[0].district + '00' + str_vse[1].district;
+                 console.log('all distrs ', all_districts);
 
-                             var all_districts = str_vse[0].district + '00' + str_vse[1].district;
-                             console.log('all distrs ', all_districts);
 
-
-           connection.query(' UPDATE ?? SET all_districts = ? WHERE id_route = ? ',[ route_p, all_districts, str_vse[0].id_route ], function (err, rows, fields) {
+                connection.query(' UPDATE ?? SET all_districts = ? WHERE id_route = ? ',[ route_p, all_districts, str_vse[0].id_route ], function (err, rows, fields) {
            if (err) throw err;
 
 
@@ -4336,7 +4336,8 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
             })
             })
       })
-})
+                }
+           })
 console.log('Время вставили!');
 })
 })
