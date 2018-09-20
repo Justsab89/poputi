@@ -6268,8 +6268,8 @@ console.log('!!send_rayon_poputi_pass_query!! Данные пассажира' ,
    else{
       console.log('!!send_rayon_poputi_pass_query!! есть еще активные водители', passenger_poputi_district)
 
-  keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
-  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].interception + '-' + passenger_poputi_district[2*i].street + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+//  keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
+//  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].interception + '-' + passenger_poputi_district[2*i].street + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
 
 
 
