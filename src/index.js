@@ -4332,7 +4332,7 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                  pass_offer_todriv (query);
                  send_rayon_poputi_pass_query (query);
                  notify_driv_about_pass (query)
-                 })
+//                 })
             })
             })
       })
