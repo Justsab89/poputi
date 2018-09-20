@@ -4316,10 +4316,10 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                      })
                 pool.getConnection(function(err, connection) {
 
-                connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
-                                 [ test ], function(err, rows, fields) {
-                                 if (err) throw err;
-                                 console.log('Время вставили в общее!', rows);
+//                connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
+//                                 [ test ], function(err, rows, fields) {
+//                                 if (err) throw err;
+//                                 console.log('Время вставили в общее!', rows);
 
 // Теперь отправляем карту
 //                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
