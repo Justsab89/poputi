@@ -8970,11 +8970,11 @@ var user_id = msg.chat.id;
 
 pool.getConnection(function(err, connection) {
 
-       connection.query(' SELECT COUNT(vibor) AS driver FROM users WHERE vibor = "driver" ',  function(err, rows, fields) {
+       connection.query(' SELECT COUNT (DISTINCT id_user) AS counted FROM users WHERE vibor = "driver" ',  function(err, rows, fields) {
        if (err) throw err;
        var driver = JSON.parse(JSON.stringify(rows));
        console.log('колво водителей', driver);
-       var driv_text = '🚕 Сейчас ' + driver[0].driver + ' водителей';
+       var driv_text = '🚕 Сейчас ' + driver[0].counted + ' водителей!!';
 
                bot.sendMessage(user_id, driv_text)
        })
