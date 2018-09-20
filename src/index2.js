@@ -7855,4 +7855,3 @@ pool.getConnection(function(err, connection) {
        })
 })
 }
-

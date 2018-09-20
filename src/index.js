@@ -4309,7 +4309,7 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 
                  var mysql  = require('mysql');
                          var pool = mysql.createPool({
-                                 host     : 'localhost',
+                         host     : 'localhost',
                          user     : 'mybd_user',
                          password : 'admin123',
                          database : 'sitebot'
