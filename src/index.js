@@ -1027,7 +1027,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1061,7 +1061,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1097,7 +1097,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1125,7 +1125,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1133,7 +1133,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1160,7 +1160,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1168,7 +1168,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1195,7 +1195,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1203,7 +1203,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1230,7 +1230,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1238,7 +1238,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1265,7 +1265,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1273,7 +1273,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1300,7 +1300,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1308,7 +1308,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1335,7 +1335,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1343,7 +1343,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1371,7 +1371,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1379,7 +1379,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1407,7 +1407,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1415,7 +1415,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1443,7 +1443,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1451,7 +1451,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1479,7 +1479,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1487,7 +1487,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1514,7 +1514,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1522,7 +1522,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1549,7 +1549,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1557,7 +1557,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1585,7 +1585,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1593,7 +1593,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1621,7 +1621,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1629,7 +1629,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1656,7 +1656,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1664,7 +1664,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1691,7 +1691,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1699,7 +1699,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1727,7 +1727,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1735,7 +1735,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1763,7 +1763,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1771,7 +1771,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1798,7 +1798,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1806,7 +1806,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1833,7 +1833,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1841,7 +1841,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1868,7 +1868,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1876,7 +1876,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1903,7 +1903,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1911,7 +1911,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1938,7 +1938,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1946,7 +1946,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -1973,7 +1973,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -1981,7 +1981,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2008,7 +2008,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2016,7 +2016,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2043,7 +2043,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2051,7 +2051,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2078,7 +2078,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2086,7 +2086,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2113,7 +2113,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2121,7 +2121,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2148,7 +2148,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2156,7 +2156,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2183,7 +2183,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2191,7 +2191,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2218,7 +2218,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2226,7 +2226,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2253,7 +2253,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2261,7 +2261,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
@@ -2287,7 +2287,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                     [ route_driver, test ], function(err, rows, fields) {
                     if (err) throw err;
 
-                                connection.query(' UPDATE route_driver.?? SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
+                                connection.query(' UPDATE route_driver.?? SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT MAX(id_route) FROM (SELECT * FROM route_driver.??) AS route2) AND id_user = ? ',
                                 [ route_driver, route_driver, user_id ], function(err, rows, fields) {
                                 if (err) throw err;
 
@@ -2295,7 +2295,7 @@ else if (res[0] == 'malsaran2'){ var district = 'malsaran';}
                                             [ test ], function(err, rows, fields) {
                                             if (err) throw err;
 
-                                                        connection.query(' UPDATE sitebot.route SET time_beg = NOW(), time_end = ADDTIME (NOW(), "00:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
+                                                        connection.query(' UPDATE sitebot.route SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_route = (SELECT id_route FROM route_driver.?? WHERE id_user = ? ORDER BY id_route DESC LIMIT 1 ) AND id_user = ? ',
                                                         [ route_driver , user_id, user_id ], function(err, rows, fields) {
                                                         if (err) throw err;
 
