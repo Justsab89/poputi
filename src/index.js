@@ -4306,12 +4306,12 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                              }
                              console.log('Данные пассажира для ввода в общую БД ', test);
 
-            connection.query(' SELECT * FROM ?? WHERE id_route = (SELECT MAX(id_route) FROM ??)  ',
-                                 [ route_p, route_p ], function(err, rows, fields) {
-                                 if (err) throw err;
-                                 var sel = JSON.parse(JSON.stringify(rows));
-                                 console.log('SELECTiwe', sel);
-                                 })
+//            connection.query(' SELECT * FROM ?? WHERE id_route = (SELECT MAX(id_route) FROM ??)  ',
+//                                 [ route_p, route_p ], function(err, rows, fields) {
+//                                 if (err) throw err;
+//                                 var sel = JSON.parse(JSON.stringify(rows));
+//                                 console.log('SELECTiwe', sel);
+//                                 })
 
 //                connection.query(' INSERT INTO ?? ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
 //                                 [ route_p, test ], function(err, rows, fields) {
@@ -4319,33 +4319,40 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 //                                 console.log('Время вставили в общее!', rows);
 //                                 })
 
-//                 var mysql  = require('mysql');
-//                         var pool = mysql.createPool({
-//                         host     : 'localhost',
-//                         user     : 'mybd_user',
-//                         password : 'admin123',
-//                         database : 'sitebot'
-//                     })
-//                pool.getConnection(function(err, connection) {
-//
-////                connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
-////                                 [ test ], function(err, rows, fields) {
-////                                 if (err) throw err;
-////                                 console.log('Время вставили в общее!', rows);
-//
-//// Теперь отправляем карту
-////                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
-//
-//
-//                const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
-//                bot.sendMessage(user_id, text)
-//
-////                 pass_offer_topass (query);
-////                 pass_offer_todriv (query);
-////                 send_rayon_poputi_pass_query (query);
-////                 notify_driv_about_pass (query)
-////                 })
-//            })
+                 var mysql  = require('mysql');
+                         var pool = mysql.createPool({
+                         host     : 'localhost',
+                         user     : 'mybd_user',
+                         password : 'admin123',
+                         database : 'sitebot'
+                     })
+                pool.getConnection(function(err, connection) {
+
+            connection.query(' SELECT * FROM route_p WHERE id_route = (SELECT MAX(id_route) FROM route_p)  ',
+                                 function(err, rows, fields) {
+                                 if (err) throw err;
+                                 var sel = JSON.parse(JSON.stringify(rows));
+                                 console.log('SELECTiwe', sel);
+                                 })
+
+//                connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
+//                                 [ test ], function(err, rows, fields) {
+//                                 if (err) throw err;
+//                                 console.log('Время вставили в общее!', rows);
+
+// Теперь отправляем карту
+//                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
+
+
+                const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
+                bot.sendMessage(user_id, text)
+
+//                 pass_offer_topass (query);
+//                 pass_offer_todriv (query);
+//                 send_rayon_poputi_pass_query (query);
+//                 notify_driv_about_pass (query)
+//                 })
+            })
             })
       })
                 }
