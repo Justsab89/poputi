@@ -4344,6 +4344,7 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                                      [ user_id ], function(err, rows, fields) {
                                      if (err) throw err;
                                      console.log('Время вставили в общее!', rows);
+                                     })
 
 // Теперь отправляем карту
 //                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
