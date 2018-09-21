@@ -4335,28 +4335,29 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 //                                 if (err) throw err;
 //                                 console.log('Время вставили в общее!', rows);
 
-                connection.query(' INSERT INTO route_p2 ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, status, n_pass, all_districts) VALUES ? ',
+                connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, status, n_pass, all_districts) VALUES ? ',
                                  [ test ], function(err, rows, fields) {
                                  if (err) throw err;
                                  console.log('Время вставили в общее!', rows);
-//  AND id_route = (SELECT MAX(id_route) FROM route_p2)       AND id_route = (SELECT id_route FROM route_p2 WHERE id_user = ? ORDER BY id_route DESC LIMIT 1)
-                    connection.query(' UPDATE route_p2 SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_user = ? AND id_route = ? ',
+
+                    connection.query(' UPDATE route_p SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_user = ? AND id_route = ? ',
                                      [ user_id, str_vse[0].id_route ], function(err, rows, fields) {
                                      if (err) throw err;
                                      console.log('Время вставили в общее!', rows);
+
+                                    const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
+                                    bot.sendMessage(user_id, text)
+
+                                     pass_offer_topass (query);
+                                     pass_offer_todriv (query);
+                                     send_rayon_poputi_pass_query (query);
+                                     notify_driv_about_pass (query)                                     
+
                                      })
 
 // Теперь отправляем карту
 //                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'))
 
-
-//                const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
-//                bot.sendMessage(user_id, text)
-
-//                 pass_offer_topass (query);
-//                 pass_offer_todriv (query);
-//                 send_rayon_poputi_pass_query (query);
-//                 notify_driv_about_pass (query)
                  })
             })
             })
