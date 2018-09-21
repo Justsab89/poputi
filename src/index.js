@@ -4339,8 +4339,8 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                                  [ test ], function(err, rows, fields) {
                                  if (err) throw err;
                                  console.log('Время вставили в общее!', rows);
-//  AND id_route = (SELECT MAX(id_route) FROM route_p2)
-                    connection.query(' UPDATE route_p2 SET time_beg = ADDTIME (NOW(), "02:00:00"), time_end = ADDTIME (NOW(), "02:40:00") WHERE id_user = ? AND id_route = (SELECT id_route FROM route_p2 WHERE id_user = ? ORDER BY id_route DESC LIMIT 1) ',
+//  AND id_route = (SELECT MAX(id_route) FROM route_p2)       AND id_route = (SELECT id_route FROM route_p2 WHERE id_user = ? ORDER BY id_route DESC LIMIT 1) 
+                    connection.query(' UPDATE route_p2 SET time_beg = ADDTIME (NOW(), "02:00:00"), time_end = ADDTIME (NOW(), "02:40:00") WHERE id_user = ? ',
                                      [ user_id, user_id ], function(err, rows, fields) {
                                      if (err) throw err;
                                      console.log('Время вставили в общее!', rows);
