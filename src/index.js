@@ -4348,10 +4348,10 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
                                     const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
                                     bot.sendMessage(user_id, text)
 
-                                     pass_offer_topass (query);
-                                     pass_offer_todriv (query);
-                                     send_rayon_poputi_pass_query (query);
-                                     notify_driv_about_pass (query)                                     
+//                                     pass_offer_topass (query);
+//                                     pass_offer_todriv (query);
+//                                     send_rayon_poputi_pass_query (query);
+                                     notify_driv_about_pass (query)
 
                                      })
 
