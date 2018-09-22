@@ -6200,7 +6200,7 @@ var route_driver = 'route'+user_id;
 pool.getConnection(function(err, connection) {
 
 
-   connection.query(' SELECT all_districts FROM route WHERE time_end > NOW() AND id_user = ? ', [ user_id ],  function(err, rows, fields) {
+   connection.query(' SELECT all_districts FROM route WHERE time_end > ADDTIME (NOW(), "03:00:00") AND id_user = ? ', [ user_id ],  function(err, rows, fields) {
    if (err) throw err;
    var active_drivers = JSON.parse(JSON.stringify(rows));
    console.log('Нашли водителей', active_drivers);
@@ -6221,7 +6221,7 @@ pool.getConnection(function(err, connection) {
              }
              else{}
              console.log('лайки', like)
-             var select = ' SELECT * FROM route_p WHERE time_end > NOW() AND status <> "busy" AND (all_districts ' + like;
+             var select = ' SELECT * FROM route_p WHERE time_end > ADDTIME (NOW(), "03:00:00") AND status <> "busy" AND (all_districts ' + like;
 
 // active_drivers[i].id_user
 
@@ -6310,6 +6310,7 @@ pool.getConnection(function(err, connection) {
                   })
                  }
                 )
+
                 }
                 }
              })
@@ -6337,10 +6338,10 @@ var route_driver = 'route'+user_id;
 
 var sql = ' SELECT * FROM (SELECT P_interception, P_street, P_busstop, P_n_pass, P_id_user, P_id_route, District, P_begend, D_id_route, D_id_user, D_begend FROM ' +
           ' ( SELECT route_p.interception AS P_interception, route_p.street AS P_street, route_p.busstop AS P_busstop, route_p.n_pass AS P_n_pass, route_p.id_user AS P_id_user, route_p.id_route AS P_id_route, route.district AS District, route_p.begend AS P_begend, route.id_route AS D_id_route, route.id_user AS D_id_user, route.begend AS D_begend FROM route_p JOIN route ' +
-          ' WHERE route_p.district = route.district  AND ( route.begend = "beg" OR route.begend IS NULL ) AND route_p.begend = "beg" AND route.time_end > NOW() AND route_p.time_end > NOW() AND route_p.id_user = ? ) AS table1 ' +
+          ' WHERE route_p.district = route.district  AND ( route.begend = "beg" OR route.begend IS NULL ) AND route_p.begend = "beg" AND route.time_end > ADDTIME (NOW(), "03:00:00") AND route_p.time_end > ADDTIME (NOW(), "03:00:00") AND route_p.id_user = ? ) AS table1 ' +
           ' WHERE EXISTS  ( SELECT * FROM ' +
           ' ( SELECT route_p.interception AS P_interception, route_p.street AS P_street, route_p.busstop AS P_busstop, route_p.n_pass AS P_n_pass, route_p.id_user AS P_id_user, route_p.id_route AS P_id_route, route.district AS District, route_p.begend AS P_begend, route.id_route AS D_id_route, route.id_user AS D_id_user, route.begend AS D_begend FROM route_p JOIN route ' +
-          ' WHERE route_p.district = route.district  AND ( route.begend = "end" OR route.begend IS NULL ) AND route_p.begend = "end" AND route.time_end > NOW() AND route_p.time_end > NOW() AND route_p.id_user = ? ) AS table2 ' +
+          ' WHERE route_p.district = route.district  AND ( route.begend = "end" OR route.begend IS NULL ) AND route_p.begend = "end" AND route.time_end > ADDTIME (NOW(), "03:00:00") AND route_p.time_end > ADDTIME (NOW(), "03:00:00") AND route_p.id_user = ? ) AS table2 ' +
           ' WHERE table1.P_id_user = table2.P_id_user AND table1.D_id_route = table2.D_id_route )) AS table3 ';
 
 pool.getConnection(function(err, connection) {
@@ -6368,7 +6369,7 @@ console.log('!!send_rayon_poputi_pass_query!! Данные пассажира' ,
            for (var i = 0; i < driver.length; i++) {
 
           keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
-          var variant2 =  '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+          var variant2 =  '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street + '\n⬇️ Если хотите забрать его нажмите ';
 
                   bot.sendMessage( driver[i].D_id_user , variant2,
                    {
@@ -6386,7 +6387,7 @@ console.log('!!send_rayon_poputi_pass_query!! Данные пассажира' ,
           for (var i = 0; i < driver.length; i++) {
 
           keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
-          var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception  + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+          var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[0].busstop + ' по улице ' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception  + '\n⬇️ Если хотите забрать его нажмите ';
 
                   bot.sendMessage( driver[i].D_id_user , variant2,
                    {
@@ -6404,7 +6405,7 @@ console.log('!!send_rayon_poputi_pass_query!! Данные пассажира' ,
           for (var i = 0; i < driver.length; i++) {
 
           keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
-          var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].street + '-' + passenger_poputi_district[0].interception + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+          var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].street + '-' + passenger_poputi_district[0].interception + ' ДО ост. ' + passenger_poputi_district[1].busstop + ' по улице ' + passenger_poputi_district[1].street + '\n⬇️ Если хотите забрать его нажмите ';
 
                  bot.sendMessage( driver[i].D_id_user , variant2,
                    {
@@ -6422,7 +6423,7 @@ console.log('!!send_rayon_poputi_pass_query!! Данные пассажира' ,
           for (var i = 0; i < driver.length; i++) {
 
           keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ user_id + ' ' + driver[i].D_id_user )}]);
-          var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].interception + '-' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception  + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+          var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + passenger_poputi_district[1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[0].interception + '-' + passenger_poputi_district[0].street + ' ДО ' + passenger_poputi_district[1].street + '-' + passenger_poputi_district[1].interception  + '\n⬇️ Если хотите забрать его нажмите ';
 
                 bot.sendMessage( driver[i].D_id_user , variant2,
                    {
