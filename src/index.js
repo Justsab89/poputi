@@ -6230,28 +6230,28 @@ pool.getConnection(function(err, connection) {
                   var number_pass = i+1;
                   var keyboard = [];
                   keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
-                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop + '\n⬇️  Если хотите забрать его нажмите';
                   }
 
                   else if ( passenger_poputi_district[2*i].interception === null && passenger_poputi_district[2*i+1].interception !== null ){
                   var number_pass = i+1;
                   var keyboard = [];
                   keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
-                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ост. ' + passenger_poputi_district[2*i].busstop + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception + '\n⬇️   Если хотите забрать его нажмите';
                   }
 
                   else if ( passenger_poputi_district[2*i].interception !== null && passenger_poputi_district[2*i+1].interception === null ){
                   var number_pass = i+1;
                   var keyboard = [];
                   keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
-                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].street + '-' + passenger_poputi_district[2*i].interception + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].street + '-' + passenger_poputi_district[2*i].interception + ' ДО ост. ' + passenger_poputi_district[2*i+1].busstop + '\n⬇️  Если хотите забрать его нажмите';
                   }
 
                   else {
                   var number_pass = i+1;
                   var keyboard = [];
                   keyboard.push([{'text': ( 'Предложить пассажиру забрать его' ) , 'callback_data': ('offer_to_pass '+ passenger_poputi_district[2*i].id_user + ' ' + user_id )}]);
-                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].interception + '-' + passenger_poputi_district[2*i].street + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception + '\n⏹  Если хотите забрать его нажмите ⬇️ ';
+                  var variant2 = '🔹 Возможно этот/эти пассажиры вам по пути. \n' + number_pass +') ' + passenger_poputi_district[2*i+1].n_pass +' чел.'+ ' ОТ ' + passenger_poputi_district[2*i].interception + '-' + passenger_poputi_district[2*i].street + ' ДО ' + passenger_poputi_district[2*i+1].street + '-' + passenger_poputi_district[2*i+1].interception + '\n⬇️  Если хотите забрать его нажмите';
                   }
 
 
@@ -9047,7 +9047,7 @@ pool.getConnection(function(err, connection) {
                bot.sendMessage(user_id, driv_text)
        })
 
-       connection.query(' SELECT COUNT(vibor) AS passenger FROM users WHERE vibor = "passenger" ',  function(err, rows, fields) {
+       connection.query(' SELECT COUNT (DISTINCT id_user) AS passenger FROM users WHERE vibor = "passenger" ',  function(err, rows, fields) {
        if (err) throw err;
        var pass = JSON.parse(JSON.stringify(rows));
        console.log('колво пассажиров', pass);
