@@ -4556,7 +4556,8 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 
                              var test = [];
                              for(var i = 0; i < rows.length; i++){
-                             test.push([ str_vse[i].begend, str_vse[i].n_zapros, user_id, str_vse[i].id_route, str_vse[i].district, str_vse[i].point_type, str_vse[i].id_street, str_vse[i].street, str_vse[i].id_interception, str_vse[i].interception, str_vse[i].id_point, str_vse[i].busstop, str_vse[i].ordinal, str_vse[i].nearby_interception, str_vse[i].point_parinter_min5, str_vse[i].point_parinter_plu5, str_vse_time[1].time_beg, str_vse_time[1].time_end, 'free', str_vse[i].n_pass, all_districts ]);
+                             test.push([ str_vse[i].begend, str_vse[i].n_zapros, user_id, str_vse[i].id_route, str_vse[i].district, str_vse[i].point_type, str_vse[i].id_street, str_vse[i].street, str_vse[i].id_interception, str_vse[i].interception, str_vse[i].id_point, str_vse[i].busstop, str_vse[i].ordinal, str_vse[i].nearby_interception, str_vse[i].point_parinter_min5, str_vse[i].point_parinter_plu5, 'free', str_vse[i].n_pass, all_districts ]);
+//                             test.push([ str_vse[i].begend, str_vse[i].n_zapros, user_id, str_vse[i].id_route, str_vse[i].district, str_vse[i].point_type, str_vse[i].id_street, str_vse[i].street, str_vse[i].id_interception, str_vse[i].interception, str_vse[i].id_point, str_vse[i].busstop, str_vse[i].ordinal, str_vse[i].nearby_interception, str_vse[i].point_parinter_min5, str_vse[i].point_parinter_plu5, str_vse_time[1].time_beg, str_vse_time[1].time_end, 'free', str_vse[i].n_pass, all_districts ]);
                              }
                              console.log('Тест', test);
 
@@ -4571,23 +4572,25 @@ connection.query(' SELECT id FROM ?? ORDER BY id DESC LIMIT 1 ',
 
                  pool.getConnection(function(err, connection) {
 
-                 connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, time_beg, time_end, status, n_pass, all_districts) VALUES ? ',
+                 connection.query(' INSERT INTO route_p ( begend, n_zapros, id_user, id_route, district, point_type, id_street, street, id_interception, interception, id_point, busstop, ordinal, nearby_interception, point_parinter_min5, point_parinter_plu5, status, n_pass, all_districts) VALUES ? ',
                                  [ test ], function(err, rows, fields) {
                                  if (err) throw err;
                                  console.log('Время вставили в общее!', rows);
 
-// Теперь отправляем карту
-//                 bot.sendPhoto(user_id, fs.readFileSync(__dirname + '/picture-map.png'), {
-//                 caption: 'В этих местах можно останавливаться водителю'
-//                 })
+                         connection.query(' UPDATE route_p SET time_beg = ADDTIME (NOW(), "03:00:00"), time_end = ADDTIME (NOW(), "03:40:00") WHERE id_user = ? AND id_route = ? ',
+                                     [ user_id, str_vse[0].id_route ], function(err, rows, fields) {
+                                     if (err) throw err;
+                                     console.log('Время вставили в общее!', rows);
 
-                 const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
-                 bot.sendMessage(user_id, text)
+                                    const text = 'По всем направлениям цена 300 тг на одного пассажира\nКроме этих направлений:\nВнутри любого района 200 тг\nРайон Базара - Юго-восток 200 тг\nРайон Базара - Федоровка 200 тг\nМайкудук - Сортировка 200 тг\nУштобе - Юго-восток 200 тг '
+                                    bot.sendMessage(user_id, text)
 
-                 pass_offer_topass (query);
-                 pass_offer_todriv (query);
-                 send_rayon_poputi_pass_query (query);
-                 notify_driv_about_pass (query);
+                                     pass_offer_topass (query);
+                                     pass_offer_todriv (query);
+                                     send_rayon_poputi_pass_query (query);
+                                     notify_driv_about_pass (query)
+
+                                     })
                  })
             })
             })
