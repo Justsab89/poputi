@@ -4417,51 +4417,95 @@ else {var near_minute = 0;}
 
 var hh = hours.toString();
 var hh1 = (hours+1).toString();
+var hh3 = (hours+3).toString();
+var hh4 = (hours+4).toString();
 var mm = near_minute.toString();
 
 console.log('Часик', hh);
 console.log('час+1', hh1);
 console.log('ьинутка', mm );
 
+//if(near_minute!=0) {
+//    //var totalminutes = hours*60+near_minute;
+//    //var ostatok = totalminutes%60;
+//    //var chastnoe = ~~(totalminutes/60);
+//    var massiv_time = [hh+':'+mm];
+//    for (i = 0; i < 5; i++) {
+//       var near_minute = near_minute+10;
+//       if(near_minute>50) { var near_minute2 = near_minute-60;
+//         console.log('nearminute2', near_minute2);
+//         if(near_minute2==0){
+//           var hh1 = (hours+1).toString();
+//           var mm = near_minute2.toString();
+//           massiv_time.push(hh1+':'+mm+'0');
+//           console.log('>50+0');
+//         }
+//         else {
+//           var hh1 = (hours+1).toString();
+//           var mm = near_minute2.toString();
+//           massiv_time.push(hh1+':'+mm);
+//           console.log('>50');
+//         }
+//       }
+//       else {
+//            var hh = hours.toString();
+//            var mm = near_minute.toString();
+//            massiv_time.push(hh+':'+mm);
+//            console.log('<<50');
+//            }
+//    }
+//    console.log('qwer', massiv_time);
+//}
+//else{
+//    var massiv_time = [hh1+':'+mm+'0'];
+//    for (i = 0; i < 5; i++) {
+//       var near_minute = near_minute+10;
+//       var hh = hours.toString();
+//       var mm = near_minute.toString();
+//       massiv_time.push(hh1+':'+mm);
+//    }
+//    console.log('Neartime=0', massiv_time);
+//}
+
+
 if(near_minute!=0) {
-//var totalminutes = hours*60+near_minute;
-//var ostatok = totalminutes%60;
-//var chastnoe = ~~(totalminutes/60);
-var massiv_time = [hh+':'+mm];
-for (i = 0; i < 5; i++) {
-   var near_minute = near_minute+10;
-   if(near_minute>50) { var near_minute2 = near_minute-60;
-     console.log('nearminute2', near_minute2);
-     if(near_minute2==0){
-       var hh1 = (hours+1).toString();
-       var mm = near_minute2.toString();
-       massiv_time.push(hh1+':'+mm+'0');
-       console.log('>50+0');
-     }
-     else {
-       var hh1 = (hours+1).toString();
-       var mm = near_minute2.toString();
-       massiv_time.push(hh1+':'+mm);
-       console.log('>50');
-     }
-   }
-   else {
-        var hh = hours.toString();
-        var mm = near_minute.toString();
-        massiv_time.push(hh+':'+mm);
-        console.log('<<50');}
-}
-console.log('qwer', massiv_time);
+
+    var massiv_time = [hh3+':'+mm];
+    for (i = 0; i < 5; i++) {
+       var near_minute = near_minute+10;
+       if(near_minute>50) { var near_minute2 = near_minute-60;
+         console.log('nearminute2', near_minute2);
+         if(near_minute2==0){
+           var hh1 = (hours+4).toString();
+           var mm = near_minute2.toString();
+           massiv_time.push(hh1+':'+mm+'0');
+           console.log('>50+0');
+         }
+         else {
+           var hh1 = (hours+4).toString();
+           var mm = near_minute2.toString();
+           massiv_time.push(hh1+':'+mm);
+           console.log('>50');
+         }
+       }
+       else {
+            var hh = (hours+3).toString();
+            var mm = near_minute.toString();
+            massiv_time.push(hh+':'+mm);
+            console.log('<<50');
+            }
+    }
+    console.log('qwer', massiv_time);
 }
 else{
-var massiv_time = [hh1+':'+mm+'0'];
-for (i = 0; i < 5; i++) {
-   var near_minute = near_minute+10;
-   var hh = hours.toString();
-   var mm = near_minute.toString();
-   massiv_time.push(hh1+':'+mm);
-}
-console.log('Neartime=0', massiv_time);
+    var massiv_time = [hh4+':'+mm+'0'];
+    for (i = 0; i < 5; i++) {
+       var near_minute = near_minute+10;
+       var hh = hours.toString();
+       var mm = near_minute.toString();
+       massiv_time.push(hh4+':'+mm);
+    }
+    console.log('Neartime=0', massiv_time);
 }
 
 console.log('Ближайшая минута', near_minute);
@@ -4470,6 +4514,7 @@ var bbb = JSON.parse(JSON.stringify(massiv_time));
 
 console.log('strinfy', asddd);
 console.log('strinfy', bbb);
+
 bot.sendMessage(query.message.chat.id, 'Я буду стоять на остановке или у дороги в:', { reply_markup: JSON.stringify({
                                                                inline_keyboard: massiv_time.map((x, xi) => ([{
                                                                    text: x,
