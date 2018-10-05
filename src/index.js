@@ -2633,27 +2633,27 @@ var n_route_driver = 'n_route'+user_id;
 
 pool.getConnection(function(err, connection) {
 
-//connection.query('UPDATE ?? SET id_interception = ?, interception = (SELECT streetname FROM kowe WHERE id_str = ?) WHERE begend = "beg" AND id_route = (SELECT MAX(id_route) FROM (SELECT * FROM ??) AS route2)  ',
-// [ route_driver, res[2], res[2], route_driver ], function(err, rows, fields) {
-//})
-//    connection.query('SELECT * FROM points WHERE id_street = ? AND point_type = ? ORDER BY ordinal DESC', [ res[2], 1 ], function(err, rows, fields) {
-//    if (err) throw err;
-//    var street = JSON.parse(JSON.stringify(rows));
-//    var keyboard = [];
-//
-//    for(var i = 0; i < street.length; i++){
-//    keyboard.push([{'text': ( street[i].interception ) , 'callback_data': ('beg_inter2#' + street[i].id_interception)}]);
-//    }
-//
-//    bot.sendMessage( query.message.chat.id, 'Выберите вторую улицу стартового пересечения',
-//    {
-//    'reply_markup': JSON.stringify({
-//    inline_keyboard: keyboard
-//                                   })
-//    }
-//    )
-//    })
-//})
+connection.query('UPDATE ?? SET id_interception = ?, interception = (SELECT streetname FROM kowe WHERE id_str = ?) WHERE begend = "beg" AND id_route = (SELECT MAX(id_route) FROM (SELECT * FROM ??) AS route2)  ',
+ [ route_driver, res[2], res[2], route_driver ], function(err, rows, fields) {
+})
+    connection.query('SELECT * FROM points WHERE id_street = ? AND point_type = ? ORDER BY ordinal DESC', [ res[2], 1 ], function(err, rows, fields) {
+    if (err) throw err;
+    var street = JSON.parse(JSON.stringify(rows));
+    var keyboard = [];
+
+    for(var i = 0; i < street.length; i++){
+    keyboard.push([{'text': ( street[i].interception ) , 'callback_data': ('beg_inter2#' + street[i].id_interception)}]);
+    }
+
+    bot.sendMessage( query.message.chat.id, 'Выберите вторую улицу стартового пересечения',
+    {
+    'reply_markup': JSON.stringify({
+    inline_keyboard: keyboard
+                                   })
+    }
+    )
+    })
+})
 
 }
 
