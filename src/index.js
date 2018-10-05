@@ -13434,3 +13434,4 @@ bot.sendMessage(id_user[0], text_to)
 
 })
 
+// lkndlknf
