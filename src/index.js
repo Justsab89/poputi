@@ -13477,6 +13477,11 @@ pool.getConnection(function(err, connection) {
        if (err) throw err;
        var driver = JSON.parse(JSON.stringify(rows));
        console.log('!! ', driver);
+       var text = 'Ф ';
+        for(var i = 0; i < driver.length; i++){
+        text += '\nuser ' + driver[i].id_user + ' distr ' + driver[i].all_districts + ' id_route ' + driver[i].id_route
+        }
+            bot.sendMessage(admin, text)
        })
 })
 
