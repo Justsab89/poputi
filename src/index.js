@@ -13484,7 +13484,7 @@ pool.getConnection(function(err, connection) {
         test.push([ driver[i].id_user, driver[i].id_route, driver[i].all_districts ]);
         }
 //            bot.sendMessage(admin, text)
-
+//kjb
            connection.query(' INSERT INTO distr1 VALUES ? ', [test],
 
            function(err, rows, fields) {
