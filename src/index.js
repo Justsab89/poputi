@@ -6012,7 +6012,7 @@ pool.getConnection(function(err, connection) {
                       else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
                       else if (msg.text === 'Нет') {search_regime(msg)}
                       else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
-                      else {console.log('Hmm')}
+                      else {console.log('Hmmr')}
                    }
                    else if (user.length == 2) {
                       if (user[1].marka === null && user[1].vibor === 'driver') { marka(msg) }
@@ -6044,7 +6044,7 @@ pool.getConnection(function(err, connection) {
                       else if (msg.text === 'Да, я уверен') { driv(msg); to_busy_regime(msg) }
                       else if (msg.text === 'Нет') {search_regime(msg)}
                       else if (msg.text === '💾 Мои данные.') {edit_profile_pass(msg)}
-                      else {console.log('Hmm')}
+                      else {console.log('Hmmr')}
                    }
                }
 //              }
