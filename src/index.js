@@ -13478,10 +13478,19 @@ pool.getConnection(function(err, connection) {
        var driver = JSON.parse(JSON.stringify(rows));
        console.log('!! ', driver);
        var text = 'Ф ';
+       var test = [];
         for(var i = 0; i < driver.length; i++){
         text += '\nuser ' + driver[i].id_user + ' distr ' + driver[i].all_districts + ' id_route ' + driver[i].id_route
+        test.push([ driver[i].id_user, driver[i].id_route, driver[i].all_districts ]);
         }
-            bot.sendMessage(admin, text)
+//            bot.sendMessage(admin, text)
+
+           connection.query(' INSERT INTO distr1 VALUES ? ', [test],
+
+           function(err, rows, fields) {
+           if (err) throw err;
+           })
+
        })
 })
 
