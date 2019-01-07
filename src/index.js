@@ -13485,7 +13485,7 @@ pool.getConnection(function(err, connection) {
         }
 //            bot.sendMessage(admin, text)
 //kjb
-           connection.query(' INSERT INTO distr1 VALUES ? ', [test],
+           connection.query(' INSERT INTO distr1 ( id_user, id_route, all_districts ) VALUES ? ', [test],
 
            function(err, rows, fields) {
            if (err) throw err;
