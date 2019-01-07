@@ -5961,7 +5961,7 @@ pool.getConnection(function(err, connection) {
       connection.query('SELECT DISTINCT * FROM users WHERE id_user = ? ',[user_id], function(err, rows, fields) {
       if (err) throw err;
       var user = JSON.parse(JSON.stringify(rows));
-      console.log('users chosen', user);
+//      console.log('users chosen', user);
 
               if (msg.text === '/start') {
                   if (user[0] !== undefined) {
@@ -5979,8 +5979,8 @@ pool.getConnection(function(err, connection) {
 
 // Начало нововведения
               else if (user.length == 1 || user.length == 2) {
-              console.log('user length is 1 or 2: ', user.length);
-              console.log('message text ', msg.text);
+//              console.log('user length is 1 or 2: ', user.length);
+//              console.log('message text ', msg.text);
                    if (user.length == 1) {
                        if (user[0].marka === null && user[0].vibor === 'driver') { marka(msg) }
                        else if (user[0].marka !== null && user[0].nomer === null && user[0].vibor === 'driver') { nomer(msg); bot.sendMessage(msg.chat.id, 'Напишите ваш номер телефона\nНапишите слитно в таком формате:\n+77013330044') }
