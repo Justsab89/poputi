@@ -7,6 +7,7 @@ const date_format = require('date_format')
 const fs = require('fs')
 const TaskTimer = require('tasktimer')
 const database = require('./database')
+const admin = 336243307
 
 const bot = new TelegramBot(config.TOKEN, {
   polling: true
@@ -13435,3 +13436,48 @@ bot.sendMessage(id_user[0], text_to)
 })
 
 // lkndlknf
+
+bot.onText(/\/drivdistr (.+)/, (msg, [source, match]) => {
+
+
+var mysql  = require('mysql');
+        var pool = mysql.createPool({
+        host     : 'localhost',
+        user     : 'mybd_user',
+        password : 'admin123',
+        database : 'sitebot'
+    })
+
+var user_id = msg.chat.id;
+
+//console.log('!!message text', msg.text);
+
+//var msg_text = msg.text;
+//
+//var text = msg_text.replace("/drivdistr", "");
+//var splited = text.split(" ");
+////var id_user = splited.shift();
+//var id_user = splited.splice(1,1);
+//var text_to = splited.join(" ");
+//
+//console.log('!!text', text);
+//console.log('splited ', splited);
+//console.log('id_user: ', id_user);
+//console.log('!!text_to', text_to);
+
+
+
+//bot.sendMessage(admin, text_to)
+
+pool.getConnection(function(err, connection) {
+
+       connection.query(' SELECT DISTINCT id_user, id_route, all_districts FROM route  ',
+
+       function(err, rows, fields) {
+       if (err) throw err;
+       var driver = JSON.parse(JSON.stringify(rows));
+       console.log('!! ', driver);
+       })
+})
+
+})
